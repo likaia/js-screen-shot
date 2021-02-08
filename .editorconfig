@@ -1,0 +1,8 @@
+root = true
+
+# 对所有文件有效
+[*]
+charset = utf-8
+tab_width = 2
+indent_style = space
+indent_size = 2

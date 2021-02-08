@@ -1,0 +1,359 @@
+#screenShotContainer {
+  width: 800px;
+  height: 900px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  cursor: crosshair;
+}
+
+#toolPanel {
+  height: 24px;
+  background: #ffffff;
+  z-index: 9999;
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 10px;
+
+  .item-panel {
+    width: 24px;
+    height: 24px;
+    margin-right: 15px;
+    float: left;
+
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+
+  .square {
+    background-image: url("../img/square.png");
+    background-size: cover;
+
+    &:hover {
+      background-image: url("../img/square-hover.png");
+    }
+
+    &:active {
+      background-image: url("../img/square-click.png");
+    }
+  }
+  .square-active {
+    background-image: url("../img/square-click.png");
+  }
+
+  .round {
+    background-image: url("../img/round.png");
+    background-size: cover;
+
+    &:hover {
+      background-image: url("../img/round-hover.png");
+    }
+
+    &:active {
+      background-image: url("../img/round-click.png");
+    }
+  }
+  .round-active {
+    background-image: url("../img/round-click.png");
+  }
+
+  .right-top {
+    background-image: url("../img/right-top.png");
+    background-size: cover;
+
+    &:hover {
+      background-image: url("../img/right-top-hover.png");
+    }
+
+    &:active {
+      background-image: url("../img/right-top-click.png");
+    }
+  }
+  .right-top-active {
+    background-image: url("../img/right-top-click.png");
+  }
+
+  .brush {
+    background-image: url("../img/brush.png");
+    background-size: cover;
+
+    &:hover {
+      background-image: url("../img/brush-hover.png");
+    }
+
+    &:active {
+      background-image: url("../img/brush-click.png");
+    }
+  }
+  .brush-active{
+    background-image: url("../img/brush-click.png");
+  }
+
+  .mosaicPen {
+    background-image: url("../img/mosaicPen.png");
+    background-size: cover;
+
+    &:hover {
+      background-image: url("../img/mosaicPen-hover.png");
+    }
+
+    &:active {
+      background-image: url("../img/mosaicPen-click.png");
+    }
+  }
+  .mosaicPen-active {
+    background-image: url("../img/mosaicPen-click.png");
+  }
+
+  .separateLine {
+    width: 1px;
+    background-image: url("../img/seperateLine.png");
+    background-size: cover;
+  }
+
+  .text {
+    background-image: url("../img/text.png");
+    background-size: cover;
+
+    &:hover {
+      background-image: url("../img/text-hover.png");
+    }
+
+    &:active {
+      background-image: url("../img/text-click.png");
+    }
+  }
+  .text-active {
+    background-image: url("../img/text-click.png");
+  }
+
+  .save {
+    background-image: url("../img/save.png");
+    background-size: cover;
+
+    &:hover {
+      background-image: url("../img/save-hover.png");
+    }
+
+    &:active {
+      background-image: url("../img/save-click.png");
+    }
+  }
+
+  .close {
+    background-image: url("../img/close.png");
+    background-size: cover;
+
+    &:hover {
+      background-image: url("../img/close-hover.png");
+    }
+  }
+
+  .undo-disabled {
+    background-size: cover;
+    background-image: url("../img/undo-disabled.png");
+  }
+
+  .undo {
+    background-size: cover;
+    background-image: url("../img/undo.png");
+
+    &:hover{
+      background-image: url("../img/undo-hover.png");
+    }
+  }
+
+  .confirm {
+    background-image: url("../img/confirm.png");
+    background-size: cover;
+
+    &:hover {
+      background-image: url("../img/confirm-hover.png");
+    }
+  }
+}
+
+// 三角形角标
+.ico-panel {
+  width: 0;
+  height: 0;
+  border-right: 6px solid transparent;
+  border-left: 6px solid transparent;
+  border-top: 6px solid #FFFFFF;
+  position: absolute;
+  top: 0;
+  left: 23px;
+  transform: rotate(180deg);
+
+  img {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+#optionPanel {
+  height: 20px;
+  top: 6px;
+  left: 0;
+  border-radius: 5px;
+  background: #ffffff;
+  z-index: 9999;
+  position: absolute;
+  padding: 10px;
+
+  .brush-select-panel{
+    height: 20px;
+    float: left;
+
+    .item-panel {
+      width: 20px;
+      height: 20px;
+      margin-right: 18px;
+      float: left;
+
+      &:first-child {
+        margin-left: 2px;
+      }
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+    .brush-small {
+      background-size: cover;
+      background-image: url("../img/round-normal-small.png");
+
+      &:hover {
+        background-image: url("../img/round-selected-small.png");
+      }
+      &:active {
+        background-image: url("../img/round-selected-small.png");
+      }
+    }
+    .brush-small-active {
+      background-image: url("../img/round-selected-small.png");
+    }
+
+    .brush-medium {
+      background-size: cover;
+      background-image: url("../img/round-normal-medium.png");
+
+      &:hover {
+        background-image: url("../img/round-selected-medium.png");
+      }
+      &:active {
+        background-image: url("../img/round-selected-medium.png");
+      }
+    }
+    .brush-medium-active{
+      background-image: url("../img/round-selected-medium.png");
+    }
+
+    .brush-big {
+      background-size: cover;
+      background-image: url("../img/round-normal-big.png");
+
+      &:hover {
+        background-image: url("../img/round-selected-big.png");
+      }
+      &:active {
+        background-image: url("../img/round-selected-big.png");
+      }
+    }
+
+    .brush-big-active {
+      background-image: url("../img/round-selected-big.png");
+    }
+  }
+
+  .right-panel {
+    float: left;
+    display: flex;
+    align-items: center;
+    margin-left: 39px;
+
+    // 颜色容器
+    .color-panel{
+      width: 72px;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      background: #FFFFFF;
+      border: solid 1px #E5E6E5;
+      border-radius: 5px;
+      position: absolute;
+      top: -225px;
+      right: 28px;
+
+      .color-item {
+        width: 62px;
+        height: 20px;
+        margin-bottom: 5px;
+
+        &:nth-child(1) {
+          margin-top: 5px;
+          background: #F53440;
+        }
+        &:nth-child(2) {
+          background: #F65E95;
+        }
+        &:nth-child(3) {
+          background: #D254CF;
+        }
+        &:nth-child(4) {
+          background: #12A9D7;
+        }
+        &:nth-child(5) {
+          background: #30A345;
+        }
+        &:nth-child(6) {
+          background: #FACF50;
+        }
+        &:nth-child(7) {
+          background: #F66632;
+        }
+        &:nth-child(8) {
+          background: #989998;
+        }
+        &:nth-child(9) {
+          background: #000000;
+        }
+        &:nth-child(10) {
+          border: solid 1px #E5E6E5;
+          background: #FEFFFF;
+        }
+      }
+    }
+    // 已选择容器
+    .color-select-panel {
+      width: 62px;
+      height: 20px;
+      background: #F53340;
+      border: solid 1px #E5E6E5;
+    }
+
+    .pull-down-arrow {
+      width: 15px;
+      height: 8px;
+      margin-left: 10px;
+      background-size: cover;
+      background-image: url("../img/PopoverPullDownArrow.png");
+    }
+  }
+
+}
+
+#textInputPanel {
+  min-width: 20px;
+  min-height: 30px;
+  line-height: 30px;
+  padding: 5px;
+  box-sizing: border-box;
+  position: absolute;
+  outline: none;
+  top: 0;
+  left: 0;
+  color: red;
+  border: solid 1px red;
+}
