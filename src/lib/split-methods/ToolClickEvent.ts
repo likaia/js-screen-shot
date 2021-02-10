@@ -1,0 +1,77 @@
+/**
+ * 裁剪框工具栏点击事件
+ * @param toolName
+ * @param index
+ * @param mouseEvent
+ */
+import { setSelectedClassName } from "@/lib/common-methords/SetSelectedClassName";
+import { calculateOptionIcoPosition } from "@/lib/split-methods/CalculateOptionIcoPosition";
+import InitData from "@/lib/main-entrance/InitData";
+import { getCanvasImgData } from "@/lib/common-methords/GetCanvasImgData";
+import { takeOutHistory } from "@/lib/common-methords/TakeOutHistory";
+
+export function toolClickEvent(
+  toolName: string,
+  index: number,
+  mouseEvent: any
+) {
+  const data = new InitData();
+  const textInputController = data.getTextInputController();
+  // 更新当前点击的工具栏条目
+  data.setToolName(toolName);
+  // 为当前点击项添加选中时的class名
+  setSelectedClassName(mouseEvent, index, false);
+  if (toolName != "text") {
+    // 显示画笔选择工具栏
+    data.setOptionStatus(true);
+    // 设置画笔选择工具栏位置
+    data.setOptionPosition(calculateOptionIcoPosition(index));
+  } else {
+    // 隐藏画笔工具栏
+    data.setOptionStatus(false);
+  }
+  data.setRightPanel(true);
+  if (toolName == "mosaicPen") {
+    // 马赛克工具隐藏右侧颜色面板与角标
+    data.setRightPanel(false);
+    data.hiddenOptionIcoStatus();
+  }
+  // 清空文本输入区域的内容并隐藏文本输入框
+  if (textInputController != null && data.getTextStatus()) {
+    textInputController.innerHTML = "";
+    data.setTextStatus(false);
+  }
+  // 初始化点击状态
+  data.setDragging(false);
+  data.setDraggingTrim(false);
+
+  // 保存图片
+  if (toolName == "save") {
+    getCanvasImgData(true);
+    // 销毁组件
+    data.destroyDOM();
+    data.setInitStatus(true);
+  }
+  // 销毁组件
+  if (toolName == "close") {
+    data.destroyDOM();
+    data.setInitStatus(true);
+  }
+  // 确认截图
+  if (toolName == "confirm") {
+    const base64 = getCanvasImgData(false);
+    sessionStorage.setItem("screenShotImg", base64);
+    // 销毁组件
+    data.destroyDOM();
+    data.setInitStatus(true);
+  }
+  // 撤销
+  if (toolName == "undo") {
+    // 隐藏画笔选项工具栏
+    data.setOptionStatus(false);
+    takeOutHistory();
+  }
+
+  // 设置裁剪框工具栏为点击状态
+  data.setToolClickStatus(true);
+}

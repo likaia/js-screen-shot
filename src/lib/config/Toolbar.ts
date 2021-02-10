@@ -30,5 +30,17 @@ export default [
   {
     id: 8,
     title: "save"
+  },
+  {
+    id: 9,
+    title: "undo"
+  },
+  {
+    id: 10,
+    title: "close"
+  },
+  {
+    id: 11,
+    title: "confirm"
   }
 ];

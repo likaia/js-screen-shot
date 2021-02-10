@@ -1,11 +1,15 @@
 import toolbar from "@/lib/config/Toolbar";
 import { toolbarType } from "@/lib/type/ComponentType";
+import { toolClickEvent } from "@/lib/split-methods/ToolClickEvent";
+import { setBrushSize } from "@/lib/common-methords/SetBrushSize";
+import { selectColor } from "@/lib/common-methords/SelectColor";
+import { getColor } from "@/lib/common-methords/GetColor";
 
 export default class CreateDom {
   // 截图区域canvas容器
-  private screenShortController: HTMLCanvasElement;
+  private readonly screenShortController: HTMLCanvasElement;
   // 截图工具栏容器
-  private toolController: HTMLDivElement;
+  private readonly toolController: HTMLDivElement;
   // 绘制选项顶部ico容器
   private readonly optionIcoController: HTMLDivElement;
   // 画笔绘制选项容器
@@ -35,6 +39,8 @@ export default class CreateDom {
     this.setTextInputPanel();
     // 渲染页面
     this.setDomToBody();
+    // 隐藏所有dom
+    this.hiddenAllDom();
   }
 
   // 渲染截图工具栏图标
@@ -45,8 +51,12 @@ export default class CreateDom {
       // 撤销按钮单独处理
       if (item.title == "undo") {
         itemPanel.className = `item-panel undo-disabled`;
+        itemPanel.id = "undoPanel";
       } else {
         itemPanel.className = `item-panel ${item.title}`;
+        itemPanel.addEventListener("click", e => {
+          toolClickEvent(item.title, item.id, e);
+        });
       }
       itemPanel.setAttribute("data-title", item.title);
       itemPanel.setAttribute("data-id", item.id + "");
@@ -67,12 +77,21 @@ export default class CreateDom {
         case 0:
           itemPanel.classList.add("brush-small");
           itemPanel.classList.add("brush-small-active");
+          itemPanel.addEventListener("click", e => {
+            setBrushSize("small", 1, e);
+          });
           break;
         case 1:
           itemPanel.classList.add("brush-medium");
+          itemPanel.addEventListener("click", e => {
+            setBrushSize("medium", 2, e);
+          });
           break;
         case 2:
           itemPanel.classList.add("brush-big");
+          itemPanel.addEventListener("click", e => {
+            setBrushSize("big", 3, e);
+          });
           break;
       }
       brushSelectPanel.appendChild(itemPanel);
@@ -83,20 +102,33 @@ export default class CreateDom {
     // 创建颜色选择容器
     const colorSelectPanel = document.createElement("div");
     colorSelectPanel.className = "color-select-panel";
+    colorSelectPanel.id = "colorSelectPanel";
+    colorSelectPanel.addEventListener("click", () => {
+      selectColor();
+    });
     // 创建颜色显示容器
     const colorPanel = document.createElement("div");
+    colorPanel.id = "colorPanel";
     colorPanel.className = "color-panel";
+    colorPanel.style.display = "none";
     for (let i = 0; i < 10; i++) {
       const colorItem = document.createElement("div");
       colorItem.className = "color-item";
+      colorItem.addEventListener("click", () => {
+        getColor(i + 1);
+      });
       colorItem.setAttribute("data-index", i + "");
       colorPanel.appendChild(colorItem);
     }
-    colorSelectPanel.appendChild(colorPanel);
+    rightPanel.appendChild(colorPanel);
     rightPanel.appendChild(colorSelectPanel);
+    rightPanel.id = "rightPanel";
     // 创建颜色下拉箭头选择容器
     const pullDownArrow = document.createElement("div");
     pullDownArrow.className = "pull-down-arrow";
+    pullDownArrow.addEventListener("click", () => {
+      selectColor();
+    });
     rightPanel.appendChild(pullDownArrow);
     // 向画笔绘制选项容器追加画笔选择和颜色显示容器
     this.optionController.appendChild(brushSelectPanel);
@@ -120,6 +152,15 @@ export default class CreateDom {
     this.textInputController.id = "textInputPanel";
   }
 
+  // 隐藏所有dom
+  private hiddenAllDom() {
+    this.screenShortController.style.display = "none";
+    this.toolController.style.display = "none";
+    this.optionIcoController.style.display = "none";
+    this.optionController.style.display = "none";
+    this.textInputController.style.display = "none";
+  }
+
   // 将截图相关dom渲染至body
   private setDomToBody() {
     document.body.appendChild(this.screenShortController);
@@ -132,68 +173,5 @@ export default class CreateDom {
   // 设置画笔绘制选项顶部ico样式
   private setOptionIcoClassName() {
     this.optionIcoController.className = "ico-panel";
-  }
-
-  /**
-   * 设置截图区域容器大小
-   * @param width
-   * @param height
-   * @private
-   */
-  private setScreenShortControllerSize(width: number, height: number) {
-    this.screenShortController = document.getElementById(
-      "screenShortController"
-    ) as HTMLCanvasElement;
-    // 设置宽高
-    this.screenShortController.width = width;
-    this.screenShortController.height = height;
-  }
-
-  /**
-   * 设置截图工具栏位置
-   * @param top
-   * @param left
-   * @private
-   */
-  private setToolControllerPosition(top: number, left: number) {
-    this.toolController = document.getElementById(
-      "toolController"
-    ) as HTMLDivElement;
-    // 设置宽高
-    this.toolController.style.top = top + "px";
-    this.toolController.style.left = left + "px";
-  }
-
-  /**
-   * 设置画笔绘制选项顶部ico位置
-   * @param left
-   * @param top
-   * @private
-   */
-  private setOptionIcoPosition(left: number, top: number) {
-    this.optionIcoController.style.left = left + "px";
-    this.optionIcoController.style.top = top + "px";
-  }
-
-  /**
-   * 设置画笔绘制选项位置
-   * @param left
-   * @param top
-   * @private
-   */
-  private setOptionControllerPosition(left: number, top: number) {
-    this.optionController.style.left = left + "px";
-    this.optionController.style.top = top + "px";
-  }
-
-  /**
-   * 设置文字输入工具位置
-   * @param left
-   * @param top
-   * @private
-   */
-  private setTextInputControllerPosition(left: number, top: number) {
-    this.textInputController.style.left = left + "px";
-    this.textInputController.style.top = top + "px";
   }
 }
