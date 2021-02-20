@@ -10,6 +10,8 @@
  * @param imageController 图片canvas容器
  * @private
  */
+import { imgScaling } from "@/lib/common-methords/ImgScaling";
+
 export function drawCutOutBox(
   mouseX: number,
   mouseY: number,
@@ -94,7 +96,14 @@ export function drawCutOutBox(
   // context.scale(window.devicePixelRatio, window.devicePixelRatio);
 
   context.globalCompositeOperation = "destination-over";
-  context.drawImage(imageController, 0, 0, controller.width, controller.height);
+  // 计算等比例缩放后的图片宽高
+  const { tempWidth, tempHeight } = imgScaling(
+    window.screen.width,
+    window.screen.height,
+    controller.width,
+    controller.height
+  );
+  context.drawImage(imageController, 0, 0, tempWidth, tempHeight);
   context.restore();
   // 返回裁剪框临时位置信息
   return {

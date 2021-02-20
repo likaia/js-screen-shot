@@ -17,19 +17,19 @@ export function getCanvasImgData(isSave: boolean) {
       // 将canvas转为图片
       saveCanvasToImage(
         screenShortCanvas,
-        startX + data.getBorderSize() / 1.5,
-        startY + data.getBorderSize() / 1.5,
-        width - data.getBorderSize() * 1.5,
-        height - data.getBorderSize() * 1.5
+        startX + data.getBorderSize() / 2.4,
+        startY + data.getBorderSize() / 2.4,
+        width - data.getBorderSize() * 2.4,
+        height - data.getBorderSize() * 2.4
       );
     } else {
       // 将canvas转为base64
       base64 = saveCanvasToBase64(
         screenShortCanvas,
-        startX + data.getBorderSize() / 1.5,
-        startY + data.getBorderSize() / 1.5,
-        width - data.getBorderSize() * 1.5,
-        height - data.getBorderSize() * 1.5
+        startX + data.getBorderSize() / 2.4,
+        startY + data.getBorderSize() / 2.4,
+        width - data.getBorderSize() * 2.4,
+        height - data.getBorderSize() * 2.4
       );
     }
   }
