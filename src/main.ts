@@ -21,6 +21,8 @@ import { drawCutOutBox } from "@/lib/split-methods/DrawCutOutBox";
 import { zoomCutOutBoxPosition } from "@/lib/common-methords/ZoomCutOutBoxPosition";
 import { saveBorderArrInfo } from "@/lib/common-methords/SaveBorderArrInfo";
 import { calculateToolLocation } from "@/lib/split-methods/CalculateToolLocation";
+import html2canvas from "html2canvas";
+import PlugInParameters from "@/lib/main-entrance/PlugInParameters";
 
 export default class ScreenShort {
   // 当前实例的响应式data数据
@@ -33,7 +35,7 @@ export default class ScreenShort {
   // 截图工具栏dom
   private readonly toolController: HTMLDivElement | null;
   // 截图图片存放容器
-  private readonly screenShortImageController: HTMLCanvasElement;
+  private screenShortImageController: HTMLCanvasElement;
   // 截图区域画布
   private screenShortCanvas: CanvasRenderingContext2D | undefined;
   // 文本区域dom
@@ -79,9 +81,28 @@ export default class ScreenShort {
     mouseX: 0,
     mouseY: 0
   };
-  constructor() {
-    // 创建dom
-    new CreateDom();
+  constructor(options: { enableWebRtc: boolean; completeCallback: Function }) {
+    const plugInParameters = new PlugInParameters();
+    // webrtc启用状态
+    if (
+      options &&
+      Object.prototype.hasOwnProperty.call(options, "enableWebRtc")
+    ) {
+      plugInParameters.setWebRtcStatus(options.enableWebRtc);
+    }
+    // 设置回调函数
+    if (
+      options &&
+      Object.prototype.hasOwnProperty.call(options, "completeCallback")
+    ) {
+      // 创建dom
+      new CreateDom(options.completeCallback);
+    } else {
+      // 创建dom
+      new CreateDom((base64: string) => {
+        sessionStorage.setItem("screenShotImg", base64);
+      });
+    }
     this.videoController = document.createElement("video");
     this.videoController.autoplay = true;
     this.screenShortImageController = document.createElement("canvas");
@@ -98,13 +119,47 @@ export default class ScreenShort {
 
   // 加载截图组件
   private load() {
+    const plugInParameters = new PlugInParameters();
     // 设置截图区域canvas宽高
     this.data.setScreenShortInfo(window.innerWidth, window.innerHeight);
     // 设置截图图片存放容器宽高
     this.screenShortImageController.width = window.innerWidth;
     this.screenShortImageController.height = window.innerHeight;
+    // 获取截图区域画canvas容器画布
+    const context = this.screenShortController?.getContext("2d");
+    if (context == null) return;
     // 显示截图区域容器
     this.data.showScreenShortPanel();
+    if (!plugInParameters.getWebRtcStatus()) {
+      // html2canvas截屏
+      html2canvas(document.body, {}).then(canvas => {
+        // 装载截图的dom为null则退出
+        if (this.screenShortController == null) return;
+
+        // 存放html2canvas截取的内容
+        this.screenShortImageController = canvas;
+
+        // 赋值截图区域canvas画布
+        this.screenShortCanvas = context;
+        // 绘制蒙层
+        drawMasking(context);
+
+        // 添加监听
+        this.screenShortController?.addEventListener(
+          "mousedown",
+          this.mouseDownEvent
+        );
+        this.screenShortController?.addEventListener(
+          "mousemove",
+          this.mouseMoveEvent
+        );
+        this.screenShortController?.addEventListener(
+          "mouseup",
+          this.mouseUpEvent
+        );
+      });
+      return;
+    }
     // 截取整个屏幕
     this.screenShot();
   }

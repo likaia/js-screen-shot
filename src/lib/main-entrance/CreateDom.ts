@@ -16,16 +16,19 @@ export default class CreateDom {
   private readonly optionController: HTMLDivElement;
   // 文字工具输入容器
   private readonly textInputController: HTMLDivElement;
+  // 截图完成回调函数
+  private completeCallback: Function;
 
   // 截图工具栏图标
   private readonly toolbar: Array<toolbarType>;
 
-  constructor() {
+  constructor(completeCallback: Function) {
     this.screenShortController = document.createElement("canvas");
     this.toolController = document.createElement("div");
     this.optionIcoController = document.createElement("div");
     this.optionController = document.createElement("div");
     this.textInputController = document.createElement("div");
+    this.completeCallback = completeCallback;
     // 为所有dom设置id
     this.setAllControllerId();
     // 为画笔绘制选项角标设置class
@@ -55,7 +58,7 @@ export default class CreateDom {
       } else {
         itemPanel.className = `item-panel ${item.title}`;
         itemPanel.addEventListener("click", e => {
-          toolClickEvent(item.title, item.id, e);
+          toolClickEvent(item.title, item.id, e, this.completeCallback);
         });
       }
       itemPanel.setAttribute("data-title", item.title);

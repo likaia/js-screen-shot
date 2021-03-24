@@ -13,7 +13,8 @@ import { takeOutHistory } from "@/lib/common-methords/TakeOutHistory";
 export function toolClickEvent(
   toolName: string,
   index: number,
-  mouseEvent: any
+  mouseEvent: any,
+  completeCallback: Function
 ) {
   const data = new InitData();
   const textInputController = data.getTextInputController();
@@ -60,7 +61,10 @@ export function toolClickEvent(
   // 确认截图
   if (toolName == "confirm") {
     const base64 = getCanvasImgData(false);
-    sessionStorage.setItem("screenShotImg", base64);
+    // 触发回调函数，截图数据回传给插件调用者
+    if (completeCallback) {
+      completeCallback(base64);
+    }
     // 销毁组件
     data.destroyDOM();
     data.setInitStatus(true);

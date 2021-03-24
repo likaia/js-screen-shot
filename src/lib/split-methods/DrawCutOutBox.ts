@@ -11,6 +11,7 @@
  * @private
  */
 import { imgScaling } from "@/lib/common-methords/ImgScaling";
+import PlugInParameters from "@/lib/main-entrance/PlugInParameters";
 
 export function drawCutOutBox(
   mouseX: number,
@@ -25,6 +26,7 @@ export function drawCutOutBox(
   // 获取画布宽高
   const canvasWidth = controller?.width;
   const canvasHeight = controller?.height;
+  const plugInParameters = new PlugInParameters();
 
   // 画布、图片不存在则return
   if (!canvasWidth || !canvasHeight || !imageController || !controller) return;
@@ -96,14 +98,23 @@ export function drawCutOutBox(
   // context.scale(window.devicePixelRatio, window.devicePixelRatio);
 
   context.globalCompositeOperation = "destination-over";
-  // 计算等比例缩放后的图片宽高
-  const { tempWidth, tempHeight } = imgScaling(
-    window.screen.width,
-    window.screen.height,
-    controller.width,
-    controller.height
-  );
-  context.drawImage(imageController, 0, 0, tempWidth, tempHeight);
+  let { imgWidth, imgHeight } = {
+    imgWidth: controller?.width,
+    imgHeight: controller?.height
+  };
+  if (plugInParameters.getWebRtcStatus()) {
+    // 计算等比例缩放后的图片宽高
+    const { tempWidth, tempHeight } = imgScaling(
+      window.screen.width,
+      window.screen.height,
+      controller.width,
+      controller.height
+    );
+    imgWidth = tempWidth;
+    imgHeight = tempHeight;
+  }
+
+  context.drawImage(imageController, 0, 0, imgWidth, imgHeight);
   context.restore();
   // 返回裁剪框临时位置信息
   return {
