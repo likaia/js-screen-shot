@@ -103,15 +103,28 @@ export function drawCutOutBox(
     imgHeight: controller?.height
   };
   if (plugInParameters.getWebRtcStatus()) {
+    // // 计算等比例缩放后的图片宽高
+    // const { tempWidth, tempHeight } = imgScaling(
+    //   window.screen.width,
+    //   window.screen.height,
+    //   controller.width,
+    //   controller.height
+    // );
+    // imgWidth = tempWidth;
+    // imgHeight = tempHeight;
     // 计算等比例缩放后的图片宽高
-    const { tempWidth, tempHeight } = imgScaling(
-      window.screen.width,
-      window.screen.height,
-      controller.width,
-      controller.height
-    );
-    imgWidth = tempWidth;
-    imgHeight = tempHeight;
+    // const { tempWidth, tempHeight } = imgScaling(
+    //   window.screen.width,
+    //   window.screen.height,
+    //   controller.width,
+    //   controller.height
+    // );
+    // imgWidth = tempWidth;
+    // imgHeight = tempHeight;
+
+    // 使用当前屏幕宽高
+    imgWidth = window.screen.width;
+    imgHeight = window.screen.height;
   }
 
   context.drawImage(imageController, 0, 0, imgWidth, imgHeight);

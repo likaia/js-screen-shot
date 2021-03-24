@@ -128,6 +128,14 @@ export default class ScreenShort {
     // 获取截图区域画canvas容器画布
     const context = this.screenShortController?.getContext("2d");
     if (context == null) return;
+    // 启用webrtc截屏时则修改容器宽高
+    if (plugInParameters.getWebRtcStatus()) {
+      // 设置为屏幕宽高
+      this.data.setScreenShortInfo(window.screen.width, window.screen.height);
+      // 设置为屏幕宽高
+      this.screenShortImageController.width = window.screen.width;
+      this.screenShortImageController.height = window.screen.height;
+    }
     // 显示截图区域容器
     this.data.showScreenShortPanel();
     if (!plugInParameters.getWebRtcStatus()) {
