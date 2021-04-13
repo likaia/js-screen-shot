@@ -184,7 +184,9 @@ export default class ScreenShort {
       // 将MediaStream输出至video标签
       this.videoController.srcObject = captureStream;
     } catch (err) {
-      throw "浏览器不支持webrtc" + err;
+      // 销毁截图组件
+      this.data.destroyDOM();
+      throw `浏览器不支持webrtc或者用户未授权( ${err} )`;
     }
     return captureStream;
   };
