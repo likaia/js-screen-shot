@@ -81,7 +81,11 @@ export default class ScreenShort {
     mouseX: 0,
     mouseY: 0
   };
-  constructor(options: { enableWebRtc: boolean; completeCallback: Function }) {
+  constructor(options: {
+    enableWebRtc: boolean;
+    level: number;
+    completeCallback: Function;
+  }) {
     const plugInParameters = new PlugInParameters();
     // webrtc启用状态
     if (
@@ -115,6 +119,10 @@ export default class ScreenShort {
     this.optionController = this.data.getOptionController() as HTMLDivElement | null;
     this.optionIcoController = this.data.getOptionIcoController() as HTMLDivElement | null;
     this.load();
+    const screenShotContainer = document.getElementById("screenShotContainer");
+    if (screenShotContainer == null) return;
+    // 调整层级
+    screenShotContainer.style.zIndex = options?.level + "";
   }
 
   // 加载截图组件
@@ -239,7 +247,7 @@ export default class ScreenShort {
         );
         // 停止捕捉屏幕
         this.stopCapture();
-      }, 300);
+      }, 500);
     });
   };
 
