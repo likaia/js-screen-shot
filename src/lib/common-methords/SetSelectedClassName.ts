@@ -19,9 +19,10 @@ export function setSelectedClassName(
     className = getBrushSelectedName(index);
   }
   // 解决event 在火狐和Safari浏览上的兼容性问题
-  const path = mouseEvent.path || (mouseEvent.composedPath && mouseEvent.composedPath());
+  const path =
+    mouseEvent.path || (mouseEvent.composedPath && mouseEvent.composedPath());
   // 获取div下的所有子元素
-  const nodes =path[1].children;
+  const nodes = path[1].children;
   for (let i = 0; i < nodes.length; i++) {
     const item = nodes[i];
     // 如果工具栏中已经有选中的class则将其移除
