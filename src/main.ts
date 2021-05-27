@@ -84,6 +84,8 @@ export default class ScreenShort {
   constructor(options: {
     enableWebRtc: boolean;
     level: number;
+    canvasWidth: number;
+    canvasHeight: number;
     completeCallback: Function;
   }) {
     const plugInParameters = new PlugInParameters();
@@ -107,6 +109,14 @@ export default class ScreenShort {
         sessionStorage.setItem("screenShotImg", base64);
       });
     }
+    // 读取参数中的画布宽高
+    if (
+      options &&
+      Object.prototype.hasOwnProperty.call(options, "canvasWidth") &&
+      Object.prototype.hasOwnProperty.call(options, "canvasHeight")
+    ) {
+      plugInParameters.setCanvasSize(options.canvasWidth, options.canvasHeight);
+    }
     this.videoController = document.createElement("video");
     this.videoController.autoplay = true;
     this.screenShortImageController = document.createElement("canvas");
@@ -128,11 +138,21 @@ export default class ScreenShort {
   // 加载截图组件
   private load() {
     const plugInParameters = new PlugInParameters();
+    const canvasSize = plugInParameters.getCanvasSize();
     // 设置截图区域canvas宽高
     this.data.setScreenShortInfo(window.innerWidth, window.innerHeight);
     // 设置截图图片存放容器宽高
     this.screenShortImageController.width = window.innerWidth;
     this.screenShortImageController.height = window.innerHeight;
+    // 用户有传宽高则使用用户传进来的
+    if (canvasSize.canvasWidth !== 0 && canvasSize.canvasHeight !== 0) {
+      this.data.setScreenShortInfo(
+        canvasSize.canvasWidth,
+        canvasSize.canvasHeight
+      );
+      this.screenShortImageController.width = canvasSize.canvasWidth;
+      this.screenShortImageController.height = canvasSize.canvasHeight;
+    }
     // 获取截图区域画canvas容器画布
     const context = this.screenShortController?.getContext("2d");
     if (context == null) return;
@@ -143,6 +163,15 @@ export default class ScreenShort {
       // 设置为屏幕宽高
       this.screenShortImageController.width = window.screen.width;
       this.screenShortImageController.height = window.screen.height;
+      // 用户有传宽高则使用用户传进来的
+      if (canvasSize.canvasWidth !== 0 && canvasSize.canvasHeight !== 0) {
+        this.data.setScreenShortInfo(
+          canvasSize.canvasWidth,
+          canvasSize.canvasHeight
+        );
+        this.screenShortImageController.width = canvasSize.canvasWidth;
+        this.screenShortImageController.height = canvasSize.canvasHeight;
+      }
     }
     // 显示截图区域容器
     this.data.showScreenShortPanel();
