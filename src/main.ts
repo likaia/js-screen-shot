@@ -251,6 +251,15 @@ export default class ScreenShort {
         this.screenShortCanvas = context;
         // 绘制蒙层
         drawMasking(context);
+        const plugInParameters = new PlugInParameters();
+        const canvasSize = plugInParameters.getCanvasSize();
+        let containerWidth = this.screenShortImageController?.width;
+        let containerHeight = this.screenShortImageController?.height;
+        // 用户有传宽高时，则使用用户的
+        if (canvasSize.canvasWidth !== 0 && canvasSize.canvasHeight !== 0) {
+          containerWidth = canvasSize.canvasWidth;
+          containerHeight = canvasSize.canvasHeight;
+        }
         // 将获取到的屏幕截图绘制到图片容器里
         this.screenShortImageController
           .getContext("2d")
@@ -258,8 +267,8 @@ export default class ScreenShort {
             this.videoController,
             0,
             0,
-            this.screenShortImageController?.width,
-            this.screenShortImageController?.height
+            containerWidth,
+            containerHeight
           );
         // 添加监听
         this.screenShortController?.addEventListener(
