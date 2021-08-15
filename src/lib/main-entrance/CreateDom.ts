@@ -17,18 +17,21 @@ export default class CreateDom {
   // 文字工具输入容器
   private readonly textInputController: HTMLDivElement;
   // 截图完成回调函数
-  private completeCallback: Function;
+  private readonly completeCallback: Function;
+  // 截图关闭毁掉函数
+  private readonly closeCallback: Function | undefined;
 
   // 截图工具栏图标
   private readonly toolbar: Array<toolbarType>;
 
-  constructor(completeCallback: Function) {
+  constructor(completeCallback: Function, closeCallback?: Function) {
     this.screenShortController = document.createElement("canvas");
     this.toolController = document.createElement("div");
     this.optionIcoController = document.createElement("div");
     this.optionController = document.createElement("div");
     this.textInputController = document.createElement("div");
     this.completeCallback = completeCallback;
+    this.closeCallback = closeCallback;
     // 为所有dom设置id
     this.setAllControllerId();
     // 为画笔绘制选项角标设置class
@@ -58,7 +61,13 @@ export default class CreateDom {
       } else {
         itemPanel.className = `item-panel ${item.title}`;
         itemPanel.addEventListener("click", e => {
-          toolClickEvent(item.title, item.id, e, this.completeCallback);
+          toolClickEvent(
+            item.title,
+            item.id,
+            e,
+            this.completeCallback,
+            this.closeCallback
+          );
         });
       }
       itemPanel.setAttribute("data-title", item.title);

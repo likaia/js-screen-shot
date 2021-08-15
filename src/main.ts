@@ -87,6 +87,7 @@ export default class ScreenShort {
     canvasWidth: number;
     canvasHeight: number;
     completeCallback: Function;
+    closeCallback: Function;
   }) {
     const plugInParameters = new PlugInParameters();
     // webrtc启用状态
@@ -99,12 +100,25 @@ export default class ScreenShort {
     // 设置回调函数
     if (
       options &&
+      Object.prototype.hasOwnProperty.call(options, "completeCallback") &&
+      Object.prototype.hasOwnProperty.call(options, "closeCallback")
+    ) {
+      // 完成与关闭回调都存在
+      new CreateDom(options.completeCallback, options.closeCallback);
+    } else if (
+      options &&
+      Object.prototype.hasOwnProperty.call(options, "closeCallback")
+    ) {
+      // 只有关闭回调函数存在
+      new CreateDom(options.completeCallback, options.closeCallback);
+    } else if (
+      options &&
       Object.prototype.hasOwnProperty.call(options, "completeCallback")
     ) {
-      // 创建dom
+      // 只有完成回调函数存在
       new CreateDom(options.completeCallback);
     } else {
-      // 创建dom
+      // 都不存在
       new CreateDom((base64: string) => {
         sessionStorage.setItem("screenShotImg", base64);
       });

@@ -14,7 +14,8 @@ export function toolClickEvent(
   toolName: string,
   index: number,
   mouseEvent: any,
-  completeCallback: Function
+  completeCallback: Function,
+  closeCallback: Function | undefined
 ) {
   const data = new InitData();
   const textInputController = data.getTextInputController();
@@ -55,6 +56,10 @@ export function toolClickEvent(
   }
   // 销毁组件
   if (toolName == "close") {
+    // 触发关闭回调函数
+    if (closeCallback) {
+      closeCallback();
+    }
     data.destroyDOM();
     data.setInitStatus(true);
   }
