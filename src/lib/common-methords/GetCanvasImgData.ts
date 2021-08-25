@@ -15,22 +15,38 @@ export function getCanvasImgData(isSave: boolean) {
   if (screenShortCanvas) {
     if (isSave) {
       // 将canvas转为图片
-      saveCanvasToImage(
-        screenShortCanvas,
-        startX + data.getBorderSize() / 2.4,
-        startY + data.getBorderSize() / 2.4,
-        width - data.getBorderSize() * 2.4,
-        height - data.getBorderSize() * 2.4
-      );
+      if (width < 0 && height < 0) {
+        // 考虑右下往左上拉区域的情况
+        saveCanvasToImage(screenShortCanvas, 
+          (startX - data.getBorderSize() / 2.4 + width + data.getBorderSize() * 2.4), 
+          (startY - data.getBorderSize() / 2.4 + height + data.getBorderSize() * 2.4), 
+          Math.abs(width + data.getBorderSize() * 2.4), 
+          Math.abs(height + data.getBorderSize() * 2.4));     
+      } else {
+        saveCanvasToImage(
+          screenShortCanvas, 
+          startX + data.getBorderSize() / 2.4, 
+          startY + data.getBorderSize() / 2.4, 
+          width - data.getBorderSize() * 2.4, 
+          height - data.getBorderSize() * 2.4);
+      }
     } else {
       // 将canvas转为base64
-      base64 = saveCanvasToBase64(
-        screenShortCanvas,
-        startX + data.getBorderSize() / 2.4,
-        startY + data.getBorderSize() / 2.4,
-        width - data.getBorderSize() * 2.4,
-        height - data.getBorderSize() * 2.4
-      );
+      if (width < 0 && height < 0) {
+        // 考虑右下往左上拉区域的情况
+        base64 = saveCanvasToBase64(
+          screenShortCanvas, 
+          (startX - data.getBorderSize() / 2.4 + width + data.getBorderSize() * 2.4),
+          (startY - data.getBorderSize() / 2.4 + height + data.getBorderSize() * 2.4),
+          Math.abs(width + data.getBorderSize() * 2.4),
+          Math.abs(height + data.getBorderSize() * 2.4));        
+      } else {
+        base64 = saveCanvasToBase64(screenShortCanvas, 
+          startX + data.getBorderSize() / 2.4, 
+          startY + data.getBorderSize() / 2.4, 
+          width - data.getBorderSize() * 2.4, 
+          height - data.getBorderSize() * 2.4);
+      }
     }
   }
   // 销毁组件
