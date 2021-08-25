@@ -13,10 +13,13 @@ export function calculateToolLocation(
   const mouseX = (position.width - toolWidth) / 2 + position.startX;
   // 工具栏Y轴坐标
   let mouseY = position.startY + position.height + 10;
-  if ( (position.width < 0 && position.height < 0) || (position.width > 0 && position.height < 0) ) {
+  if (
+    (position.width < 0 && position.height < 0) ||
+    (position.width > 0 && position.height < 0)
+  ) {
     // 从右下角或者左下角拖动时，工具条y轴的位置应该为position.startY + 10
     mouseY = position.startY + 10;
-  } 
+  }
   return {
     mouseX,
     mouseY
