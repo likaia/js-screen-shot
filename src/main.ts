@@ -75,6 +75,8 @@ export default class ScreenShort {
   private maxUndoNum = 15;
   // 马赛克涂抹区域大小
   private degreeOfBlur = 5;
+  // 截图容器位置信息
+  private position: { top: number; left: number } = { left: 0, top: 0 };
 
   // 文本输入框位置
   private textInputPosition: { mouseX: number; mouseY: number } = {
@@ -88,6 +90,7 @@ export default class ScreenShort {
     canvasHeight: number;
     completeCallback: Function;
     closeCallback: Function;
+    position: { top?: number; left?: number };
   }) {
     const plugInParameters = new PlugInParameters();
     // webrtc启用状态
@@ -131,6 +134,15 @@ export default class ScreenShort {
     ) {
       plugInParameters.setCanvasSize(options.canvasWidth, options.canvasHeight);
     }
+    // 设置截图容器的位置信息
+    if (options && Object.prototype.hasOwnProperty.call(options, "position")) {
+      if (options.position?.top != null) {
+        this.position.top = options.position?.top;
+      }
+      if (options.position?.left != null) {
+        this.position.left = options.position?.left;
+      }
+    }
     this.videoController = document.createElement("video");
     this.videoController.autoplay = true;
     this.screenShortImageController = document.createElement("canvas");
@@ -155,6 +167,8 @@ export default class ScreenShort {
     const canvasSize = plugInParameters.getCanvasSize();
     // 设置截图区域canvas宽高
     this.data.setScreenShortInfo(window.innerWidth, window.innerHeight);
+    // 设置截图容器位置
+    this.data.setScreenShotPosition(this.position.left, this.position.top);
     // 设置截图图片存放容器宽高
     this.screenShortImageController.width = window.innerWidth;
     this.screenShortImageController.height = window.innerHeight;
@@ -359,9 +373,9 @@ export default class ScreenShort {
         // 保存绘制记录
         this.addHistory();
       }
-      // 计算文本框显示位置
-      const textMouseX = mouseX - 15;
-      const textMouseY = mouseY - 15;
+      // 计算文本框显示位置, 需要加上截图容器的位置信息
+      const textMouseX = mouseX - 15 + this.position.left;
+      const textMouseY = mouseY - 15 + this.position.top;
       // 修改文本区域位置
       this.textInputController.style.left = textMouseX + "px";
       this.textInputController.style.top = textMouseY + "px";
@@ -539,7 +553,10 @@ export default class ScreenShort {
           this.toolController.offsetWidth
         );
         // 显示并设置截图工具栏位置
-        this.data.setToolInfo(toolLocation.mouseX, toolLocation.mouseY);
+        this.data.setToolInfo(
+          toolLocation.mouseX + this.position.left,
+          toolLocation.mouseY + this.position.top
+        );
       }
     }
   };

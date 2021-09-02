@@ -90,6 +90,14 @@ export default class InitData {
     screenShortController.height = height;
   }
 
+  // 设置截图容器位置
+  public setScreenShotPosition(left: number, top: number) {
+    this.getScreenShortController();
+    if (screenShortController == null) return;
+    screenShortController.style.left = left + "px";
+    screenShortController.style.top = top + "px";
+  }
+
   // 显示截图区域容器
   public showScreenShortPanel() {
     this.getScreenShortController();
