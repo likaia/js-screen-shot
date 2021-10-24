@@ -8,12 +8,15 @@
   "publisher": "magicalprogrammer@qq.com",
   "scripts": {
     "build": "vue-cli-service build --target lib --name screenShotPlugin src/main.ts",
-    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
-    "commit": "git-cz"
+    "serve": "vue-cli-service serve",
+    "lint": "npm run elint && npm run slint",
+    "elint": "npx eslint \"./src/**/*.{ts,tsx,vue}\" --fix",
+    "slint": "npx stylelint \"./src/**/*.{scss,vue,css}\" --fix",
+    "format": "npx prettier --write \"./src/**/*.{ts,tsx,vue,scss,css}\""
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/likaia/js-screen-shot.git"
+    "url": "git+https://github.com/xiang0308/js-screen-shot.git"
   },
   "keywords": [
     "web-best-screen-shot",
@@ -25,12 +28,12 @@
     "自定义截图",
     "web端自定义截屏"
   ],
-  "author": "likaia",
+  "author": "xiang0308",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/likaia/js-screen-shot/issues"
+    "url": "https://github.com/xiang0308/js-screen-shot/issues"
   },
-  "homepage": "https://github.com/likaia/js-screen-shot#readme",
+  "homepage": "https://github.com/xiang0308/js-screen-shot#readme",
   "devDependencies": {
     "@commitlint/cli": "^11.0.0",
     "@commitlint/config-angular": "^11.0.0",
@@ -65,6 +68,9 @@
     }
   },
   "dependencies": {
-    "html2canvas": "^1.0.0-rc.7"
+    "html2canvas": "^1.0.0-rc.7",
+    "stylelint": "^13.13.1",
+    "stylelint-config-standard": "^22.0.0",
+    "stylelint-scss": "^3.20.1"
   }
 }

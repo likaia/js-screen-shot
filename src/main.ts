@@ -27,7 +27,6 @@ import PlugInParameters from "@/lib/main-entrance/PlugInParameters";
 export default class ScreenShort {
   // 当前实例的响应式data数据
   private readonly data: InitData;
-
   // video容器用于存放屏幕MediaStream流
   private readonly videoController: HTMLVideoElement;
   // 截图区域canvas容器

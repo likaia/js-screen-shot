@@ -7,7 +7,7 @@
 
 #toolPanel {
   height: 24px;
-  background: #ffffff;
+  background: #fff;
   z-index: 9999;
   position: absolute;
   top: 0;
@@ -37,6 +37,7 @@
       background-image: url("../img/square-click.png");
     }
   }
+
   .square-active {
     background-image: url("../img/square-click.png");
   }
@@ -53,6 +54,7 @@
       background-image: url("../img/round-click.png");
     }
   }
+
   .round-active {
     background-image: url("../img/round-click.png");
   }
@@ -69,6 +71,7 @@
       background-image: url("../img/right-top-click.png");
     }
   }
+
   .right-top-active {
     background-image: url("../img/right-top-click.png");
   }
@@ -85,7 +88,8 @@
       background-image: url("../img/brush-click.png");
     }
   }
-  .brush-active{
+
+  .brush-active {
     background-image: url("../img/brush-click.png");
   }
 
@@ -101,6 +105,7 @@
       background-image: url("../img/mosaicPen-click.png");
     }
   }
+
   .mosaicPen-active {
     background-image: url("../img/mosaicPen-click.png");
   }
@@ -123,6 +128,7 @@
       background-image: url("../img/text-click.png");
     }
   }
+
   .text-active {
     background-image: url("../img/text-click.png");
   }
@@ -158,7 +164,7 @@
     background-size: cover;
     background-image: url("../img/undo.png");
 
-    &:hover{
+    &:hover {
       background-image: url("../img/undo-hover.png");
     }
   }
@@ -179,7 +185,7 @@
   height: 0;
   border-right: 6px solid transparent;
   border-left: 6px solid transparent;
-  border-top: 6px solid #FFFFFF;
+  border-top: 6px solid #fff;
   position: absolute;
   top: 0;
   left: 23px;
@@ -196,12 +202,12 @@
   top: 6px;
   left: 0;
   border-radius: 5px;
-  background: #ffffff;
+  background: #fff;
   z-index: 9999;
   position: absolute;
   padding: 10px;
 
-  .brush-select-panel{
+  .brush-select-panel {
     height: 20px;
     float: left;
 
@@ -214,10 +220,12 @@
       &:first-child {
         margin-left: 2px;
       }
+
       &:last-child {
         margin-right: 0;
       }
     }
+
     .brush-small {
       background-size: cover;
       background-image: url("../img/round-normal-small.png");
@@ -225,10 +233,12 @@
       &:hover {
         background-image: url("../img/round-selected-small.png");
       }
+
       &:active {
         background-image: url("../img/round-selected-small.png");
       }
     }
+
     .brush-small-active {
       background-image: url("../img/round-selected-small.png");
     }
@@ -240,11 +250,13 @@
       &:hover {
         background-image: url("../img/round-selected-medium.png");
       }
+
       &:active {
         background-image: url("../img/round-selected-medium.png");
       }
     }
-    .brush-medium-active{
+
+    .brush-medium-active {
       background-image: url("../img/round-selected-medium.png");
     }
 
@@ -255,6 +267,7 @@
       &:hover {
         background-image: url("../img/round-selected-big.png");
       }
+
       &:active {
         background-image: url("../img/round-selected-big.png");
       }
@@ -272,13 +285,13 @@
     margin-left: 39px;
 
     // 颜色容器
-    .color-panel{
+    .color-panel {
       width: 72px;
       display: flex;
       justify-content: center;
       flex-wrap: wrap;
-      background: #FFFFFF;
-      border: solid 1px #E5E6E5;
+      background: #fff;
+      border: solid 1px #e5e6e5;
       border-radius: 5px;
       position: absolute;
       top: -225px;
@@ -291,35 +304,44 @@
 
         &:nth-child(1) {
           margin-top: 5px;
-          background: #F53440;
+          background: #f53440;
         }
+
         &:nth-child(2) {
-          background: #F65E95;
+          background: #f65e95;
         }
+
         &:nth-child(3) {
-          background: #D254CF;
+          background: #d254cf;
         }
+
         &:nth-child(4) {
-          background: #12A9D7;
+          background: #12a9d7;
         }
+
         &:nth-child(5) {
-          background: #30A345;
+          background: #30a345;
         }
+
         &:nth-child(6) {
-          background: #FACF50;
+          background: #facf50;
         }
+
         &:nth-child(7) {
-          background: #F66632;
+          background: #f66632;
         }
+
         &:nth-child(8) {
           background: #989998;
         }
+
         &:nth-child(9) {
-          background: #000000;
+          background: #000;
         }
+
         &:nth-child(10) {
-          border: solid 1px #E5E6E5;
-          background: #FEFFFF;
+          border: solid 1px #e5e6e5;
+          background: #feffff;
         }
       }
     }
@@ -327,8 +349,8 @@
     .color-select-panel {
       width: 62px;
       height: 20px;
-      background: #F53340;
-      border: solid 1px #E5E6E5;
+      background: #f53340;
+      border: solid 1px #e5e6e5;
     }
 
     .pull-down-arrow {
@@ -339,7 +361,6 @@
       background-image: url("../img/PopoverPullDownArrow.png");
     }
   }
-
 }
 
 #textInputPanel {
