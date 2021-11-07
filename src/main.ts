@@ -40,7 +40,7 @@ export default class ScreenShort {
   private screenShortCanvas: CanvasRenderingContext2D | undefined;
   // 文本区域dom
   private readonly textInputController: HTMLDivElement | null;
-  //  截图工具栏画笔选项dom
+  // 截图工具栏画笔选项dom
   private optionController: HTMLDivElement | null;
   private optionIcoController: HTMLDivElement | null;
   // 图形位置参数
@@ -90,6 +90,8 @@ export default class ScreenShort {
     canvasHeight: number;
     completeCallback: Function;
     closeCallback: Function;
+    triggerCallback: Function;
+    cancelCallback: Function;
     position: { top?: number; left?: number };
   }) {
     const plugInParameters = new PlugInParameters();
@@ -154,7 +156,7 @@ export default class ScreenShort {
     this.textInputController = this.data.getTextInputController() as HTMLDivElement | null;
     this.optionController = this.data.getOptionController() as HTMLDivElement | null;
     this.optionIcoController = this.data.getOptionIcoController() as HTMLDivElement | null;
-    this.load();
+    this.load(options.triggerCallback, options.cancelCallback);
     const screenShotContainer = document.getElementById("screenShotContainer");
     if (screenShotContainer == null) return;
     // 调整层级
@@ -162,7 +164,7 @@ export default class ScreenShort {
   }
 
   // 加载截图组件
-  private load() {
+  private load(triggerCallback: Function, cancelCallback: Function) {
     const plugInParameters = new PlugInParameters();
     const canvasSize = plugInParameters.getCanvasSize();
     // 设置截图区域canvas宽高
@@ -205,40 +207,52 @@ export default class ScreenShort {
     this.data.showScreenShortPanel();
     if (!plugInParameters.getWebRtcStatus()) {
       // html2canvas截屏
-      html2canvas(document.body, {}).then(canvas => {
-        // 装载截图的dom为null则退出
-        if (this.screenShortController == null) return;
+      html2canvas(document.body, {})
+        .then(canvas => {
+          // 装载截图的dom为null则退出
+          if (this.screenShortController == null) return;
 
-        // 存放html2canvas截取的内容
-        this.screenShortImageController = canvas;
+          if (triggerCallback != null) {
+            // 获取页面元素成功，执行回调函数
+            triggerCallback({ code: 0, msg: "截图加载完成" });
+          }
 
-        // 赋值截图区域canvas画布
-        this.screenShortCanvas = context;
-        // 绘制蒙层
-        drawMasking(context);
+          // 存放html2canvas截取的内容
+          this.screenShortImageController = canvas;
 
-        // 添加监听
-        this.screenShortController?.addEventListener(
-          "mousedown",
-          this.mouseDownEvent
-        );
-        this.screenShortController?.addEventListener(
-          "mousemove",
-          this.mouseMoveEvent
-        );
-        this.screenShortController?.addEventListener(
-          "mouseup",
-          this.mouseUpEvent
-        );
-      });
+          // 赋值截图区域canvas画布
+          this.screenShortCanvas = context;
+          // 绘制蒙层
+          drawMasking(context);
+
+          // 添加监听
+          this.screenShortController?.addEventListener(
+            "mousedown",
+            this.mouseDownEvent
+          );
+          this.screenShortController?.addEventListener(
+            "mousemove",
+            this.mouseMoveEvent
+          );
+          this.screenShortController?.addEventListener(
+            "mouseup",
+            this.mouseUpEvent
+          );
+        })
+        .catch(err => {
+          if (triggerCallback != null) {
+            // 获取页面元素成功，执行回调函数
+            triggerCallback({ code: -1, msg: err });
+          }
+        });
       return;
     }
     // 截取整个屏幕
-    this.screenShot();
+    this.screenShot(cancelCallback);
   }
 
   // 开始捕捉屏幕
-  private startCapture = async () => {
+  private startCapture = async (cancelCallback: Function) => {
     let captureStream = null;
 
     try {
@@ -249,6 +263,12 @@ export default class ScreenShort {
       // 将MediaStream输出至video标签
       this.videoController.srcObject = captureStream;
     } catch (err) {
+      if (cancelCallback != null) {
+        cancelCallback({
+          code: -1,
+          msg: "浏览器不支持webrtc或者用户未授权"
+        });
+      }
       // 销毁截图组件
       this.data.destroyDOM();
       throw `浏览器不支持webrtc或者用户未授权( ${err} )`;
@@ -267,9 +287,9 @@ export default class ScreenShort {
   };
 
   // 截屏
-  private screenShot = () => {
+  private screenShot = (cancelCallback: Function) => {
     // 开始捕捉屏幕
-    this.startCapture().then(() => {
+    this.startCapture(cancelCallback).then(() => {
       setTimeout(() => {
         // 获取截图区域canvas容器画布
         const context = this.screenShortController?.getContext("2d");
