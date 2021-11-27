@@ -70,6 +70,11 @@ export default class ScreenShort {
 
   // 鼠标点击状态
   private clickFlag = false;
+  // 鼠标拖动状态
+  private dragFlag = false;
+  // 上一个裁剪框坐标信息
+  private drawGraphPrevX = 0;
+  private drawGraphPrevY = 0;
   private fontSize = 17;
   // 最大可撤销次数
   private maxUndoNum = 15;
@@ -422,6 +427,9 @@ export default class ScreenShort {
       this.movePosition.moveStartX = mouseX;
       this.movePosition.moveStartY = mouseY;
     } else {
+      // 保存当前裁剪框的坐标
+      this.drawGraphPrevX = this.drawGraphPosition.startX;
+      this.drawGraphPrevY = this.drawGraphPosition.startY;
       // 绘制裁剪框,记录当前鼠标开始坐标
       this.drawGraphPosition.startX = mouseX;
       this.drawGraphPosition.startY = mouseY;
@@ -436,6 +444,11 @@ export default class ScreenShort {
       this.data.getToolName() == "undo"
     )
       return;
+
+    // 工具栏未选择且鼠标处于按下状态时, 修改拖动状态为true
+    if (!this.data.getToolClickStatus() && this.data.getDragging()) {
+      this.dragFlag = true;
+    }
     this.clickFlag = false;
     // 获取裁剪框位置信息
     const { startX, startY, width, height } = this.drawGraphPosition;
@@ -546,6 +559,17 @@ export default class ScreenShort {
     // 绘制结束
     this.data.setDragging(false);
     this.data.setDraggingTrim(false);
+
+    // 鼠标尚未拖动且工具栏未选择则不修改工具栏位置
+    if (!this.dragFlag && !this.data.getToolClickStatus()) {
+      // 复原裁剪框的坐标
+      this.drawGraphPosition.startX = this.drawGraphPrevX;
+      this.drawGraphPosition.startY = this.drawGraphPrevY;
+      // 显示截图工具栏
+      this.data.setToolStatus(true);
+      return;
+    }
+
     if (this.screenShortController == null || this.screenShortCanvas == null) {
       return;
     }
@@ -571,6 +595,8 @@ export default class ScreenShort {
       this.screenShortController.style.cursor = "move";
       // 显示截图工具栏
       this.data.setToolStatus(true);
+      // 复原拖动状态
+      this.dragFlag = false;
       if (this.toolController != null) {
         // 计算截图工具栏位置
         const toolLocation = calculateToolLocation(
