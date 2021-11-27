@@ -156,11 +156,16 @@ export default class ScreenShort {
     this.textInputController = this.data.getTextInputController() as HTMLDivElement | null;
     this.optionController = this.data.getOptionController() as HTMLDivElement | null;
     this.optionIcoController = this.data.getOptionIcoController() as HTMLDivElement | null;
-    this.load(options.triggerCallback, options.cancelCallback);
+    this.load(options?.triggerCallback, options?.cancelCallback);
     const screenShotContainer = document.getElementById("screenShotContainer");
     if (screenShotContainer == null) return;
     // 调整层级
     screenShotContainer.style.zIndex = options?.level + "";
+  }
+
+  // 获取截图区域canvas容器
+  public getCanvasController(): HTMLCanvasElement | null {
+    return this.screenShortController;
   }
 
   // 加载截图组件

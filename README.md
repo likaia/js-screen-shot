@@ -1,4 +1,4 @@
-# js-web-screen-shot · [![npm](https://img.shields.io/badge/npm-v1.3.0-2081C1)](https://www.npmjs.com/package/js-web-screen-shot) [![yarn](https://img.shields.io/badge/yarn-v1.3.0-F37E42)](https://yarnpkg.com/package/js-web-screen-shot) [![github](https://img.shields.io/badge/GitHub-depositary-9A9A9A)](https://github.com/likaia/js-screen-shot) [![](https://img.shields.io/github/issues/likaia/js-screen-shot)](https://github.com/likaia/js-screen-shot/issues) [![](	https://img.shields.io/github/forks/likaia/js-screen-shot)](``https://github.com/likaia/js-screen-shot/network/members) [![](	https://img.shields.io/github/stars/likaia/js-screen-shot)](https://github.com/likaia/js-screen-shot/stargazers)
+# js-web-screen-shot · [![npm](https://img.shields.io/badge/npm-v1.3.1-2081C1)](https://www.npmjs.com/package/js-web-screen-shot) [![yarn](https://img.shields.io/badge/yarn-v1.3.1-F37E42)](https://yarnpkg.com/package/js-web-screen-shot) [![github](https://img.shields.io/badge/GitHub-depositary-9A9A9A)](https://github.com/likaia/js-screen-shot) [![](https://img.shields.io/github/issues/likaia/js-screen-shot)](https://github.com/likaia/js-screen-shot/issues) [![](	https://img.shields.io/github/forks/likaia/js-screen-shot)](``https://github.com/likaia/js-screen-shot/network/members) [![](	https://img.shields.io/github/stars/likaia/js-screen-shot)](https://github.com/likaia/js-screen-shot/stargazers)
 web端自定义截屏插件(原生JS版)，运行视频：[实现web端自定义截屏功能](https://www.bilibili.com/video/BV1Ey4y127cV) ,效果图如下：![截屏效果图](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/486d810877a24582aa8cf110e643c138~tplv-k3u1fbpfcp-watermark.image)
 
 ## 写在前面
@@ -61,6 +61,24 @@ sessionStorage.getItem("screenShotImg");
 * `canvasWidth` 画布宽度，值为number类型。
 * `canvasHeight` 画布高度，值为number类型。
 * `position` 截图容器位置，值为`{left?: number, top?: number}`类型
+
+### API文档
+插件暴露了一些内部变量出来，便于调用者根据自己的需求进行修改。
+
+#### getCanvasController
+该函数用于获取截图容器的DOM，返回值为`HTMLCanvasElement`类型。
+
+示例代码：
+
+```javascript
+import ScreenShort from "js-web-screen-shot";
+
+const screenShotHandler = new ScreenShort();
+const canvasDom = screenShotHandler.getCanvasController();
+```
+> 注意：如果截图容器尚未加载完毕，获取到的内容可能为null。
+
+
 
 ### 工具栏图标定制
 如果你需要修改截图工具栏的图标，可以通过覆盖元素css类名的方式实现，插件内所有图标的css类名如下所示
