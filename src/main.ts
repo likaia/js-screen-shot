@@ -197,6 +197,8 @@ export default class ScreenShort {
 
           // 存放html2canvas截取的内容
           this.screenShortImageController = canvas;
+          // 存储屏幕截图
+          this.data.setScreenShortImageController(canvas);
 
           // 赋值截图区域canvas画布
           this.screenShortCanvas = context;
@@ -296,6 +298,10 @@ export default class ScreenShort {
             containerWidth,
             containerHeight
           );
+        // 存储屏幕截图
+        this.data.setScreenShortImageController(
+          this.screenShortImageController
+        );
         // 添加监听
         this.screenShortController?.addEventListener(
           "mousedown",
@@ -632,6 +638,7 @@ export default class ScreenShort {
           this.cutOutBoxBorderArr[i].width,
           this.cutOutBoxBorderArr[i].height
         );
+        // 当前坐标点处于8个可操作点上，修改鼠标指针样式
         if (context.isPointInPath(currentX, currentY)) {
           switch (this.cutOutBoxBorderArr[i].index) {
             case 1:
@@ -642,15 +649,20 @@ export default class ScreenShort {
               }
               break;
             case 2:
+              // 工具栏被点击则不改变指针样式
+              if (this.data.getToolClickStatus()) break;
               this.screenShortController.style.cursor = "ns-resize";
               break;
             case 3:
+              if (this.data.getToolClickStatus()) break;
               this.screenShortController.style.cursor = "ew-resize";
               break;
             case 4:
+              if (this.data.getToolClickStatus()) break;
               this.screenShortController.style.cursor = "nwse-resize";
               break;
             case 5:
+              if (this.data.getToolClickStatus()) break;
               this.screenShortController.style.cursor = "nesw-resize";
               break;
             default:

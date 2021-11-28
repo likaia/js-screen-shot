@@ -43,6 +43,8 @@ let colorSelectController: HTMLElement | null = null;
 let rightPanel: HTMLElement | null = null;
 let colorSelectPanel: HTMLElement | null = null;
 let undoController: HTMLElement | null = null;
+// 屏幕截图容器
+let screenShortImageController: HTMLCanvasElement | null = null;
 
 // 数据初始化标识
 let initStatus = false;
@@ -132,6 +134,16 @@ export default class InitData {
   // 获取文本输入工具栏展示状态
   public getTextStatus() {
     return textClickStatus;
+  }
+
+  // 获取屏幕截图容器
+  public getScreenShortImageController() {
+    return screenShortImageController;
+  }
+
+  // 设置屏幕截图
+  public setScreenShortImageController(imageController: HTMLCanvasElement) {
+    screenShortImageController = imageController;
   }
 
   // 设置截图工具栏展示状态

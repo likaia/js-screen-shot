@@ -9,6 +9,7 @@ import { calculateOptionIcoPosition } from "@/lib/split-methods/CalculateOptionI
 import InitData from "@/lib/main-entrance/InitData";
 import { getCanvasImgData } from "@/lib/common-methords/GetCanvasImgData";
 import { takeOutHistory } from "@/lib/common-methords/TakeOutHistory";
+import { drawCutOutBox } from "@/lib/split-methods/DrawCutOutBox";
 
 export function toolClickEvent(
   toolName: string,
@@ -19,6 +20,31 @@ export function toolClickEvent(
 ) {
   const data = new InitData();
   const textInputController = data.getTextInputController();
+  const screenShortController = data.getScreenShortController();
+  const ScreenShortImageController = data.getScreenShortImageController();
+  if (screenShortController == null || ScreenShortImageController == null)
+    return;
+  // 获取canvas容器
+  const screenShortCanvas = screenShortController.getContext(
+    "2d"
+  ) as CanvasRenderingContext2D;
+  // 工具栏尚未点击，当前属于首次点击，重新绘制一个无像素点的裁剪框
+  if (!data.getToolClickStatus()) {
+    // 获取裁剪框位置信息
+    const cutBoxPosition = data.getCutOutBoxPosition();
+    // 开始绘制无像素点裁剪框
+    drawCutOutBox(
+      cutBoxPosition.startX,
+      cutBoxPosition.startY,
+      cutBoxPosition.width,
+      cutBoxPosition.height,
+      screenShortCanvas,
+      data.getBorderSize(),
+      screenShortController as HTMLCanvasElement,
+      ScreenShortImageController,
+      false
+    );
+  }
   // 更新当前点击的工具栏条目
   data.setToolName(toolName);
   // 为当前点击项添加选中时的class名
