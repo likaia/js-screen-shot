@@ -1,5 +1,5 @@
 import toolbar from "@/lib/config/Toolbar";
-import { toolbarType } from "@/lib/type/ComponentType";
+import { screenShotType, toolbarType } from "@/lib/type/ComponentType";
 import { toolClickEvent } from "@/lib/split-methods/ToolClickEvent";
 import { setBrushSize } from "@/lib/common-methords/SetBrushSize";
 import { selectColor } from "@/lib/common-methords/SelectColor";
@@ -24,14 +24,23 @@ export default class CreateDom {
   // 截图工具栏图标
   private readonly toolbar: Array<toolbarType>;
 
-  constructor(completeCallback: Function, closeCallback?: Function) {
+  constructor(options: screenShotType) {
     this.screenShortController = document.createElement("canvas");
     this.toolController = document.createElement("div");
     this.optionIcoController = document.createElement("div");
     this.optionController = document.createElement("div");
     this.textInputController = document.createElement("div");
-    this.completeCallback = completeCallback;
-    this.closeCallback = closeCallback;
+    this.completeCallback = options?.completeCallback;
+    this.closeCallback = options?.closeCallback;
+    // 成功回调函数不存在则设置一个默认的
+    if (
+      !options ||
+      !Object.prototype.hasOwnProperty.call(options, "completeCallback")
+    ) {
+      this.completeCallback = (base64: string) => {
+        sessionStorage.setItem("screenShotImg", base64);
+      };
+    }
     // 为所有dom设置id
     this.setAllControllerId();
     // 为画笔绘制选项角标设置class

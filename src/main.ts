@@ -7,6 +7,7 @@ import {
   drawCutOutBoxReturnType,
   movePositionType,
   positionInfoType,
+  screenShotType,
   zoomCutOutBoxReturnType
 } from "@/lib/type/ComponentType";
 import { drawMasking } from "@/lib/split-methods/DrawMasking";
@@ -89,17 +90,7 @@ export default class ScreenShort {
     mouseX: 0,
     mouseY: 0
   };
-  constructor(options: {
-    enableWebRtc: boolean;
-    level: number;
-    canvasWidth: number;
-    canvasHeight: number;
-    completeCallback: Function;
-    closeCallback: Function;
-    triggerCallback: Function;
-    cancelCallback: Function;
-    position: { top?: number; left?: number };
-  }) {
+  constructor(options: screenShotType) {
     const plugInParameters = new PlugInParameters();
     // webrtc启用状态
     if (
@@ -108,32 +99,8 @@ export default class ScreenShort {
     ) {
       plugInParameters.setWebRtcStatus(options.enableWebRtc);
     }
-    // 设置回调函数
-    if (
-      options &&
-      Object.prototype.hasOwnProperty.call(options, "completeCallback") &&
-      Object.prototype.hasOwnProperty.call(options, "closeCallback")
-    ) {
-      // 完成与关闭回调都存在
-      new CreateDom(options.completeCallback, options.closeCallback);
-    } else if (
-      options &&
-      Object.prototype.hasOwnProperty.call(options, "closeCallback")
-    ) {
-      // 只有关闭回调函数存在
-      new CreateDom(options.completeCallback, options.closeCallback);
-    } else if (
-      options &&
-      Object.prototype.hasOwnProperty.call(options, "completeCallback")
-    ) {
-      // 只有完成回调函数存在
-      new CreateDom(options.completeCallback);
-    } else {
-      // 都不存在
-      new CreateDom((base64: string) => {
-        sessionStorage.setItem("screenShotImg", base64);
-      });
-    }
+    // 创建截图所需dom并设置回调函数
+    new CreateDom(options);
     // 读取参数中的画布宽高
     if (
       options &&

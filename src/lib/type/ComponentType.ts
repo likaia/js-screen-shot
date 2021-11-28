@@ -40,3 +40,15 @@ export type drawCutOutBoxReturnType = {
 
 // 截图工具栏图标数据类型
 export type toolbarType = { id: number; title: string };
+
+export type screenShotType = {
+  enableWebRtc: boolean; // 是否启用webrtc，默认是启用状态
+  level: number; // 截图容器层级
+  canvasWidth: number; // 截图画布宽度
+  canvasHeight: number; // 截图画布高度
+  completeCallback: Function; // 工具栏截图确认回调
+  closeCallback: Function; // 工具栏关闭回调
+  triggerCallback: Function; // html2canvas截图响应回调
+  cancelCallback: Function; // webrtc截图未授权回调
+  position: { top?: number; left?: number }; // 截图容器位置
+};
