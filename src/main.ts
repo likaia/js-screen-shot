@@ -23,6 +23,7 @@ import { saveBorderArrInfo } from "@/lib/common-methords/SaveBorderArrInfo";
 import { calculateToolLocation } from "@/lib/split-methods/CalculateToolLocation";
 import html2canvas from "html2canvas";
 import PlugInParameters from "@/lib/main-entrance/PlugInParameters";
+import { getDrawBoundaryStatus } from "@/lib/split-methods/BoundaryJudgment";
 
 export default class ScreenShort {
   // 当前实例的响应式data数据
@@ -450,16 +451,28 @@ export default class ScreenShort {
       this.dragFlag = true;
     }
     this.clickFlag = false;
-    // 获取裁剪框位置信息
+    // 获取当前绘制中的工具位置信息
     const { startX, startY, width, height } = this.drawGraphPosition;
     // 获取当前鼠标坐标
     const currentX = nonNegativeData(event.offsetX);
     const currentY = nonNegativeData(event.offsetY);
-    // 裁剪框临时宽高
+    // 绘制中工具的临时宽高
     const tempWidth = currentX - startX;
     const tempHeight = currentY - startY;
     // 工具栏绘制
     if (this.data.getToolClickStatus() && this.data.getDragging()) {
+      // 获取裁剪框位置信息
+      const cutBoxPosition = this.data.getCutOutBoxPosition();
+      // 绘制中工具的起始x、y坐标不能小于裁剪框的起始坐标
+      // 绘制中工具的起始x、y坐标不能大于裁剪框的结束标作
+      // 当前鼠标的x坐标不能小于裁剪框起始x坐标，不能大于裁剪框的结束坐标
+      // 当前鼠标的y坐标不能小于裁剪框起始y坐标，不能大于裁剪框的结束坐标
+      if (
+        !getDrawBoundaryStatus(startX, startY, cutBoxPosition) ||
+        !getDrawBoundaryStatus(currentX, currentY, cutBoxPosition)
+      )
+        return;
+
       // 当前操作的不是马赛克则显示最后一次画布绘制时的状态
       if (this.data.getToolName() != "mosaicPen") {
         this.showLastHistory();
