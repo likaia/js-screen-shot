@@ -362,9 +362,6 @@ export default class ScreenShort {
       // 记录当前鼠标开始坐标
       this.drawGraphPosition.startX = mouseX;
       this.drawGraphPosition.startY = mouseY;
-    } else {
-      // 隐藏截图工具栏
-      this.data.setToolStatus(false);
     }
 
     // 当前操作的是画笔
@@ -446,9 +443,12 @@ export default class ScreenShort {
     )
       return;
 
-    // 工具栏未选择且鼠标处于按下状态时, 修改拖动状态为true
+    // 工具栏未选择且鼠标处于按下状态时
     if (!this.data.getToolClickStatus() && this.data.getDragging()) {
+      // 修改拖动状态为true;
       this.dragFlag = true;
+      // 隐藏截图工具栏
+      this.data.setToolStatus(false);
     }
     this.clickFlag = false;
     // 获取当前绘制中的工具位置信息
