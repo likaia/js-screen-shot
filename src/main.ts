@@ -74,6 +74,8 @@ export default class ScreenShort {
   private clickFlag = false;
   // 鼠标拖动状态
   private dragFlag = false;
+  // 单击截取屏启用状态
+  private clickCutFullScreen = false;
   // 上一个裁剪框坐标信息
   private drawGraphPrevX = 0;
   private drawGraphPrevY = 0;
@@ -98,6 +100,13 @@ export default class ScreenShort {
       Object.prototype.hasOwnProperty.call(options, "enableWebRtc")
     ) {
       plugInParameters.setWebRtcStatus(options.enableWebRtc);
+    }
+    // 单击截取全屏启用状态
+    if (
+      options &&
+      Object.prototype.hasOwnProperty.call(options, "clickCutFullScreen")
+    ) {
+      this.clickCutFullScreen = options.clickCutFullScreen;
     }
     // 创建截图所需dom并设置回调函数
     new CreateDom(options);
@@ -413,8 +422,9 @@ export default class ScreenShort {
       this.screenShortCanvas == null ||
       this.screenShortController == null ||
       this.data.getToolName() == "undo"
-    )
+    ) {
       return;
+    }
 
     // 工具栏未选择且鼠标处于按下状态时
     if (!this.data.getToolClickStatus() && this.data.getDragging()) {
@@ -546,8 +556,42 @@ export default class ScreenShort {
     this.data.setDragging(false);
     this.data.setDraggingTrim(false);
 
-    // 鼠标尚未拖动且工具栏未选择则不修改工具栏位置
-    if (!this.dragFlag && !this.data.getToolClickStatus()) {
+    // 截图容器判空
+    if (this.screenShortCanvas == null || this.screenShortController == null) {
+      return;
+    }
+    // 鼠标未拖动且单击截屏状态为false则不做任何操作
+    if (!this.dragFlag && !this.clickCutFullScreen) {
+      return;
+    }
+
+    // 调用者尚未拖拽生成选区
+    // 鼠标尚未拖动
+    // 单击截取屏幕状态为true
+    // 则截取整个屏幕
+    const cutBoxPosition = this.data.getCutOutBoxPosition();
+    if (
+      cutBoxPosition.width === 0 &&
+      cutBoxPosition.height === 0 &&
+      cutBoxPosition.startX === 0 &&
+      cutBoxPosition.startY === 0 &&
+      !this.dragFlag &&
+      this.clickCutFullScreen
+    ) {
+      // 设置裁剪框位置为全屏
+      this.tempGraphPosition = drawCutOutBox(
+        0,
+        0,
+        this.screenShortImageController.width,
+        this.screenShortImageController.height,
+        this.screenShortCanvas,
+        this.data.getBorderSize(),
+        this.screenShortController,
+        this.screenShortImageController
+      ) as drawCutOutBoxReturnType;
+    } else if (!this.dragFlag && !this.data.getToolClickStatus()) {
+      // 鼠标尚未拖动且工具栏未选择则不修改工具栏位置
+
       // 复原裁剪框的坐标
       this.drawGraphPosition.startX = this.drawGraphPrevX;
       this.drawGraphPosition.startY = this.drawGraphPrevY;
@@ -559,6 +603,7 @@ export default class ScreenShort {
     if (this.screenShortController == null || this.screenShortCanvas == null) {
       return;
     }
+    // 工具栏已点击
     if (this.data.getToolClickStatus()) {
       // 保存绘制记录
       this.addHistory();

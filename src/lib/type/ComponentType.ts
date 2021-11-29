@@ -51,4 +51,5 @@ export type screenShotType = {
   triggerCallback: Function; // html2canvas截图响应回调
   cancelCallback: Function; // webrtc截图未授权回调
   position: { top?: number; left?: number }; // 截图容器位置
+  clickCutFullScreen: boolean; // 单击截全屏启用状态, 默认值为false
 };
