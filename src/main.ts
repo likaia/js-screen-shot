@@ -560,8 +560,12 @@ export default class ScreenShort {
     if (this.screenShortCanvas == null || this.screenShortController == null) {
       return;
     }
-    // 鼠标未拖动且单击截屏状态为false则不做任何操作
-    if (!this.dragFlag && !this.clickCutFullScreen) {
+    // 工具栏未点击且鼠标未拖动且单击截屏状态为false则不做任何操作
+    if (
+      !this.data.getToolClickStatus() &&
+      !this.dragFlag &&
+      !this.clickCutFullScreen
+    ) {
       return;
     }
 
