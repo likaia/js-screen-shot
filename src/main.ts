@@ -560,12 +560,15 @@ export default class ScreenShort {
     if (this.screenShortCanvas == null || this.screenShortController == null) {
       return;
     }
-    // 工具栏未点击且鼠标未拖动且单击截屏状态为false则不做任何操作
+    // 工具栏未点击且鼠标未拖动且单击截屏状态为false则复原裁剪框位置
     if (
       !this.data.getToolClickStatus() &&
       !this.dragFlag &&
       !this.clickCutFullScreen
     ) {
+      // 复原裁剪框的坐标
+      this.drawGraphPosition.startX = this.drawGraphPrevX;
+      this.drawGraphPosition.startY = this.drawGraphPrevY;
       return;
     }
 
@@ -593,15 +596,6 @@ export default class ScreenShort {
         this.screenShortController,
         this.screenShortImageController
       ) as drawCutOutBoxReturnType;
-    } else if (!this.dragFlag && !this.data.getToolClickStatus()) {
-      // 鼠标尚未拖动且工具栏未选择则不修改工具栏位置
-
-      // 复原裁剪框的坐标
-      this.drawGraphPosition.startX = this.drawGraphPrevX;
-      this.drawGraphPosition.startY = this.drawGraphPrevY;
-      // 显示截图工具栏
-      this.data.setToolStatus(true);
-      return;
     }
 
     if (this.screenShortController == null || this.screenShortCanvas == null) {
