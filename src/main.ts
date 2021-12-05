@@ -142,6 +142,7 @@ export default class ScreenShort {
     const screenShotContainer = document.getElementById("screenShotContainer");
     if (screenShotContainer == null) return;
     // 调整层级
+    if (this.toolController == null) return;
     screenShotContainer.style.zIndex = `${options?.level}`;
     this.toolController.style.zIndex = `${options?.level + 1}`;
   }
