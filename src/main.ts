@@ -142,7 +142,8 @@ export default class ScreenShort {
     const screenShotContainer = document.getElementById("screenShotContainer");
     if (screenShotContainer == null) return;
     // 调整层级
-    screenShotContainer.style.zIndex = options?.level + "";
+    screenShotContainer.style.zIndex = `${options?.level}`;
+    this.toolController.style.zIndex = `${options?.level + 1}`;
   }
 
   // 获取截图区域canvas容器
