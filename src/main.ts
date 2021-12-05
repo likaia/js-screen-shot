@@ -585,14 +585,15 @@ export default class ScreenShort {
       !this.dragFlag &&
       this.clickCutFullScreen
     ) {
+      const borderSize = this.data.getBorderSize();
       // 设置裁剪框位置为全屏
       this.tempGraphPosition = drawCutOutBox(
         0,
         0,
-        this.screenShortImageController.width,
-        this.screenShortImageController.height,
+        this.screenShortController.width - borderSize / 2,
+        this.screenShortController.height - borderSize / 2,
         this.screenShortCanvas,
-        this.data.getBorderSize(),
+        borderSize,
         this.screenShortController,
         this.screenShortImageController
       ) as drawCutOutBoxReturnType;
