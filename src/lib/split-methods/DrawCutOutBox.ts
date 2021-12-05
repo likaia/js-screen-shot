@@ -134,6 +134,39 @@ export function drawCutOutBox(
   context.drawImage(imageController, 0, 0, imgWidth, imgHeight);
   context.restore();
   // 返回裁剪框临时位置信息
+  if (width > 0 && height > 0) {
+    // 考虑左上往右下拉区域的情况
+    return {
+      startX: mouseX,
+      startY: mouseY,
+      width: width,
+      height: height
+    };
+  } else if (width < 0 && height < 0) {
+    // 考虑右下往左上拉区域的情况
+    return {
+      startX: mouseX + width,
+      startY: mouseY + height,
+      width: Math.abs(width),
+      height: Math.abs(height)
+    };
+  } else if (width > 0 && height < 0) {
+    // 考虑左下往右上拉区域的情况
+    return {
+      startX: mouseX,
+      startY: mouseY + height,
+      width: width,
+      height: Math.abs(height)
+    };
+  } else if (width < 0 && height > 0) {
+    // 考虑右上往左下拉区域的情况
+    return {
+      startX: mouseX + width,
+      startY: mouseY,
+      width: Math.abs(width),
+      height: height
+    };
+  }
   return {
     startX: mouseX,
     startY: mouseY,
