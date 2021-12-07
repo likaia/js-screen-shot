@@ -1,4 +1,4 @@
-# js-web-screen-shot · [![npm](https://img.shields.io/badge/npm-v1.5.4-2081C1)](https://www.npmjs.com/package/js-web-screen-shot) [![yarn](https://img.shields.io/badge/yarn-v1.5.4-F37E42)](https://yarnpkg.com/package/js-web-screen-shot) [![github](https://img.shields.io/badge/GitHub-depositary-9A9A9A)](https://github.com/likaia/js-screen-shot) [![](https://img.shields.io/github/issues/likaia/js-screen-shot)](https://github.com/likaia/js-screen-shot/issues) [![](	https://img.shields.io/github/forks/likaia/js-screen-shot)](``https://github.com/likaia/js-screen-shot/network/members) [![](	https://img.shields.io/github/stars/likaia/js-screen-shot)](https://github.com/likaia/js-screen-shot/stargazers)
+# js-web-screen-shot · [![npm](https://img.shields.io/badge/npm-v1.5.5-2081C1)](https://www.npmjs.com/package/js-web-screen-shot) [![yarn](https://img.shields.io/badge/yarn-v1.5.5-F37E42)](https://yarnpkg.com/package/js-web-screen-shot) [![github](https://img.shields.io/badge/GitHub-depositary-9A9A9A)](https://github.com/likaia/js-screen-shot) [![](https://img.shields.io/github/issues/likaia/js-screen-shot)](https://github.com/likaia/js-screen-shot/issues) [![](	https://img.shields.io/github/forks/likaia/js-screen-shot)](``https://github.com/likaia/js-screen-shot/network/members) [![](	https://img.shields.io/github/stars/likaia/js-screen-shot)](https://github.com/likaia/js-screen-shot/stargazers)
 web端自定义截屏插件(原生JS版)，运行视频：[实现web端自定义截屏功能](https://www.bilibili.com/video/BV1Ey4y127cV) ,效果图如下：![截屏效果图](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/486d810877a24582aa8cf110e643c138~tplv-k3u1fbpfcp-watermark.image)
 
 ## 写在前面
@@ -62,6 +62,9 @@ sessionStorage.getItem("screenShotImg");
 * `canvasHeight` 画布高度，值为number类型。
 * `position` 截图容器位置，值为`{left?: number, top?: number}`类型
 * `clickCutFullScreen` 单击截全屏启用状态,值为`boolean`类型， 默认为`false`
+* `hiddenToolIco` 需要隐藏的截图工具栏图标，值为`{ save?: boolean; undo?: boolean; confirm?: boolean }`类型，默认为`{}`。传你需要隐藏的图标名称，将值设为`true`即可。
+
+> 上述类型中的`?:`为ts中的可选类型，意思为：这个key是可选的，如果需要就传，不需要就不传。
 
 ### API文档
 插件暴露了一些内部变量出来，便于调用者根据自己的需求进行修改。

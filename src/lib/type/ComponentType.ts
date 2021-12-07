@@ -38,6 +38,8 @@ export type drawCutOutBoxReturnType = {
   height: number;
 };
 
+type toolIcoType = { save?: boolean; undo?: boolean; confirm?: boolean };
+
 // 截图工具栏图标数据类型
 export type toolbarType = { id: number; title: string };
 
@@ -52,4 +54,5 @@ export type screenShotType = {
   cancelCallback: Function; // webrtc截图未授权回调
   position: { top?: number; left?: number }; // 截图容器位置
   clickCutFullScreen: boolean; // 单击截全屏启用状态, 默认值为false
+  hiddenToolIco?: toolIcoType; // 需要隐藏的工具栏图标
 };

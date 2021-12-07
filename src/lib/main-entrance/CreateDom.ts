@@ -20,6 +20,8 @@ export default class CreateDom {
   private readonly completeCallback: Function;
   // 截图关闭毁掉函数
   private readonly closeCallback: Function | undefined;
+  // 需要隐藏的图标
+  private readonly hiddenIcoArr: string[];
 
   // 截图工具栏图标
   private readonly toolbar: Array<toolbarType>;
@@ -32,6 +34,7 @@ export default class CreateDom {
     this.textInputController = document.createElement("div");
     this.completeCallback = options?.completeCallback;
     this.closeCallback = options?.closeCallback;
+    this.hiddenIcoArr = [];
     // 成功回调函数不存在则设置一个默认的
     if (
       !options ||
@@ -40,6 +43,19 @@ export default class CreateDom {
       this.completeCallback = (base64: string) => {
         sessionStorage.setItem("screenShotImg", base64);
       };
+    }
+
+    // 筛选需要隐藏的图标
+    if (options?.hiddenToolIco) {
+      if (options.hiddenToolIco?.save === true) {
+        this.hiddenIcoArr.push("save");
+      }
+      if (options.hiddenToolIco?.undo === true) {
+        this.hiddenIcoArr.push("undo");
+      }
+      if (options.hiddenToolIco?.confirm === true) {
+        this.hiddenIcoArr.push("confirm");
+      }
     }
     // 为所有dom设置id
     this.setAllControllerId();
@@ -62,6 +78,16 @@ export default class CreateDom {
   private setToolBarIco() {
     for (let i = 0; i < this.toolbar.length; i++) {
       const item = this.toolbar[i];
+      // 判断是否有需要隐藏的图标
+      let icoHiddenStatus = false;
+      for (let j = 0; j < this.hiddenIcoArr.length; j++) {
+        if (this.hiddenIcoArr[j] === item.title) {
+          icoHiddenStatus = true;
+          break;
+        }
+      }
+      // 图标隐藏状态为true则直接跳过本次循环
+      if (icoHiddenStatus) continue;
       const itemPanel = document.createElement("div");
       // 撤销按钮单独处理
       if (item.title == "undo") {
@@ -82,6 +108,10 @@ export default class CreateDom {
       itemPanel.setAttribute("data-title", item.title);
       itemPanel.setAttribute("data-id", item.id + "");
       this.toolController.appendChild(itemPanel);
+    }
+    // 有需要隐藏的截图工具栏时，则修改其最小宽度
+    if (this.hiddenIcoArr.length > 0) {
+      this.toolController.style.minWidth = "275px";
     }
   }
 
