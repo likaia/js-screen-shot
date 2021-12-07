@@ -76,6 +76,8 @@ export default class ScreenShort {
   private dragFlag = false;
   // 单击截取屏启用状态
   private clickCutFullScreen = false;
+  // 全屏截取状态
+  private getFullScreenStatus = false;
   // 上一个裁剪框坐标信息
   private drawGraphPrevX = 0;
   private drawGraphPrevY = 0;
@@ -588,6 +590,7 @@ export default class ScreenShort {
       this.clickCutFullScreen
     ) {
       const borderSize = this.data.getBorderSize();
+      this.getFullScreenStatus = true;
       // 设置裁剪框位置为全屏
       this.tempGraphPosition = drawCutOutBox(
         0,
@@ -635,11 +638,17 @@ export default class ScreenShort {
           this.drawGraphPosition,
           this.toolController.offsetWidth
         );
+        // 当前截取的是全屏，则修改工具栏的位置到截图容器最底部，防止超出
+        if (this.getFullScreenStatus) {
+          toolLocation.mouseY -= 64;
+        }
         // 显示并设置截图工具栏位置
         this.data.setToolInfo(
           toolLocation.mouseX + this.position.left,
           toolLocation.mouseY + this.position.top
         );
+        // 状态重置
+        this.getFullScreenStatus = false;
       }
     }
   };

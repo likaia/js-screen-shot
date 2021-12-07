@@ -22,17 +22,19 @@ export function saveCanvasToBase64(
     imgContext.putImageData(img, 0, 0);
     // 将图片自动添加至剪贴板中
     canvas?.toBlob(
-      (blob: any) => {
-        const Clipboard = (window as any).ClipboardItem;
-        if (!Clipboard) {
-          return '';
-        }
+      blob => {
+        if (blob == null) return;
+        const Clipboard = window.ClipboardItem;
+        // 浏览器不支持Clipboard
+        if (Clipboard == null) return canvas.toDataURL("png");
         const clipboardItem = new Clipboard({
           [blob.type]: blob
         });
-        (navigator.clipboard as any).write([clipboardItem]);
+        navigator.clipboard?.write([clipboardItem]).then(() => {
+          return "写入成功";
+        });
       },
-      'image/png',
+      "image/png",
       quality
     );
     return canvas.toDataURL("png");
