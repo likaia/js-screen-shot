@@ -25,7 +25,16 @@ import { calculateToolLocation } from "@/lib/split-methods/CalculateToolLocation
 import html2canvas from "html2canvas";
 import PlugInParameters from "@/lib/main-entrance/PlugInParameters";
 import { getDrawBoundaryStatus } from "@/lib/split-methods/BoundaryJudgment";
-
+import { getCanvasImgData } from "@/lib/common-methords/GetCanvasImgData";
+// 销毁组件函数
+function closeDom(data: any, canvas: any) {
+  data.destroyDOM();
+  data.setInitStatus(true);
+  canvas.removeEventListener("keydown", () => {
+    return false;
+  });
+}
+let canvasDom: any;
 export default class ScreenShort {
   // 当前实例的响应式data数据
   private readonly data: InitData;
@@ -110,8 +119,8 @@ export default class ScreenShort {
     ) {
       this.clickCutFullScreen = options.clickCutFullScreen;
     }
-    // 创建截图所需dom并设置回调函数
-    new CreateDom(options);
+    // 获取创建dom的里面函数
+    canvasDom = new CreateDom(options);
     // 读取参数中的画布宽高
     if (
       options &&
@@ -176,6 +185,8 @@ export default class ScreenShort {
     }
     // 获取截图区域画canvas容器画布
     const context = this.screenShortController?.getContext("2d");
+
+    this.openMonitor(context);
     if (context == null) return;
     // 启用webrtc截屏时则修改容器宽高
     if (plugInParameters.getWebRtcStatus()) {
@@ -283,6 +294,7 @@ export default class ScreenShort {
   private screenShot = (cancelCallback: Function) => {
     // 开始捕捉屏幕
     this.startCapture(cancelCallback).then(() => {
+      console.log(11111);
       setTimeout(() => {
         // 获取截图区域canvas容器画布
         const context = this.screenShortController?.getContext("2d");
@@ -334,6 +346,28 @@ export default class ScreenShort {
     });
   };
 
+  // 开启esc enter监听
+  private openMonitor(plugInParameters: any) {
+    if (!plugInParameters) {
+      return;
+    }
+    const canvas = plugInParameters.canvas;
+    canvas.tabIndex = 1000;
+    const data = new InitData();
+    canvas.addEventListener("keydown", (event: any) => {
+      // 取消截图
+      if (event.keyCode === 27) {
+        closeDom(data, canvas);
+        canvasDom.closeCallback();
+      }
+      // 截图成功
+      if (event.keyCode === 13) {
+        const base64 = getCanvasImgData(false);
+        canvasDom.completeCallback(base64);
+        closeDom(data, canvas);
+      }
+    });
+  }
   // 鼠标按下事件
   private mouseDownEvent = (event: MouseEvent) => {
     // 当前操作的是撤销
