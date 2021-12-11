@@ -25,6 +25,7 @@ import { calculateToolLocation } from "@/lib/split-methods/CalculateToolLocation
 import html2canvas from "html2canvas";
 import PlugInParameters from "@/lib/main-entrance/PlugInParameters";
 import { getDrawBoundaryStatus } from "@/lib/split-methods/BoundaryJudgment";
+import KeyboardEventHandle from "@/lib/split-methods/KeyboardEventHandle";
 
 export default class ScreenShort {
   // 当前实例的响应式data数据
@@ -143,10 +144,14 @@ export default class ScreenShort {
     this.load(options?.triggerCallback, options?.cancelCallback);
     const screenShotContainer = document.getElementById("screenShotContainer");
     if (screenShotContainer == null) return;
+    if (this.toolController == null || this.screenShortController == null) {
+      return;
+    }
     // 调整层级
-    if (this.toolController == null) return;
     screenShotContainer.style.zIndex = `${options?.level}`;
     this.toolController.style.zIndex = `${options?.level + 1}`;
+    // 创建键盘事件监听
+    new KeyboardEventHandle(this.screenShortController, this.toolController);
   }
 
   // 获取截图区域canvas容器
