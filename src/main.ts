@@ -46,6 +46,7 @@ export default class ScreenShort {
   // 截图工具栏画笔选项dom
   private optionController: HTMLDivElement | null;
   private optionIcoController: HTMLDivElement | null;
+  private cutBoxSizeContainer: HTMLDivElement | null;
   // 图形位置参数
   private drawGraphPosition: positionInfoType = {
     startX: 0,
@@ -141,6 +142,7 @@ export default class ScreenShort {
     this.textInputController = this.data.getTextInputController() as HTMLDivElement | null;
     this.optionController = this.data.getOptionController() as HTMLDivElement | null;
     this.optionIcoController = this.data.getOptionIcoController() as HTMLDivElement | null;
+    this.cutBoxSizeContainer = this.data.getCutBoxSizeContainer() as HTMLDivElement | null;
     this.load(options?.triggerCallback, options?.cancelCallback);
     const screenShotContainer = document.getElementById("screenShotContainer");
     if (screenShotContainer == null) return;
@@ -448,6 +450,8 @@ export default class ScreenShort {
       this.dragFlag = true;
       // 隐藏截图工具栏
       this.data.setToolStatus(false);
+      // 隐藏裁剪框尺寸显示容器
+      this.data.setCutBoxSizeStatus(false);
     }
     this.clickFlag = false;
     // 获取当前绘制中的工具位置信息
@@ -642,6 +646,8 @@ export default class ScreenShort {
       this.screenShortController.style.cursor = "move";
       // 显示截图工具栏
       this.data.setToolStatus(true);
+      // 显示裁剪框尺寸显示容器
+      this.data.setCutBoxSizeStatus(true);
       // 复原拖动状态
       this.dragFlag = false;
       if (this.toolController != null) {
@@ -659,6 +665,18 @@ export default class ScreenShort {
           toolLocation.mouseX + this.position.left,
           toolLocation.mouseY + this.position.top
         );
+
+        // 设置裁剪框尺寸显示容器位置
+        this.data.setCutBoxSizePosition(
+          this.drawGraphPosition.startX,
+          this.drawGraphPosition.startY - 35
+        );
+        // 渲染裁剪框尺寸
+        this.data.setCutBoxSize(
+          this.drawGraphPosition.width,
+          this.drawGraphPosition.height
+        );
+
         // 状态重置
         this.getFullScreenStatus = false;
       }

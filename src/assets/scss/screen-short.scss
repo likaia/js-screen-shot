@@ -343,6 +343,22 @@
 
 }
 
+#cutBoxSizePanel {
+  width: 85px;
+  height: 25px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  border-radius: 3px;
+  z-index: 9999;
+  background: rgba(0, 0, 0, .4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  font-size: 14px;
+}
+
 #textInputPanel {
   min-width: 20px;
   min-height: 30px;

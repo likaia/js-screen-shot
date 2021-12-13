@@ -14,6 +14,8 @@ export default class CreateDom {
   private readonly optionIcoController: HTMLDivElement;
   // 画笔绘制选项容器
   private readonly optionController: HTMLDivElement;
+  // 裁剪框大小显示容器
+  private readonly cutBoxSizeContainer: HTMLDivElement;
   // 文字工具输入容器
   private readonly textInputController: HTMLDivElement;
   // 截图完成回调函数
@@ -31,6 +33,7 @@ export default class CreateDom {
     this.toolController = document.createElement("div");
     this.optionIcoController = document.createElement("div");
     this.optionController = document.createElement("div");
+    this.cutBoxSizeContainer = document.createElement("div");
     this.textInputController = document.createElement("div");
     this.completeCallback = options?.completeCallback;
     this.closeCallback = options?.closeCallback;
@@ -200,6 +203,7 @@ export default class CreateDom {
     this.toolController.id = "toolPanel";
     this.optionIcoController.id = "optionIcoController";
     this.optionController.id = "optionPanel";
+    this.cutBoxSizeContainer.id = "cutBoxSizePanel";
     this.textInputController.id = "textInputPanel";
   }
 
@@ -209,6 +213,7 @@ export default class CreateDom {
     this.toolController.style.display = "none";
     this.optionIcoController.style.display = "none";
     this.optionController.style.display = "none";
+    this.cutBoxSizeContainer.style.display = "none";
     this.textInputController.style.display = "none";
   }
 
@@ -218,6 +223,7 @@ export default class CreateDom {
     document.body.appendChild(this.toolController);
     document.body.appendChild(this.optionIcoController);
     document.body.appendChild(this.optionController);
+    document.body.appendChild(this.cutBoxSizeContainer);
     document.body.appendChild(this.textInputController);
   }
 

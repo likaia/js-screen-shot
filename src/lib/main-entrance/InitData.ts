@@ -34,6 +34,7 @@ let cutOutBoxPosition: positionInfoType = {
 let screenShortController: HTMLCanvasElement | null = null;
 // 获取截图工具栏容器dom
 let toolController: HTMLDivElement | null = null;
+let cutBoxSizeContainer: HTMLDivElement | null = null;
 // 获取文本输入区域dom
 let textInputController: HTMLDivElement | null = null;
 // 截图工具栏画笔选择dom
@@ -60,6 +61,7 @@ export default class InitData {
       textInputController = null;
       optionController = null;
       optionIcoController = null;
+      cutBoxSizeContainer = null;
       cutOutBoxPosition = {
         startX: 0,
         startY: 0,
@@ -123,6 +125,14 @@ export default class InitData {
     return toolController;
   }
 
+  // 获取裁剪框尺寸显示容器
+  public getCutBoxSizeContainer() {
+    cutBoxSizeContainer = document.getElementById(
+      "cutBoxSizePanel"
+    ) as HTMLDivElement | null;
+    return cutBoxSizeContainer;
+  }
+
   // 获取文本输入区域dom
   public getTextInputController() {
     textInputController = document.getElementById(
@@ -154,6 +164,38 @@ export default class InitData {
       return;
     }
     toolController.style.display = "none";
+  }
+
+  // 设置裁剪框尺寸显示容器展示状态
+  public setCutBoxSizeStatus(status: boolean) {
+    if (cutBoxSizeContainer == null) return;
+    if (status) {
+      cutBoxSizeContainer.style.display = "flex";
+      return;
+    }
+    cutBoxSizeContainer.style.display = "none";
+  }
+
+  // 设置裁剪框尺寸显示容器位置
+  public setCutBoxSizePosition(x: number, y: number) {
+    if (cutBoxSizeContainer == null) return;
+    cutBoxSizeContainer.style.left = x + "px";
+    cutBoxSizeContainer.style.top = y + "px";
+  }
+
+  // 设置裁剪框尺寸
+  public setCutBoxSize(width: number, height: number) {
+    if (cutBoxSizeContainer == null) return;
+    const childrenPanel = cutBoxSizeContainer.childNodes;
+    // p标签已存在直接更改文本值即可
+    if (childrenPanel.length > 0) {
+      (childrenPanel[0] as HTMLParagraphElement).innerText = `${width} * ${height}`;
+      return;
+    }
+    // 不存在则渲染
+    const textPanel = document.createElement("p");
+    textPanel.innerText = `${width} * ${height}`;
+    cutBoxSizeContainer.appendChild(textPanel);
   }
 
   // 设置文本输入工具栏展示状态
@@ -402,7 +444,8 @@ export default class InitData {
       toolController == null ||
       optionIcoController == null ||
       optionController == null ||
-      textInputController == null
+      textInputController == null ||
+      cutBoxSizeContainer == null
     )
       return;
     // 销毁dom
@@ -411,5 +454,6 @@ export default class InitData {
     document.body.removeChild(optionIcoController);
     document.body.removeChild(optionController);
     document.body.removeChild(textInputController);
+    document.body.removeChild(cutBoxSizeContainer);
   }
 }
