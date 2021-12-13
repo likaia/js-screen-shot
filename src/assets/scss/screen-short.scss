@@ -181,6 +181,7 @@
   border-right: 6px solid transparent;
   border-left: 6px solid transparent;
   border-top: 6px solid #FFFFFF;
+  z-index: 9999;
   position: absolute;
   top: 0;
   left: 23px;
@@ -367,6 +368,7 @@
   box-sizing: border-box;
   position: absolute;
   outline: none;
+  z-index: 9999;
   top: 0;
   left: 0;
   color: red;

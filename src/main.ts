@@ -150,15 +150,19 @@ export default class ScreenShort {
       this.toolController == null ||
       this.screenShortController == null ||
       this.optionIcoController == null ||
-      this.optionController == null
+      this.optionController == null ||
+      this.cutBoxSizeContainer == null ||
+      this.textInputController == null
     ) {
       return;
     }
     // 调整层级
     screenShotContainer.style.zIndex = `${options?.level}`;
     this.toolController.style.zIndex = `${options?.level + 1}`;
+    this.textInputController.style.zIndex = `${options?.level + 1}`;
     this.optionIcoController.style.zIndex = `${options?.level + 1}`;
     this.optionController.style.zIndex = `${options?.level + 1}`;
+    this.cutBoxSizeContainer.style.zIndex = `${options?.level + 1}`;
     // 创建键盘事件监听
     new KeyboardEventHandle(this.screenShortController, this.toolController);
   }
