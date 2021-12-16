@@ -7,12 +7,17 @@ let initStatus = false;
 let canvasWidth = 0;
 let canvasHeight = 0;
 
+// 展示截屏图片至容器
+let showScreenData = false;
+
 export default class PlugInParameters {
   constructor() {
     // 标识为true时则初始化数据
     if (initStatus) {
       enableWebRtc = true;
-      // 初始化完成设置其值为false
+      canvasWidth = 0;
+      canvasHeight = 0;
+      showScreenData = false; // 初始化完成设置其值为false
       initStatus = false;
     }
   }
@@ -46,5 +51,15 @@ export default class PlugInParameters {
   public setCanvasSize(width: number, height: number) {
     canvasWidth = width;
     canvasHeight = height;
+  }
+
+  // 获取展示图片至容器的状态
+  public getShowScreenDataStatus() {
+    return showScreenData;
+  }
+
+  // 设置展示图片至容器的状态
+  public setShowScreenDataStatus(status: boolean) {
+    showScreenData = status;
   }
 }

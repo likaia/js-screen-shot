@@ -122,6 +122,14 @@ export default class ScreenShort {
     ) {
       plugInParameters.setCanvasSize(options.canvasWidth, options.canvasHeight);
     }
+    // 读取参数重默认展示截屏数据的状态
+    if (
+      options &&
+      Object.prototype.hasOwnProperty.call(options, "showScreenData") &&
+      options.showScreenData === true
+    ) {
+      plugInParameters.setShowScreenDataStatus(true);
+    }
     // 设置截图容器的位置信息
     if (options && Object.prototype.hasOwnProperty.call(options, "position")) {
       if (options.position?.top != null) {
@@ -234,7 +242,7 @@ export default class ScreenShort {
           // 赋值截图区域canvas画布
           this.screenShortCanvas = context;
           // 绘制蒙层
-          drawMasking(context);
+          drawMasking(context, canvas);
 
           // 添加监听
           this.screenShortController?.addEventListener(
@@ -308,8 +316,6 @@ export default class ScreenShort {
 
         // 赋值截图区域canvas画布
         this.screenShortCanvas = context;
-        // 绘制蒙层
-        drawMasking(context);
         const plugInParameters = new PlugInParameters();
         const canvasSize = plugInParameters.getCanvasSize();
         let containerWidth = this.screenShortImageController?.width;
@@ -333,6 +339,8 @@ export default class ScreenShort {
         this.data.setScreenShortImageController(
           this.screenShortImageController
         );
+        // 绘制蒙层
+        drawMasking(context, this.screenShortImageController);
         // 添加监听
         this.screenShortController?.addEventListener(
           "mousedown",

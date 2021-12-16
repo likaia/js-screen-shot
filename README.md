@@ -64,6 +64,7 @@ sessionStorage.getItem("screenShotImg");
 * `position` 截图容器位置，值为`{left?: number, top?: number}`类型
 * `clickCutFullScreen` 单击截全屏启用状态,值为`boolean`类型， 默认为`false`
 * `hiddenToolIco` 需要隐藏的截图工具栏图标，值为`{ save?: boolean; undo?: boolean; confirm?: boolean }`类型，默认为`{}`。传你需要隐藏的图标名称，将值设为`true`即可。
+* `showScreenData` 截图组件加载完毕后，是否显示截图内容至canvas画布内，值为`boolean`类型，默认为`false`。
 
 > 上述类型中的`?:`为ts中的可选类型，意思为：这个key是可选的，如果需要就传，不需要就不传。
 
