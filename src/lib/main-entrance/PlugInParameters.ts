@@ -17,7 +17,8 @@ export default class PlugInParameters {
       enableWebRtc = true;
       canvasWidth = 0;
       canvasHeight = 0;
-      showScreenData = false; // 初始化完成设置其值为false
+      showScreenData = false;
+      // 初始化完成设置其值为false
       initStatus = false;
     }
   }

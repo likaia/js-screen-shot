@@ -15,12 +15,12 @@ export function toolClickEvent(
   toolName: string,
   index: number,
   mouseEvent: any,
-  completeCallback: Function,
+  completeCallback: Function | undefined,
   closeCallback: Function | undefined
 ) {
   const data = new InitData();
   const textInputController = data.getTextInputController();
-  const screenShortController = data.getScreenShortController();
+  const screenShortController = data.getScreenShotContainer();
   const ScreenShortImageController = data.getScreenShortImageController();
   if (screenShortController == null || ScreenShortImageController == null)
     return;

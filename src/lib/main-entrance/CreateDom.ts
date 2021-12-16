@@ -19,7 +19,7 @@ export default class CreateDom {
   // 文字工具输入容器
   private readonly textInputController: HTMLDivElement;
   // 截图完成回调函数
-  private readonly completeCallback: Function;
+  private readonly completeCallback: Function | undefined;
   // 截图关闭毁掉函数
   private readonly closeCallback: Function | undefined;
   // 需要隐藏的图标

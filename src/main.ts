@@ -26,6 +26,7 @@ import html2canvas from "html2canvas";
 import PlugInParameters from "@/lib/main-entrance/PlugInParameters";
 import { getDrawBoundaryStatus } from "@/lib/split-methods/BoundaryJudgment";
 import KeyboardEventHandle from "@/lib/split-methods/KeyboardEventHandle";
+import { setPlugInParameters } from "@/lib/split-methods/SetPlugInParameters";
 
 export default class ScreenShort {
   // 当前实例的响应式data数据
@@ -34,7 +35,7 @@ export default class ScreenShort {
   // video容器用于存放屏幕MediaStream流
   private readonly videoController: HTMLVideoElement;
   // 截图区域canvas容器
-  private readonly screenShortController: HTMLCanvasElement | null;
+  private readonly screenShotContainer: HTMLCanvasElement | null;
   // 截图工具栏dom
   private readonly toolController: HTMLDivElement | null;
   // 截图图片存放容器
@@ -97,66 +98,45 @@ export default class ScreenShort {
     mouseY: 0
   };
   constructor(options: screenShotType) {
-    const plugInParameters = new PlugInParameters();
-    // webrtc启用状态
-    if (
-      options &&
-      Object.prototype.hasOwnProperty.call(options, "enableWebRtc")
-    ) {
-      plugInParameters.setWebRtcStatus(options.enableWebRtc);
-    }
-    // 单击截取全屏启用状态
-    if (
-      options &&
-      Object.prototype.hasOwnProperty.call(options, "clickCutFullScreen")
-    ) {
-      this.clickCutFullScreen = options.clickCutFullScreen;
-    }
+    // 提取options中的有用参数设置到全局参数中
+    setPlugInParameters(options);
     // 创建截图所需dom并设置回调函数
     new CreateDom(options);
-    // 读取参数中的画布宽高
-    if (
-      options &&
-      Object.prototype.hasOwnProperty.call(options, "canvasWidth") &&
-      Object.prototype.hasOwnProperty.call(options, "canvasHeight")
-    ) {
-      plugInParameters.setCanvasSize(options.canvasWidth, options.canvasHeight);
-    }
-    // 读取参数重默认展示截屏数据的状态
-    if (
-      options &&
-      Object.prototype.hasOwnProperty.call(options, "showScreenData") &&
-      options.showScreenData === true
-    ) {
-      plugInParameters.setShowScreenDataStatus(true);
-    }
-    // 设置截图容器的位置信息
-    if (options && Object.prototype.hasOwnProperty.call(options, "position")) {
-      if (options.position?.top != null) {
-        this.position.top = options.position?.top;
-      }
-      if (options.position?.left != null) {
-        this.position.left = options.position?.left;
-      }
-    }
+    // 创建并获取webrtc模式所需要的辅助dom
     this.videoController = document.createElement("video");
     this.videoController.autoplay = true;
     this.screenShortImageController = document.createElement("canvas");
     // 实例化响应式data
     this.data = new InitData();
-    // 获取截图区域canvas容器
-    this.screenShortController = this.data.getScreenShortController() as HTMLCanvasElement | null;
+
+    // 单击截取全屏启用状态,默认为false
+    if (options?.clickCutFullScreen === true) {
+      this.clickCutFullScreen = true;
+    }
+    // 设置截图容器的位置信息
+    if (options?.position != null) {
+      if (options.position?.top != null) {
+        this.position.top = options.position.top;
+      }
+      if (options.position?.left != null) {
+        this.position.left = options.position.left;
+      }
+    }
+
+    // 获取截图区域canvas容器(获取的同时也会为InitData中的全局变量赋值)
+    this.screenShotContainer = this.data.getScreenShotContainer() as HTMLCanvasElement | null;
     this.toolController = this.data.getToolController() as HTMLDivElement | null;
     this.textInputController = this.data.getTextInputController() as HTMLDivElement | null;
     this.optionController = this.data.getOptionController() as HTMLDivElement | null;
     this.optionIcoController = this.data.getOptionIcoController() as HTMLDivElement | null;
     this.cutBoxSizeContainer = this.data.getCutBoxSizeContainer() as HTMLDivElement | null;
+
+    // 加载截图组件
     this.load(options?.triggerCallback, options?.cancelCallback);
-    const screenShotContainer = document.getElementById("screenShotContainer");
-    if (screenShotContainer == null) return;
+
     if (
       this.toolController == null ||
-      this.screenShortController == null ||
+      this.screenShotContainer == null ||
       this.optionIcoController == null ||
       this.optionController == null ||
       this.cutBoxSizeContainer == null ||
@@ -165,23 +145,29 @@ export default class ScreenShort {
       return;
     }
     // 调整层级
-    screenShotContainer.style.zIndex = `${options?.level}`;
-    this.toolController.style.zIndex = `${options?.level + 1}`;
-    this.textInputController.style.zIndex = `${options?.level + 1}`;
-    this.optionIcoController.style.zIndex = `${options?.level + 1}`;
-    this.optionController.style.zIndex = `${options?.level + 1}`;
-    this.cutBoxSizeContainer.style.zIndex = `${options?.level + 1}`;
+    if (options?.level) {
+      this.screenShotContainer.style.zIndex = `${options.level}`;
+      this.toolController.style.zIndex = `${options.level + 1}`;
+      this.textInputController.style.zIndex = `${options.level + 1}`;
+      this.optionIcoController.style.zIndex = `${options.level + 1}`;
+      this.optionController.style.zIndex = `${options.level + 1}`;
+      this.cutBoxSizeContainer.style.zIndex = `${options.level + 1}`;
+    }
+
     // 创建键盘事件监听
-    new KeyboardEventHandle(this.screenShortController, this.toolController);
+    new KeyboardEventHandle(this.screenShotContainer, this.toolController);
   }
 
   // 获取截图区域canvas容器
   public getCanvasController(): HTMLCanvasElement | null {
-    return this.screenShortController;
+    return this.screenShotContainer;
   }
 
   // 加载截图组件
-  private load(triggerCallback: Function, cancelCallback: Function) {
+  private load(
+    triggerCallback: Function | undefined,
+    cancelCallback: Function | undefined
+  ) {
     const plugInParameters = new PlugInParameters();
     const canvasSize = plugInParameters.getCanvasSize();
     // 设置截图区域canvas宽高
@@ -201,7 +187,7 @@ export default class ScreenShort {
       this.screenShortImageController.height = canvasSize.canvasHeight;
     }
     // 获取截图区域画canvas容器画布
-    const context = this.screenShortController?.getContext("2d");
+    const context = this.screenShotContainer?.getContext("2d");
     if (context == null) return;
     // 启用webrtc截屏时则修改容器宽高
     if (plugInParameters.getWebRtcStatus()) {
@@ -227,7 +213,7 @@ export default class ScreenShort {
       html2canvas(document.body, {})
         .then(canvas => {
           // 装载截图的dom为null则退出
-          if (this.screenShortController == null) return;
+          if (this.screenShotContainer == null) return;
 
           if (triggerCallback != null) {
             // 获取页面元素成功，执行回调函数
@@ -245,15 +231,15 @@ export default class ScreenShort {
           drawMasking(context, canvas);
 
           // 添加监听
-          this.screenShortController?.addEventListener(
+          this.screenShotContainer?.addEventListener(
             "mousedown",
             this.mouseDownEvent
           );
-          this.screenShortController?.addEventListener(
+          this.screenShotContainer?.addEventListener(
             "mousemove",
             this.mouseMoveEvent
           );
-          this.screenShortController?.addEventListener(
+          this.screenShotContainer?.addEventListener(
             "mouseup",
             this.mouseUpEvent
           );
@@ -271,7 +257,7 @@ export default class ScreenShort {
   }
 
   // 开始捕捉屏幕
-  private startCapture = async (cancelCallback: Function) => {
+  private startCapture = async (cancelCallback: Function | undefined) => {
     let captureStream = null;
 
     try {
@@ -306,13 +292,13 @@ export default class ScreenShort {
   };
 
   // 截屏
-  private screenShot = (cancelCallback: Function) => {
+  private screenShot = (cancelCallback: Function | undefined) => {
     // 开始捕捉屏幕
     this.startCapture(cancelCallback).then(() => {
       setTimeout(() => {
         // 获取截图区域canvas容器画布
-        const context = this.screenShortController?.getContext("2d");
-        if (context == null || this.screenShortController == null) return;
+        const context = this.screenShotContainer?.getContext("2d");
+        if (context == null || this.screenShotContainer == null) return;
 
         // 赋值截图区域canvas画布
         this.screenShortCanvas = context;
@@ -342,15 +328,15 @@ export default class ScreenShort {
         // 绘制蒙层
         drawMasking(context, this.screenShortImageController);
         // 添加监听
-        this.screenShortController?.addEventListener(
+        this.screenShotContainer?.addEventListener(
           "mousedown",
           this.mouseDownEvent
         );
-        this.screenShortController?.addEventListener(
+        this.screenShotContainer?.addEventListener(
           "mousemove",
           this.mouseMoveEvent
         );
-        this.screenShortController?.addEventListener(
+        this.screenShotContainer?.addEventListener(
           "mouseup",
           this.mouseUpEvent
         );
@@ -386,11 +372,11 @@ export default class ScreenShort {
     if (
       this.data.getToolName() == "text" &&
       this.textInputController &&
-      this.screenShortController &&
+      this.screenShotContainer &&
       this.screenShortCanvas
     ) {
       // 修改鼠标样式
-      this.screenShortController.style.cursor = "text";
+      this.screenShotContainer.style.cursor = "text";
       // 显示文本输入区域
       this.data.setTextStatus(true);
       // 判断输入框位置是否变化
@@ -450,7 +436,7 @@ export default class ScreenShort {
   private mouseMoveEvent = (event: MouseEvent) => {
     if (
       this.screenShortCanvas == null ||
-      this.screenShortController == null ||
+      this.screenShotContainer == null ||
       this.data.getToolName() == "undo"
     ) {
       return;
@@ -502,7 +488,7 @@ export default class ScreenShort {
             this.data.getSelectedColor(),
             this.data.getPenSize(),
             this.screenShortCanvas,
-            this.screenShortController,
+            this.screenShotContainer,
             this.screenShortImageController
           );
           break;
@@ -575,7 +561,7 @@ export default class ScreenShort {
       tempHeight,
       this.screenShortCanvas,
       this.data.getBorderSize(),
-      this.screenShortController,
+      this.screenShotContainer,
       this.screenShortImageController
     ) as drawCutOutBoxReturnType;
   };
@@ -589,7 +575,7 @@ export default class ScreenShort {
     this.data.setDraggingTrim(false);
 
     // 截图容器判空
-    if (this.screenShortCanvas == null || this.screenShortController == null) {
+    if (this.screenShortCanvas == null || this.screenShotContainer == null) {
       return;
     }
     // 工具栏未点击且鼠标未拖动且单击截屏状态为false则复原裁剪框位置
@@ -623,16 +609,16 @@ export default class ScreenShort {
       this.tempGraphPosition = drawCutOutBox(
         0,
         0,
-        this.screenShortController.width - borderSize / 2,
-        this.screenShortController.height - borderSize / 2,
+        this.screenShotContainer.width - borderSize / 2,
+        this.screenShotContainer.height - borderSize / 2,
         this.screenShortCanvas,
         borderSize,
-        this.screenShortController,
+        this.screenShotContainer,
         this.screenShortImageController
       ) as drawCutOutBoxReturnType;
     }
 
-    if (this.screenShortController == null || this.screenShortCanvas == null) {
+    if (this.screenShotContainer == null || this.screenShortCanvas == null) {
       return;
     }
     // 工具栏已点击
@@ -653,9 +639,9 @@ export default class ScreenShort {
       this.data.getBorderSize(),
       this.drawGraphPosition
     );
-    if (this.screenShortController != null) {
+    if (this.screenShotContainer != null) {
       // 修改鼠标状态为拖动
-      this.screenShortController.style.cursor = "move";
+      this.screenShotContainer.style.cursor = "move";
       // 显示截图工具栏
       this.data.setToolStatus(true);
       // 显示裁剪框尺寸显示容器
@@ -716,7 +702,7 @@ export default class ScreenShort {
     context: CanvasRenderingContext2D
   ) {
     // canvas元素不存在
-    if (this.screenShortController == null) {
+    if (this.screenShotContainer == null) {
       return;
     }
     // 获取鼠标按下时的坐标
@@ -740,27 +726,27 @@ export default class ScreenShort {
           switch (this.cutOutBoxBorderArr[i].index) {
             case 1:
               if (this.data.getToolClickStatus()) {
-                this.screenShortController.style.cursor = "crosshair";
+                this.screenShotContainer.style.cursor = "crosshair";
               } else {
-                this.screenShortController.style.cursor = "move";
+                this.screenShotContainer.style.cursor = "move";
               }
               break;
             case 2:
               // 工具栏被点击则不改变指针样式
               if (this.data.getToolClickStatus()) break;
-              this.screenShortController.style.cursor = "ns-resize";
+              this.screenShotContainer.style.cursor = "ns-resize";
               break;
             case 3:
               if (this.data.getToolClickStatus()) break;
-              this.screenShortController.style.cursor = "ew-resize";
+              this.screenShotContainer.style.cursor = "ew-resize";
               break;
             case 4:
               if (this.data.getToolClickStatus()) break;
-              this.screenShortController.style.cursor = "nwse-resize";
+              this.screenShotContainer.style.cursor = "nwse-resize";
               break;
             case 5:
               if (this.data.getToolClickStatus()) break;
-              this.screenShortController.style.cursor = "nesw-resize";
+              this.screenShotContainer.style.cursor = "nesw-resize";
               break;
             default:
               break;
@@ -773,7 +759,7 @@ export default class ScreenShort {
       context.closePath();
       if (!flag) {
         // 鼠标移出裁剪框重置鼠标样式
-        this.screenShortController.style.cursor = "default";
+        this.screenShotContainer.style.cursor = "default";
         // 重置当前操作的边框节点为null
         this.borderOption = null;
       }
@@ -787,13 +773,13 @@ export default class ScreenShort {
         const x = fixedData(
           currentX - (moveStartX - startX),
           width,
-          this.screenShortController.width
+          this.screenShotContainer.width
         );
         // 计算要移动的y轴坐标
         const y = fixedData(
           currentY - (moveStartY - startY),
           height,
-          this.screenShortController.height
+          this.screenShotContainer.height
         );
         // 重新绘制裁剪框
         this.tempGraphPosition = drawCutOutBox(
@@ -803,7 +789,7 @@ export default class ScreenShort {
           height,
           context,
           this.data.getBorderSize(),
-          this.screenShortController as HTMLCanvasElement,
+          this.screenShotContainer as HTMLCanvasElement,
           this.screenShortImageController
         ) as drawCutOutBoxReturnType;
       } else {
@@ -830,7 +816,7 @@ export default class ScreenShort {
           tempHeight,
           context,
           this.data.getBorderSize(),
-          this.screenShortController as HTMLCanvasElement,
+          this.screenShotContainer as HTMLCanvasElement,
           this.screenShortImageController
         ) as drawCutOutBoxReturnType;
       }
@@ -860,10 +846,10 @@ export default class ScreenShort {
    * @private
    */
   private addHistory() {
-    if (this.screenShortCanvas != null && this.screenShortController != null) {
+    if (this.screenShortCanvas != null && this.screenShotContainer != null) {
       // 获取canvas画布与容器
       const context = this.screenShortCanvas;
-      const controller = this.screenShortController;
+      const controller = this.screenShotContainer;
       if (this.data.getHistory().length > this.maxUndoNum) {
         // 删除最早的一条画布记录
         this.data.shiftHistory();

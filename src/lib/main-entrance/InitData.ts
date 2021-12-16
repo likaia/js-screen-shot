@@ -88,7 +88,7 @@ export default class InitData {
 
   // 设置截图容器宽高
   public setScreenShortInfo(width: number, height: number) {
-    this.getScreenShortController();
+    this.getScreenShotContainer();
     if (screenShortController == null) return;
     screenShortController.width = width;
     screenShortController.height = height;
@@ -96,7 +96,7 @@ export default class InitData {
 
   // 设置截图容器位置
   public setScreenShotPosition(left: number, top: number) {
-    this.getScreenShortController();
+    this.getScreenShotContainer();
     if (screenShortController == null) return;
     screenShortController.style.left = left + "px";
     screenShortController.style.top = top + "px";
@@ -104,13 +104,13 @@ export default class InitData {
 
   // 显示截图区域容器
   public showScreenShortPanel() {
-    this.getScreenShortController();
+    this.getScreenShotContainer();
     if (screenShortController == null) return;
     screenShortController.style.display = "block";
   }
 
   // 获取截图容器dom
-  public getScreenShortController() {
+  public getScreenShotContainer() {
     screenShortController = document.getElementById(
       "screenShotContainer"
     ) as HTMLCanvasElement | null;

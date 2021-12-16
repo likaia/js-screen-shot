@@ -59,8 +59,8 @@ sessionStorage.getItem("screenShotImg");
 * `triggerCallback` 截图响应回调函数，值为`Function`类型，使用html2canvas截屏时，页面图片过多时响应会较慢，该函数为响应完成后触发的事件。回调函数返回一个对象，类型为: `{code: number,msg: string}`，code为0时代表截图加载完成。
 * `cancelCallback` 取消分享回到函数，值为`Function`类型，使用webrtc模式截屏时，用户点了取消或者浏览器不支持时所触发的事件。回调函数返回一个对象，类型为：`{code: number,msg: string}`，code为-1时代表用户未授权或者浏览器不支持webrtc。
 * `level` 截图容器层级，值为number类型。 
-* `canvasWidth` 画布宽度，值为number类型。
-* `canvasHeight` 画布高度，值为number类型。
+* `canvasWidth` 画布宽度，值为number类型，必须与高度一起设置，单独设置无效。
+* `canvasHeight` 画布高度，值为number类型，必须与宽度一起设置，单独设置无效。
 * `position` 截图容器位置，值为`{left?: number, top?: number}`类型
 * `clickCutFullScreen` 单击截全屏启用状态,值为`boolean`类型， 默认为`false`
 * `hiddenToolIco` 需要隐藏的截图工具栏图标，值为`{ save?: boolean; undo?: boolean; confirm?: boolean }`类型，默认为`{}`。传你需要隐藏的图标名称，将值设为`true`即可。

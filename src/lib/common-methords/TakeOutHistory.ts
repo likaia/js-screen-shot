@@ -6,7 +6,7 @@ import InitData from "@/lib/main-entrance/InitData";
 export function takeOutHistory() {
   const data = new InitData();
   const lastImageData = data.popHistory();
-  const screenShortCanvas = data.getScreenShortController()?.getContext("2d");
+  const screenShortCanvas = data.getScreenShotContainer()?.getContext("2d");
   if (screenShortCanvas != null && lastImageData) {
     const context = screenShortCanvas;
     if (data.getUndoClickNum() == 0 && data.getHistory().length > 0) {

@@ -7,7 +7,7 @@ import InitData from "@/lib/main-entrance/InitData";
  */
 export function getCanvasImgData(isSave: boolean) {
   const data = new InitData();
-  const screenShortCanvas = data.getScreenShortController()?.getContext("2d");
+  const screenShortCanvas = data.getScreenShotContainer()?.getContext("2d");
   // 获取裁剪区域位置信息
   const { startX, startY, width, height } = data.getCutOutBoxPosition();
   let base64 = "";

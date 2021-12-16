@@ -44,16 +44,16 @@ type toolIcoType = { save?: boolean; undo?: boolean; confirm?: boolean };
 export type toolbarType = { id: number; title: string };
 
 export type screenShotType = {
-  enableWebRtc: boolean; // 是否启用webrtc，默认是启用状态
-  level: number; // 截图容器层级
-  canvasWidth: number; // 截图画布宽度
-  canvasHeight: number; // 截图画布高度
-  completeCallback: Function; // 工具栏截图确认回调
-  closeCallback: Function; // 工具栏关闭回调
-  triggerCallback: Function; // html2canvas截图响应回调
-  cancelCallback: Function; // webrtc截图未授权回调
-  position: { top?: number; left?: number }; // 截图容器位置
-  clickCutFullScreen: boolean; // 单击截全屏启用状态, 默认值为false
+  enableWebRtc?: boolean; // 是否启用webrtc，默认是启用状态
+  level?: number; // 截图容器层级
+  canvasWidth?: number; // 截图画布宽度
+  canvasHeight?: number; // 截图画布高度
+  completeCallback?: Function; // 工具栏截图确认回调
+  closeCallback?: Function; // 工具栏关闭回调
+  triggerCallback?: Function; // html2canvas截图响应回调
+  cancelCallback?: Function; // webrtc截图未授权回调
+  position?: { top?: number; left?: number }; // 截图容器位置
+  clickCutFullScreen?: boolean; // 单击截全屏启用状态, 默认值为false
   hiddenToolIco?: toolIcoType; // 需要隐藏的工具栏图标
   showScreenData?: boolean; // 展示截屏图片至容器，默认值为false
 };
