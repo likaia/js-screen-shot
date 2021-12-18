@@ -22,6 +22,8 @@ let undoClickNum = 0;
 let history: Array<Record<string, any>> = [];
 // 文本输入工具栏点击状态
 const textClickStatus = false;
+// 工具栏超出截图容器状态
+let toolPositionStatus = false;
 // 裁剪框位置参数
 let cutOutBoxPosition: positionInfoType = {
   startX: 0,
@@ -69,6 +71,7 @@ export default class InitData {
         height: 0
       };
       toolClickStatus = false;
+      toolPositionStatus = false;
       selectedColor = "#F53340";
       toolName = "";
       penSize = 2;
@@ -241,6 +244,14 @@ export default class InitData {
 
   public getDraggingTrim() {
     return draggingTrim;
+  }
+
+  public getToolPositionStatus() {
+    return toolPositionStatus;
+  }
+
+  public setToolPositionStatus(status: boolean) {
+    toolPositionStatus = status;
   }
 
   public setDraggingTrim(status: boolean) {

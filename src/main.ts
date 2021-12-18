@@ -351,6 +351,8 @@ export default class ScreenShort {
     // 当前操作的是撤销
     if (this.data.getToolName() == "undo") return;
     this.data.setDragging(true);
+    // 重置工具栏超出状态
+    this.data.setToolPositionStatus(false);
     this.clickFlag = true;
     const mouseX = nonNegativeData(event.offsetX);
     const mouseY = nonNegativeData(event.offsetY);
@@ -654,10 +656,22 @@ export default class ScreenShort {
           this.drawGraphPosition,
           this.toolController.offsetWidth
         );
+        const containerHeight = this.screenShotContainer.height;
         // 当前截取的是全屏，则修改工具栏的位置到截图容器最底部，防止超出
         if (this.getFullScreenStatus) {
           toolLocation.mouseY -= 64;
         }
+
+        // 工具栏的位置超出截图容器时，调整工具栏位置防止超出
+        if (toolLocation.mouseY > containerHeight - 64) {
+          toolLocation.mouseY -= this.drawGraphPosition.height + 64;
+          console.log("超出了", toolLocation.mouseY);
+          // 设置工具栏超出状态为true
+          this.data.setToolPositionStatus(true);
+          // 隐藏裁剪框尺寸显示容器
+          this.data.setCutBoxSizeStatus(false);
+        }
+
         // 显示并设置截图工具栏位置
         this.data.setToolInfo(
           toolLocation.mouseX + this.position.left,
