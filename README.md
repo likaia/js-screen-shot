@@ -65,8 +65,12 @@ sessionStorage.getItem("screenShotImg");
 * `clickCutFullScreen` 单击截全屏启用状态,值为`boolean`类型， 默认为`false`
 * `hiddenToolIco` 需要隐藏的截图工具栏图标，值为`{ save?: boolean; undo?: boolean; confirm?: boolean }`类型，默认为`{}`。传你需要隐藏的图标名称，将值设为`true`即可。
 * `showScreenData` 截图组件加载完毕后，是否显示截图内容至canvas画布内，值为`boolean`类型，默认为`false`。
+* `imgSrc` 截图内容，如果你已经通过其他方式获取到了屏幕内容（例如`electron`环境），那么可以将获取到的内容传入，此时插件将使用你传进来的图片，值为`string`类型（可以为图片`url`地址或者`base64`），默认为`null`。
+* `loadCrossImg` 是否加载跨域图片，值为`boolean`类型，默认为`false`。
 
 > 上述类型中的`?:`为ts中的可选类型，意思为：这个key是可选的，如果需要就传，不需要就不传。
+
+> imgSrc是url时，如果图片资源跨域了，必须让图片服务器允许跨域才能正常加载。同样的loadCrossImg设置为true时，图片资源跨域了也需要让图片服务器允许跨域。
 
 ### 快捷键监听
 插件容器监听了三个快捷键，如下所示：

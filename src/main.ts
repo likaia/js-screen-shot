@@ -27,6 +27,7 @@ import PlugInParameters from "@/lib/main-entrance/PlugInParameters";
 import { getDrawBoundaryStatus } from "@/lib/split-methods/BoundaryJudgment";
 import KeyboardEventHandle from "@/lib/split-methods/KeyboardEventHandle";
 import { setPlugInParameters } from "@/lib/split-methods/SetPlugInParameters";
+import { drawCrossImg } from "@/lib/split-methods/drawCrossImg";
 
 export default class ScreenShort {
   // 当前实例的响应式data数据
@@ -91,6 +92,8 @@ export default class ScreenShort {
   private degreeOfBlur = 5;
   // 截图容器位置信息
   private position: { top: number; left: number } = { left: 0, top: 0 };
+  private imgSrc: string | null = null;
+  private loadCrossImg = false;
 
   // 文本输入框位置
   private textInputPosition: { mouseX: number; mouseY: number } = {
@@ -112,6 +115,14 @@ export default class ScreenShort {
     // 单击截取全屏启用状态,默认为false
     if (options?.clickCutFullScreen === true) {
       this.clickCutFullScreen = true;
+    }
+    // 判断调用者是否传了截图进来
+    if (options?.imgSrc != null) {
+      this.imgSrc = options.imgSrc;
+    }
+    // 是否加载跨域图片
+    if (options?.loadCrossImg === true) {
+      this.loadCrossImg = true;
     }
     // 设置截图容器的位置信息
     if (options?.position != null) {
@@ -209,40 +220,47 @@ export default class ScreenShort {
     // 显示截图区域容器
     this.data.showScreenShortPanel();
     if (!plugInParameters.getWebRtcStatus()) {
+      // 判断用户是否自己传入截屏图片
+      if (this.imgSrc != null) {
+        const imgContainer = new Image();
+        imgContainer.src = this.imgSrc;
+        imgContainer.crossOrigin = "Anonymous";
+        imgContainer.onload = () => {
+          // 装载截图的dom为null则退出
+          if (this.screenShotContainer == null) return;
+
+          // 将用户传递的图片绘制到图片容器里
+          this.screenShortImageController
+            .getContext("2d")
+            ?.drawImage(
+              imgContainer,
+              0,
+              0,
+              this.screenShortImageController.width,
+              this.screenShortImageController.height
+            );
+          // 初始化截图容器
+          this.initScreenShot(
+            triggerCallback,
+            context,
+            this.screenShortImageController
+          );
+        };
+        return;
+      }
+
       // html2canvas截屏
-      html2canvas(document.body, {})
+      html2canvas(document.body, {
+        onclone: this.loadCrossImg ? drawCrossImg : undefined
+      })
         .then(canvas => {
           // 装载截图的dom为null则退出
           if (this.screenShotContainer == null) return;
 
-          if (triggerCallback != null) {
-            // 获取页面元素成功，执行回调函数
-            triggerCallback({ code: 0, msg: "截图加载完成" });
-          }
-
-          // 存放html2canvas截取的内容
+          // 存储html2canvas截取的内容
           this.screenShortImageController = canvas;
-          // 存储屏幕截图
-          this.data.setScreenShortImageController(canvas);
-
-          // 赋值截图区域canvas画布
-          this.screenShortCanvas = context;
-          // 绘制蒙层
-          drawMasking(context, canvas);
-
-          // 添加监听
-          this.screenShotContainer?.addEventListener(
-            "mousedown",
-            this.mouseDownEvent
-          );
-          this.screenShotContainer?.addEventListener(
-            "mousemove",
-            this.mouseMoveEvent
-          );
-          this.screenShotContainer?.addEventListener(
-            "mouseup",
-            this.mouseUpEvent
-          );
+          // 初始化截图容器
+          this.initScreenShot(triggerCallback, context, canvas);
         })
         .catch(err => {
           if (triggerCallback != null) {
@@ -321,24 +339,11 @@ export default class ScreenShort {
             containerWidth,
             containerHeight
           );
-        // 存储屏幕截图
-        this.data.setScreenShortImageController(
+        // 初始化截图容器
+        this.initScreenShot(
+          undefined,
+          context,
           this.screenShortImageController
-        );
-        // 绘制蒙层
-        drawMasking(context, this.screenShortImageController);
-        // 添加监听
-        this.screenShotContainer?.addEventListener(
-          "mousedown",
-          this.mouseDownEvent
-        );
-        this.screenShotContainer?.addEventListener(
-          "mousemove",
-          this.mouseMoveEvent
-        );
-        this.screenShotContainer?.addEventListener(
-          "mouseup",
-          this.mouseUpEvent
         );
         // 停止捕捉屏幕
         this.stopCapture();
@@ -665,7 +670,6 @@ export default class ScreenShort {
         // 工具栏的位置超出截图容器时，调整工具栏位置防止超出
         if (toolLocation.mouseY > containerHeight - 64) {
           toolLocation.mouseY -= this.drawGraphPosition.height + 64;
-          console.log("超出了", toolLocation.mouseY);
           // 设置工具栏超出状态为true
           this.data.setToolPositionStatus(true);
           // 隐藏裁剪框尺寸显示容器
@@ -853,6 +857,42 @@ export default class ScreenShort {
         0
       );
     }
+  }
+
+  /**
+   * 初始化截图容器
+   * @param triggerCallback
+   * @param context
+   * @param screenShotContainer
+   * @private
+   */
+  private initScreenShot(
+    triggerCallback: Function | undefined,
+    context: CanvasRenderingContext2D,
+    screenShotContainer: HTMLCanvasElement
+  ) {
+    if (triggerCallback != null) {
+      // 加载成功，执行回调函数
+      triggerCallback({ code: 0, msg: "截图加载完成" });
+    }
+    // 赋值截图区域canvas画布
+    this.screenShortCanvas = context;
+    // 存储屏幕截图
+    this.data.setScreenShortImageController(screenShotContainer);
+
+    // 绘制蒙层
+    drawMasking(context, screenShotContainer);
+
+    // 添加监听
+    this.screenShotContainer?.addEventListener(
+      "mousedown",
+      this.mouseDownEvent
+    );
+    this.screenShotContainer?.addEventListener(
+      "mousemove",
+      this.mouseMoveEvent
+    );
+    this.screenShotContainer?.addEventListener("mouseup", this.mouseUpEvent);
   }
 
   /**

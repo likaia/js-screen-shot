@@ -56,4 +56,6 @@ export type screenShotType = {
   clickCutFullScreen?: boolean; // 单击截全屏启用状态, 默认值为false
   hiddenToolIco?: toolIcoType; // 需要隐藏的工具栏图标
   showScreenData?: boolean; // 展示截屏图片至容器，默认值为false
+  imgSrc?: string; // 截图内容，默认为false
+  loadCrossImg?: boolean; // 加载跨域图片状态
 };
