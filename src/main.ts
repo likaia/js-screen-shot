@@ -401,6 +401,13 @@ export default class ScreenShort {
           this.fontSize,
           this.screenShortCanvas
         );
+
+        // 输入框内容不为空时则隐藏
+        if (this.textInputController.innerText !== "") {
+          // 隐藏输入框
+          this.data.setTextStatus(false);
+        }
+
         // 清空文本输入区域的内容
         this.textInputController.innerHTML = "";
         // 保存绘制记录
