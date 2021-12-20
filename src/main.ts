@@ -94,6 +94,7 @@ export default class ScreenShort {
   private position: { top: number; left: number } = { left: 0, top: 0 };
   private imgSrc: string | null = null;
   private loadCrossImg = false;
+  private drawStatus = false;
 
   // 文本输入框位置
   private textInputPosition: { mouseX: number; mouseY: number } = {
@@ -356,6 +357,7 @@ export default class ScreenShort {
     // 当前操作的是撤销
     if (this.data.getToolName() == "undo") return;
     this.data.setDragging(true);
+    this.drawStatus = false;
     // 重置工具栏超出状态
     this.data.setToolPositionStatus(false);
     this.clickFlag = true;
@@ -491,6 +493,7 @@ export default class ScreenShort {
       // 当前操作的不是马赛克则显示最后一次画布绘制时的状态
       if (this.data.getToolName() != "mosaicPen") {
         this.showLastHistory();
+        this.drawStatus = true;
       }
       switch (this.data.getToolName()) {
         case "square":
@@ -635,10 +638,13 @@ export default class ScreenShort {
     if (this.screenShotContainer == null || this.screenShortCanvas == null) {
       return;
     }
-    // 工具栏已点击
-    if (this.data.getToolClickStatus()) {
+    // 工具栏已点击且进行了绘制
+    if (this.data.getToolClickStatus() && this.drawStatus) {
       // 保存绘制记录
       this.addHistory();
+      return;
+    } else if (this.data.getToolClickStatus() && !this.drawStatus) {
+      // 工具栏点击了但尚未进行绘制
       return;
     }
     // 保存绘制后的图形位置信息
