@@ -73,7 +73,10 @@ export function toolClickEvent(
     data.hiddenOptionIcoStatus();
   }
   // 清空文本输入区域的内容并隐藏文本输入框
-  if (textInputController != null && data.getTextStatus()) {
+  if (
+    (textInputController != null && data.getTextStatus()) ||
+    (textInputController != null && toolName !== "text")
+  ) {
     textInputController.innerHTML = "";
     data.setTextStatus(false);
   }
