@@ -7,10 +7,12 @@ export function setPlugInParameters(options: screenShotType) {
   // webrtc启用状态, 默认为true，如果设置了false则修改默认值
   if (options?.enableWebRtc === false) {
     plugInParameters.setWebRtcStatus(false);
+    plugInParameters.setInitStatus(false);
   }
   // 手动启用webrtc时，清空状态，避免受多次实例化的影响
   if (options?.enableWebRtc === true) {
     plugInParameters.setWebRtcStatus(true);
+    plugInParameters.setInitStatus(true);
   }
   // 读取参数中的画布宽高, 两者都存在时才设置
   if (options?.canvasWidth && options?.canvasHeight) {
