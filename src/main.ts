@@ -683,6 +683,10 @@ export default class ScreenShort {
         // 工具栏的位置超出截图容器时，调整工具栏位置防止超出
         if (toolLocation.mouseY > containerHeight - 64) {
           toolLocation.mouseY -= this.drawGraphPosition.height + 64;
+          // 超出屏幕顶部时
+          if (toolLocation.mouseY < 0) {
+            toolLocation.mouseY += 64
+          }
           // 设置工具栏超出状态为true
           this.data.setToolPositionStatus(true);
           // 隐藏裁剪框尺寸显示容器
