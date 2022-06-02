@@ -58,4 +58,5 @@ export type screenShotType = {
   showScreenData?: boolean; // 展示截屏图片至容器，默认值为false
   imgSrc?: string; // 截图内容，默认为false
   loadCrossImg?: boolean; // 加载跨域图片状态
+  screenShotDom?: HTMLElement | HTMLDivElement | HTMLCanvasElement; // 需要进行截图的容器
 };

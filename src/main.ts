@@ -37,6 +37,11 @@ export default class ScreenShot {
   private readonly videoController: HTMLVideoElement;
   // 截图区域canvas容器
   private readonly screenShotContainer: HTMLCanvasElement | null;
+  private readonly screenShotDom:
+    | HTMLElement
+    | HTMLDivElement
+    | HTMLCanvasElement
+    | null = null;
   // 截图工具栏dom
   private readonly toolController: HTMLDivElement | null;
   // 截图图片存放容器
@@ -133,6 +138,10 @@ export default class ScreenShot {
       if (options.position?.left != null) {
         this.position.left = options.position.left;
       }
+    }
+    // 截图容器dom
+    if (options?.screenShotDom) {
+      this.screenShotDom = options.screenShotDom;
     }
 
     // 获取截图区域canvas容器(获取的同时也会为InitData中的全局变量赋值)
@@ -251,7 +260,7 @@ export default class ScreenShot {
       }
 
       // html2canvas截屏
-      html2canvas(document.body, {
+      html2canvas(this.screenShotDom ? this.screenShotDom : document.body, {
         onclone: this.loadCrossImg ? drawCrossImg : undefined
       })
         .then(canvas => {

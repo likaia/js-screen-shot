@@ -1,6 +1,6 @@
 {
   "name": "js-web-screen-shot",
-  "version": "1.6.2",
+  "version": "1.6.3",
   "description": "web端自定义截屏插件(原生JS版)",
   "main": "dist/screenShotPlugin.common.js",
   "private": false,
