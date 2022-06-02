@@ -7,18 +7,18 @@ import InitData from "@/lib/main-entrance/InitData";
  */
 export function getCanvasImgData(isSave: boolean) {
   const data = new InitData();
-  const screenShortCanvas = data.getScreenShotContainer()?.getContext("2d");
+  const screenShotCanvas = data.getScreenShotContainer()?.getContext("2d");
   // 获取裁剪区域位置信息
   const { startX, startY, width, height } = data.getCutOutBoxPosition();
   let base64 = "";
-  if (screenShortCanvas) {
+  if (screenShotCanvas) {
     if (isSave) {
       // 将canvas转为图片
-      saveCanvasToImage(screenShortCanvas, startX, startY, width, height);
+      saveCanvasToImage(screenShotCanvas, startX, startY, width, height);
     } else {
       // 将canvas转为base64
       base64 = saveCanvasToBase64(
-        screenShortCanvas,
+        screenShotCanvas,
         startX,
         startY,
         width,

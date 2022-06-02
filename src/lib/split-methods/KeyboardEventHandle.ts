@@ -4,32 +4,29 @@ export default class KeyboardEventHandle {
   private readonly toolController: HTMLDivElement | null = null;
 
   constructor(
-    screenShortController: HTMLCanvasElement,
+    screenShotController: HTMLCanvasElement,
     toolController: HTMLDivElement
   ) {
     this.toolController = toolController;
     // 调整截图容器显示权重
-    screenShortController.tabIndex = 9999;
+    screenShotController.tabIndex = 9999;
     // 监听截图容器键盘按下事件
-    screenShortController.addEventListener(
-      "keydown",
-      (event: KeyboardEvent) => {
-        if (event.code === "Escape") {
-          // ESC按下，触发取消截图事件
-          this.triggerEvent("close");
-        }
-
-        if (event.code === "Enter") {
-          // Enter按下，触发确认截图事件
-          this.triggerEvent("confirm");
-        }
-
-        // 按下command+z或者ctrl+z快捷键选中撤销工具
-        if ((event.metaKey || event.ctrlKey) && event.code === "KeyZ") {
-          this.triggerEvent("undo");
-        }
+    screenShotController.addEventListener("keydown", (event: KeyboardEvent) => {
+      if (event.code === "Escape") {
+        // ESC按下，触发取消截图事件
+        this.triggerEvent("close");
       }
-    );
+
+      if (event.code === "Enter") {
+        // Enter按下，触发确认截图事件
+        this.triggerEvent("confirm");
+      }
+
+      // 按下command+z或者ctrl+z快捷键选中撤销工具
+      if ((event.metaKey || event.ctrlKey) && event.code === "KeyZ") {
+        this.triggerEvent("undo");
+      }
+    });
   }
 
   /**

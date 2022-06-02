@@ -33,7 +33,7 @@ let cutOutBoxPosition: positionInfoType = {
 };
 
 // 获取截图容器dom
-let screenShortController: HTMLCanvasElement | null = null;
+let screenShotController: HTMLCanvasElement | null = null;
 // 获取截图工具栏容器dom
 let toolController: HTMLDivElement | null = null;
 let cutBoxSizeContainer: HTMLDivElement | null = null;
@@ -47,7 +47,7 @@ let rightPanel: HTMLElement | null = null;
 let colorSelectPanel: HTMLElement | null = null;
 let undoController: HTMLElement | null = null;
 // 屏幕截图容器
-let screenShortImageController: HTMLCanvasElement | null = null;
+let screenShotImageController: HTMLCanvasElement | null = null;
 
 // 数据初始化标识
 let initStatus = false;
@@ -58,7 +58,7 @@ export default class InitData {
     if (initStatus) {
       // 初始化完成设置其值为false
       initStatus = false;
-      screenShortController = null;
+      screenShotController = null;
       toolController = null;
       textInputController = null;
       optionController = null;
@@ -90,34 +90,34 @@ export default class InitData {
   }
 
   // 设置截图容器宽高
-  public setScreenShortInfo(width: number, height: number) {
+  public setScreenShotInfo(width: number, height: number) {
     this.getScreenShotContainer();
-    if (screenShortController == null) return;
-    screenShortController.width = width;
-    screenShortController.height = height;
+    if (screenShotController == null) return;
+    screenShotController.width = width;
+    screenShotController.height = height;
   }
 
   // 设置截图容器位置
   public setScreenShotPosition(left: number, top: number) {
     this.getScreenShotContainer();
-    if (screenShortController == null) return;
-    screenShortController.style.left = left + "px";
-    screenShortController.style.top = top + "px";
+    if (screenShotController == null) return;
+    screenShotController.style.left = left + "px";
+    screenShotController.style.top = top + "px";
   }
 
   // 显示截图区域容器
-  public showScreenShortPanel() {
+  public showScreenShotPanel() {
     this.getScreenShotContainer();
-    if (screenShortController == null) return;
-    screenShortController.style.display = "block";
+    if (screenShotController == null) return;
+    screenShotController.style.display = "block";
   }
 
   // 获取截图容器dom
   public getScreenShotContainer() {
-    screenShortController = document.getElementById(
+    screenShotController = document.getElementById(
       "screenShotContainer"
     ) as HTMLCanvasElement | null;
-    return screenShortController;
+    return screenShotController;
   }
 
   // 获取截图工具栏dom
@@ -150,13 +150,13 @@ export default class InitData {
   }
 
   // 获取屏幕截图容器
-  public getScreenShortImageController() {
-    return screenShortImageController;
+  public getScreenShotImageController() {
+    return screenShotImageController;
   }
 
   // 设置屏幕截图
-  public setScreenShortImageController(imageController: HTMLCanvasElement) {
-    screenShortImageController = imageController;
+  public setScreenShotImageController(imageController: HTMLCanvasElement) {
+    screenShotImageController = imageController;
   }
 
   // 设置截图工具栏展示状态
@@ -451,7 +451,7 @@ export default class InitData {
   // 销毁截图容器
   public destroyDOM() {
     if (
-      screenShortController == null ||
+      screenShotController == null ||
       toolController == null ||
       optionIcoController == null ||
       optionController == null ||
@@ -460,7 +460,7 @@ export default class InitData {
     )
       return;
     // 销毁dom
-    document.body.removeChild(screenShortController);
+    document.body.removeChild(screenShotController);
     document.body.removeChild(toolController);
     document.body.removeChild(optionIcoController);
     document.body.removeChild(optionController);

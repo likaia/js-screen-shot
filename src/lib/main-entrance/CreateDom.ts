@@ -7,7 +7,7 @@ import { getColor } from "@/lib/common-methords/GetColor";
 
 export default class CreateDom {
   // 截图区域canvas容器
-  private readonly screenShortController: HTMLCanvasElement;
+  private readonly screenShotController: HTMLCanvasElement;
   // 截图工具栏容器
   private readonly toolController: HTMLDivElement;
   // 绘制选项顶部ico容器
@@ -29,7 +29,7 @@ export default class CreateDom {
   private readonly toolbar: Array<toolbarType>;
 
   constructor(options: screenShotType) {
-    this.screenShortController = document.createElement("canvas");
+    this.screenShotController = document.createElement("canvas");
     this.toolController = document.createElement("div");
     this.optionIcoController = document.createElement("div");
     this.optionController = document.createElement("div");
@@ -199,7 +199,7 @@ export default class CreateDom {
 
   // 为所有Dom设置id
   private setAllControllerId() {
-    this.screenShortController.id = "screenShotContainer";
+    this.screenShotController.id = "screenShotContainer";
     this.toolController.id = "toolPanel";
     this.optionIcoController.id = "optionIcoController";
     this.optionController.id = "optionPanel";
@@ -209,7 +209,7 @@ export default class CreateDom {
 
   // 隐藏所有dom
   private hiddenAllDom() {
-    this.screenShortController.style.display = "none";
+    this.screenShotController.style.display = "none";
     this.toolController.style.display = "none";
     this.optionIcoController.style.display = "none";
     this.optionController.style.display = "none";
@@ -219,7 +219,7 @@ export default class CreateDom {
 
   // 将截图相关dom渲染至body
   private setDomToBody() {
-    document.body.appendChild(this.screenShortController);
+    document.body.appendChild(this.screenShotController);
     document.body.appendChild(this.toolController);
     document.body.appendChild(this.optionIcoController);
     document.body.appendChild(this.optionController);

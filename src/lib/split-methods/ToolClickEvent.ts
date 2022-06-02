@@ -20,12 +20,11 @@ export function toolClickEvent(
 ) {
   const data = new InitData();
   const textInputController = data.getTextInputController();
-  const screenShortController = data.getScreenShotContainer();
-  const ScreenShortImageController = data.getScreenShortImageController();
-  if (screenShortController == null || ScreenShortImageController == null)
-    return;
+  const screenShotController = data.getScreenShotContainer();
+  const ScreenShotImageController = data.getScreenShotImageController();
+  if (screenShotController == null || ScreenShotImageController == null) return;
   // 获取canvas容器
-  const screenShortCanvas = screenShortController.getContext(
+  const screenShotCanvas = screenShotController.getContext(
     "2d"
   ) as CanvasRenderingContext2D;
   // 工具栏尚未点击，当前属于首次点击，重新绘制一个无像素点的裁剪框
@@ -46,10 +45,10 @@ export function toolClickEvent(
       cutBoxPosition.startY,
       cutBoxPosition.width,
       cutBoxPosition.height,
-      screenShortCanvas,
+      screenShotCanvas,
       data.getBorderSize(),
-      screenShortController as HTMLCanvasElement,
-      ScreenShortImageController,
+      screenShotController as HTMLCanvasElement,
+      ScreenShotImageController,
       false
     );
   }

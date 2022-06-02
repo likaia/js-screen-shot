@@ -6,9 +6,9 @@ import InitData from "@/lib/main-entrance/InitData";
 export function takeOutHistory() {
   const data = new InitData();
   const lastImageData = data.popHistory();
-  const screenShortCanvas = data.getScreenShotContainer()?.getContext("2d");
-  if (screenShortCanvas != null && lastImageData) {
-    const context = screenShortCanvas;
+  const screenShotCanvas = data.getScreenShotContainer()?.getContext("2d");
+  if (screenShotCanvas != null && lastImageData) {
+    const context = screenShotCanvas;
     if (data.getUndoClickNum() == 0 && data.getHistory().length > 0) {
       // 首次取出需要取两条历史记录
       const firstPopImageData = data.popHistory() as Record<string, any>;

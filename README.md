@@ -21,11 +21,11 @@ npm install js-web-screen-shot --save
 ### import形式使用插件
 * 在需要使用截屏插件的业务代码中导入插件
 ```javascript
-import ScreenShort from "js-web-screen-shot";
+import ScreenShot from "js-web-screen-shot";
 ```
 * 在业务代码中使用时实例化插件即可
 ```javascript
-new ScreenShort();
+new ScreenShot();
 ```
 > ⚠️注意：实例化插件时一定要等dom加载完成，否则插件无法正常工作。
 ### cdn形式使用插件
@@ -88,9 +88,9 @@ sessionStorage.getItem("screenShotImg");
 示例代码：
 
 ```javascript
-import ScreenShort from "js-web-screen-shot";
+import ScreenShot from "js-web-screen-shot";
 
-const screenShotHandler = new ScreenShort();
+const screenShotHandler = new ScreenShot();
 const canvasDom = screenShotHandler.getCanvasController();
 ```
 > 注意：如果截图容器尚未加载完毕，获取到的内容可能为null。
