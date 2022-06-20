@@ -14,6 +14,7 @@
   top: 0;
   left: 0;
   padding: 10px;
+  box-sizing: content-box;
 
   .item-panel {
     width: 24px;
@@ -202,6 +203,7 @@
   z-index: 9999;
   position: absolute;
   padding: 10px;
+  box-sizing: content-box;
 
   .brush-select-panel{
     height: 20px;
