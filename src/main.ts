@@ -36,24 +36,24 @@ export default class ScreenShot {
   // video容器用于存放屏幕MediaStream流
   private readonly videoController: HTMLVideoElement;
   // 截图区域canvas容器
-  private readonly screenShotContainer: HTMLCanvasElement | null;
-  private readonly screenShotDom:
+  private screenShotContainer: HTMLCanvasElement | null | undefined;
+  private screenShotDom:
     | HTMLElement
     | HTMLDivElement
     | HTMLCanvasElement
     | null = null;
   // 截图工具栏dom
-  private readonly toolController: HTMLDivElement | null;
+  private toolController: HTMLDivElement | null | undefined;
   // 截图图片存放容器
   private screenShotImageController: HTMLCanvasElement;
   // 截图区域画布
   private screenShotCanvas: CanvasRenderingContext2D | undefined;
   // 文本区域dom
-  private readonly textInputController: HTMLDivElement | null;
+  private textInputController: HTMLDivElement | null | undefined;
   // 截图工具栏画笔选项dom
-  private readonly optionController: HTMLDivElement | null;
-  private readonly optionIcoController: HTMLDivElement | null;
-  private readonly cutBoxSizeContainer: HTMLDivElement | null;
+  private optionController: HTMLDivElement | null | undefined;
+  private optionIcoController: HTMLDivElement | null | undefined;
+  private cutBoxSizeContainer: HTMLDivElement | null | undefined;
   // 图形位置参数
   private drawGraphPosition: positionInfoType = {
     startX: 0,
@@ -97,9 +97,15 @@ export default class ScreenShot {
   private degreeOfBlur = 5;
   // 截图容器位置信息
   private position: { top: number; left: number } = { left: 0, top: 0 };
-  private readonly imgSrc: string | null = null;
+  private imgSrc: string | null = null;
   private loadCrossImg = false;
   private drawStatus = false;
+  private cropBoxInfo: {
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+  } | null = null;
 
   // 文本输入框位置
   private textInputPosition: { mouseX: number; mouseY: number } = {
@@ -118,61 +124,19 @@ export default class ScreenShot {
     // 实例化响应式data
     this.data = new InitData();
 
-    // 单击截取全屏启用状态,默认为false
-    if (options?.clickCutFullScreen === true) {
-      this.clickCutFullScreen = true;
-    }
-    // 判断调用者是否传了截图进来
-    if (options?.imgSrc != null) {
-      this.imgSrc = options.imgSrc;
-    }
-    // 是否加载跨域图片
-    if (options?.loadCrossImg === true) {
-      this.loadCrossImg = true;
-    }
-    // 设置截图容器的位置信息
-    if (options?.position != null) {
-      if (options.position?.top != null) {
-        this.position.top = options.position.top;
-      }
-      if (options.position?.left != null) {
-        this.position.left = options.position.left;
-      }
-    }
-    // 截图容器dom
-    if (options?.screenShotDom) {
-      this.screenShotDom = options.screenShotDom;
-    }
-
+    // 设置插件的可选参数
+    this.setOptionalParameter(options);
     // 获取截图区域canvas容器(获取的同时也会为InitData中的全局变量赋值)
-    this.screenShotContainer = this.data.getScreenShotContainer() as HTMLCanvasElement | null;
-    this.toolController = this.data.getToolController() as HTMLDivElement | null;
-    this.textInputController = this.data.getTextInputController() as HTMLDivElement | null;
-    this.optionController = this.data.getOptionController() as HTMLDivElement | null;
-    this.optionIcoController = this.data.getOptionIcoController() as HTMLDivElement | null;
-    this.cutBoxSizeContainer = this.data.getCutBoxSizeContainer() as HTMLDivElement | null;
+    this.setGlobalParameter();
 
     // 加载截图组件
     this.load(options?.triggerCallback, options?.cancelCallback);
-
-    if (
-      this.toolController == null ||
-      this.screenShotContainer == null ||
-      this.optionIcoController == null ||
-      this.optionController == null ||
-      this.cutBoxSizeContainer == null ||
-      this.textInputController == null
-    ) {
+    if (this.toolController == null || this.screenShotContainer == null) {
       return;
     }
     // 调整层级
     if (options?.level) {
-      this.screenShotContainer.style.zIndex = `${options.level}`;
-      this.toolController.style.zIndex = `${options.level + 1}`;
-      this.textInputController.style.zIndex = `${options.level + 1}`;
-      this.optionIcoController.style.zIndex = `${options.level + 1}`;
-      this.optionController.style.zIndex = `${options.level + 1}`;
-      this.cutBoxSizeContainer.style.zIndex = `${options.level + 1}`;
+      this.adjustContainerLevels(options.level);
     }
 
     // 创建键盘事件监听
@@ -180,7 +144,7 @@ export default class ScreenShot {
   }
 
   // 获取截图区域canvas容器
-  public getCanvasController(): HTMLCanvasElement | null {
+  public getCanvasController(): HTMLCanvasElement | null | undefined {
     return this.screenShotContainer;
   }
 
@@ -588,6 +552,154 @@ export default class ScreenShot {
     ) as drawCutOutBoxReturnType;
   };
 
+  // 调整插件容器层级
+  private adjustContainerLevels(level: number): void {
+    if (
+      this.screenShotContainer == null ||
+      this.toolController == null ||
+      this.textInputController == null ||
+      this.optionIcoController == null ||
+      this.optionController == null ||
+      this.cutBoxSizeContainer == null
+    ) {
+      return;
+    }
+    this.screenShotContainer.style.zIndex = `${level}`;
+    this.toolController.style.zIndex = `${level + 1}`;
+    this.textInputController.style.zIndex = `${level + 1}`;
+    this.optionIcoController.style.zIndex = `${level + 1}`;
+    this.optionController.style.zIndex = `${level + 1}`;
+    this.cutBoxSizeContainer.style.zIndex = `${level + 1}`;
+  }
+
+  // 初始化裁剪框
+  private initCropBox(cropBoxInfo: {
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+  }): void {
+    const startX = cropBoxInfo.x;
+    const startY = cropBoxInfo.y;
+    const width = cropBoxInfo.w;
+    const height = cropBoxInfo.h;
+    if (this.screenShotContainer == null) return;
+    this.drawGraphPosition = { startX, startY, width, height };
+    drawCutOutBox(
+      startX,
+      startY,
+      width,
+      height,
+      this.screenShotCanvas as CanvasRenderingContext2D,
+      this.data.getBorderSize(),
+      this.screenShotContainer,
+      this.screenShotImageController
+    );
+    // 保存边框节点信息
+    this.cutOutBoxBorderArr = saveBorderArrInfo(
+      this.data.getBorderSize(),
+      this.drawGraphPosition
+    );
+    // 修改鼠标状态为拖动
+    this.screenShotContainer.style.cursor = "move";
+    // 显示截图工具栏
+    this.data.setToolStatus(true);
+    // 显示裁剪框尺寸显示容器
+    this.data.setCutBoxSizeStatus(true);
+    if (this.toolController != null) {
+      // 渲染截图工具栏
+      this.showToolBar();
+    }
+  }
+
+  private showToolBar(): void {
+    if (this.toolController == null || this.screenShotContainer == null) return;
+    // 计算截图工具栏位置
+    const toolLocation = calculateToolLocation(
+      this.drawGraphPosition,
+      this.toolController.offsetWidth
+    );
+    const containerHeight = this.screenShotContainer.height;
+    // 当前截取的是全屏，则修改工具栏的位置到截图容器最底部，防止超出
+    if (this.getFullScreenStatus) {
+      toolLocation.mouseY -= 64;
+    }
+
+    // 工具栏的位置超出截图容器时，调整工具栏位置防止超出
+    if (toolLocation.mouseY > containerHeight - 64) {
+      toolLocation.mouseY -= this.drawGraphPosition.height + 64;
+      // 超出屏幕顶部时
+      if (toolLocation.mouseY < 0) {
+        toolLocation.mouseY += 64;
+      }
+      // 设置工具栏超出状态为true
+      this.data.setToolPositionStatus(true);
+      // 隐藏裁剪框尺寸显示容器
+      this.data.setCutBoxSizeStatus(false);
+    }
+
+    // 显示并设置截图工具栏位置
+    this.data.setToolInfo(
+      toolLocation.mouseX + this.position.left,
+      toolLocation.mouseY + this.position.top
+    );
+
+    // 设置裁剪框尺寸显示容器位置
+    this.data.setCutBoxSizePosition(
+      this.drawGraphPosition.startX,
+      this.drawGraphPosition.startY - 35
+    );
+    // 渲染裁剪框尺寸
+    this.data.setCutBoxSize(
+      this.drawGraphPosition.width,
+      this.drawGraphPosition.height
+    );
+
+    // 状态重置
+    this.getFullScreenStatus = false;
+  }
+
+  private setGlobalParameter() {
+    this.screenShotContainer = this.data.getScreenShotContainer() as HTMLCanvasElement | null;
+    this.toolController = this.data.getToolController() as HTMLDivElement | null;
+    this.textInputController = this.data.getTextInputController() as HTMLDivElement | null;
+    this.optionController = this.data.getOptionController() as HTMLDivElement | null;
+    this.optionIcoController = this.data.getOptionIcoController() as HTMLDivElement | null;
+    this.cutBoxSizeContainer = this.data.getCutBoxSizeContainer() as HTMLDivElement | null;
+  }
+
+  private setOptionalParameter(options: screenShotType) {
+    // 单击截取全屏启用状态,默认为false
+    if (options?.clickCutFullScreen === true) {
+      this.clickCutFullScreen = true;
+    }
+    // 判断调用者是否传了截图进来
+    if (options?.imgSrc != null) {
+      this.imgSrc = options.imgSrc;
+    }
+    // 是否加载跨域图片
+    if (options?.loadCrossImg === true) {
+      this.loadCrossImg = true;
+    }
+    // 设置截图容器的位置信息
+    if (options?.position != null) {
+      if (options.position?.top != null) {
+        this.position.top = options.position.top;
+      }
+      if (options.position?.left != null) {
+        this.position.left = options.position.left;
+      }
+    }
+    // 截图容器dom
+    if (options?.screenShotDom) {
+      this.screenShotDom = options.screenShotDom;
+    }
+    // 是否初始化裁剪框
+    if (options?.cropBoxInfo) {
+      this.cropBoxInfo = options.cropBoxInfo;
+    }
+  }
+
   // 鼠标抬起事件
   private mouseUpEvent = () => {
     // 当前操作的是撤销
@@ -674,49 +786,7 @@ export default class ScreenShot {
       // 复原拖动状态
       this.dragFlag = false;
       if (this.toolController != null) {
-        // 计算截图工具栏位置
-        const toolLocation = calculateToolLocation(
-          this.drawGraphPosition,
-          this.toolController.offsetWidth
-        );
-        const containerHeight = this.screenShotContainer.height;
-        // 当前截取的是全屏，则修改工具栏的位置到截图容器最底部，防止超出
-        if (this.getFullScreenStatus) {
-          toolLocation.mouseY -= 64;
-        }
-
-        // 工具栏的位置超出截图容器时，调整工具栏位置防止超出
-        if (toolLocation.mouseY > containerHeight - 64) {
-          toolLocation.mouseY -= this.drawGraphPosition.height + 64;
-          // 超出屏幕顶部时
-          if (toolLocation.mouseY < 0) {
-            toolLocation.mouseY += 64;
-          }
-          // 设置工具栏超出状态为true
-          this.data.setToolPositionStatus(true);
-          // 隐藏裁剪框尺寸显示容器
-          this.data.setCutBoxSizeStatus(false);
-        }
-
-        // 显示并设置截图工具栏位置
-        this.data.setToolInfo(
-          toolLocation.mouseX + this.position.left,
-          toolLocation.mouseY + this.position.top
-        );
-
-        // 设置裁剪框尺寸显示容器位置
-        this.data.setCutBoxSizePosition(
-          this.drawGraphPosition.startX,
-          this.drawGraphPosition.startY - 35
-        );
-        // 渲染裁剪框尺寸
-        this.data.setCutBoxSize(
-          this.drawGraphPosition.width,
-          this.drawGraphPosition.height
-        );
-
-        // 状态重置
-        this.getFullScreenStatus = false;
+        this.showToolBar();
       }
     }
   };
@@ -915,6 +985,10 @@ export default class ScreenShot {
       this.mouseMoveEvent
     );
     this.screenShotContainer?.addEventListener("mouseup", this.mouseUpEvent);
+    // 是否初始化裁剪框
+    if (this.cropBoxInfo != null && Object.keys(this.cropBoxInfo).length == 4) {
+      this.initCropBox(this.cropBoxInfo);
+    }
   }
 
   /**

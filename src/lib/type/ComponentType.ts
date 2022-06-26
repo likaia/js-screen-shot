@@ -59,4 +59,5 @@ export type screenShotType = {
   imgSrc?: string; // 截图内容，默认为false
   loadCrossImg?: boolean; // 加载跨域图片状态
   screenShotDom?: HTMLElement | HTMLDivElement | HTMLCanvasElement; // 需要进行截图的容器
+  cropBoxInfo?: { x: number; y: number; w: number; h: number }; // 是否加载默认的裁剪框
 };
