@@ -10,6 +10,7 @@ export function drawMasking(
   imgData?: HTMLCanvasElement
 ) {
   const plugInParameters = new PlugInParameters();
+  const canvasSize = plugInParameters.getCanvasSize();
   // 清除画布
   context.clearRect(0, 0, window.innerWidth, window.innerHeight);
   // 屏幕截图存在且展示截图数据的状态为true则进行绘制
@@ -19,7 +20,11 @@ export function drawMasking(
   // 绘制蒙层
   context.save();
   context.fillStyle = "rgba(0, 0, 0, .6)";
-  context.fillRect(0, 0, window.innerWidth, window.innerHeight);
+  if (canvasSize.canvasWidth !== 0 && canvasSize.canvasHeight !== 0) {
+    context.fillRect(0, 0, canvasSize.canvasWidth, canvasSize.canvasHeight);
+  } else {
+    context.fillRect(0, 0, window.innerWidth, window.innerHeight);
+  }
   // 绘制结束
   context.restore();
 }
