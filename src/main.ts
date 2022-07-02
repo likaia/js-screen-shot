@@ -585,6 +585,7 @@ export default class ScreenShot {
     const height = cropBoxInfo.h;
     if (this.screenShotContainer == null) return;
     this.drawGraphPosition = { startX, startY, width, height };
+    this.data.setCutOutBoxPosition(startX, startY, width, height);
     drawCutOutBox(
       startX,
       startY,
