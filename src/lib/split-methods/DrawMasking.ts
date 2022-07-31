@@ -15,7 +15,18 @@ export function drawMasking(
   context.clearRect(0, 0, window.innerWidth, window.innerHeight);
   // 屏幕截图存在且展示截图数据的状态为true则进行绘制
   if (imgData != null && plugInParameters.getShowScreenDataStatus()) {
-    context.drawImage(imgData, 0, 0, imgData.width, imgData.height);
+    // 调用者传了画布尺寸则使用，否则使用窗口宽高
+    if (canvasSize.canvasWidth !== 0 && canvasSize.canvasHeight !== 0) {
+      context.drawImage(
+        imgData,
+        0,
+        0,
+        canvasSize.canvasWidth,
+        canvasSize.canvasHeight
+      );
+    } else {
+      context.drawImage(imgData, 0, 0, window.innerWidth, window.innerHeight);
+    }
   }
   // 绘制蒙层
   context.save();
