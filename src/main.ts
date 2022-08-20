@@ -473,9 +473,7 @@ export default class ScreenShot {
             tempHeight,
             this.data.getSelectedColor(),
             this.data.getPenSize(),
-            this.screenShotCanvas,
-            this.screenShotContainer,
-            this.screenShotImageController
+            this.screenShotCanvas
           );
           break;
         case "round":
