@@ -28,6 +28,7 @@ import { getDrawBoundaryStatus } from "@/lib/split-methods/BoundaryJudgment";
 import KeyboardEventHandle from "@/lib/split-methods/KeyboardEventHandle";
 import { setPlugInParameters } from "@/lib/split-methods/SetPlugInParameters";
 import { drawCrossImg } from "@/lib/split-methods/drawCrossImg";
+import { takeScreenshotStream } from "@/lib/common-methords/takeScreenshot";
 
 export default class ScreenShot {
   // 当前实例的响应式data数据
@@ -253,10 +254,8 @@ export default class ScreenShot {
     let captureStream = null;
 
     try {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-      // @ts-ignore
       // 捕获屏幕
-      captureStream = await navigator.mediaDevices.getDisplayMedia();
+      captureStream = await takeScreenshotStream();
       // 将MediaStream输出至video标签
       this.videoController.srcObject = captureStream;
     } catch (err) {
