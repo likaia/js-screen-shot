@@ -1,5 +1,6 @@
 import { positionInfoType } from "@/lib/type/ComponentType";
 import { takeOutHistory } from "@/lib/common-methords/TakeOutHistory";
+import { getToolRelativePosition } from "@/lib/common-methords/GetToolRelativePosition";
 
 // 裁剪框修剪状态
 let draggingTrim = false;
@@ -93,6 +94,8 @@ export default class InitData {
   public setScreenShotInfo(width: number, height: number) {
     this.getScreenShotContainer();
     if (screenShotController == null) return;
+    // 增加截图锁屏
+    document.body.classList.add("__screenshot-lock-scroll");
     screenShotController.width = width;
     screenShotController.height = height;
   }
@@ -101,8 +104,9 @@ export default class InitData {
   public setScreenShotPosition(left: number, top: number) {
     this.getScreenShotContainer();
     if (screenShotController == null) return;
-    screenShotController.style.left = left + "px";
-    screenShotController.style.top = top + "px";
+    const { left: rLeft, top: rTop } = getToolRelativePosition(left, top);
+    screenShotController.style.left = rLeft + "px";
+    screenShotController.style.top = rTop + "px";
   }
 
   // 显示截图区域容器
@@ -182,8 +186,13 @@ export default class InitData {
   // 设置裁剪框尺寸显示容器位置
   public setCutBoxSizePosition(x: number, y: number) {
     if (cutBoxSizeContainer == null) return;
-    cutBoxSizeContainer.style.left = x + "px";
-    cutBoxSizeContainer.style.top = y + "px";
+    const { left, top } = getToolRelativePosition(x, y);
+    cutBoxSizeContainer.style.left = left + "px";
+    let sscTop = 0;
+    if (screenShotController) {
+      sscTop = parseInt(screenShotController.style.top);
+    }
+    cutBoxSizeContainer.style.top = top + sscTop + "px";
   }
 
   // 设置裁剪框尺寸
@@ -216,8 +225,13 @@ export default class InitData {
   // 设置截图工具位置信息
   public setToolInfo(left: number, top: number) {
     toolController = document.getElementById("toolPanel") as HTMLDivElement;
-    toolController.style.left = left + "px";
-    toolController.style.top = top + "px";
+    const { left: rLeft, top: rTop } = getToolRelativePosition(left, top);
+    toolController.style.left = rLeft + "px";
+    let sscTop = 0;
+    if (screenShotController) {
+      sscTop = parseInt(screenShotController.style.top);
+    }
+    toolController.style.top = rTop + sscTop + "px";
   }
 
   // 获取截图工具栏点击状态
@@ -460,6 +474,7 @@ export default class InitData {
     )
       return;
     // 销毁dom
+    document.body.classList.remove("__screenshot-lock-scroll");
     document.body.removeChild(screenShotController);
     document.body.removeChild(toolController);
     document.body.removeChild(optionIcoController);
