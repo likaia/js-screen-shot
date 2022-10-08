@@ -175,6 +175,12 @@
   }
 }
 
+.__screenshot-lock-scroll {
+  margin: 0;
+  height: 100% !important;
+  overflow: hidden !important;
+}
+
 // 三角形角标
 .ico-panel {
   width: 0;
