@@ -316,8 +316,12 @@ export default class ScreenShot {
         // 初始化截图容器
         this.initScreenShot(undefined, context, this.screenShotImageController);
         // 停止捕捉屏幕
-        this.stopCapture();
-      }, 500);
+        // fix: 加个延迟，共享窗口时，部分窗口会无法截取到，比如微信，钉钉，网易云之类的。
+        setTimeout(() => {
+          this.stopCapture();
+        }, 200);
+        // fix: 延迟从500改成600， 共享弹窗在500的时候还未完全消失
+      }, 600);
     });
   };
 

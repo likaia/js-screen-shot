@@ -21,5 +21,7 @@ export function setPlugInParameters(options: screenShotType) {
   // 读取参数设置默认展示截屏数据的状态，默认为false，如果设置了true才修改
   if (options?.showScreenData === true) {
     plugInParameters.setShowScreenDataStatus(true);
+    // fix: ShowScreenData 总是会被重置，重复走了PlugInParameters的构造函数
+    plugInParameters.setInitStatus(false);
   }
 }
