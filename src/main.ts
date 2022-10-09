@@ -54,6 +54,8 @@ export default class ScreenShot {
   private optionController: HTMLDivElement | null | undefined;
   private optionIcoController: HTMLDivElement | null | undefined;
   private cutBoxSizeContainer: HTMLDivElement | null | undefined;
+  private plugInParameters: PlugInParameters;
+  private wrcReplyTime = 500;
   // 图形位置参数
   private drawGraphPosition: positionInfoType = {
     startX: 0,
@@ -113,6 +115,7 @@ export default class ScreenShot {
     mouseY: 0
   };
   constructor(options: screenShotType) {
+    this.plugInParameters = new PlugInParameters();
     // 提取options中的有用参数设置到全局参数中
     setPlugInParameters(options);
     // 创建截图所需dom并设置回调函数
@@ -128,6 +131,8 @@ export default class ScreenShot {
     this.setOptionalParameter(options);
     // 获取截图区域canvas容器(获取的同时也会为InitData中的全局变量赋值)
     this.setGlobalParameter();
+    // 修改截图容器可滚动状态
+    this.data.setNoScrollStatus(options?.noScroll);
 
     // 加载截图组件
     this.load(options?.triggerCallback, options?.cancelCallback);
@@ -137,6 +142,10 @@ export default class ScreenShot {
     // 调整层级
     if (options?.level) {
       this.adjustContainerLevels(options.level);
+    }
+    // webrtc截图等待时间
+    if (options?.wrcReplyTime) {
+      this.wrcReplyTime = options.wrcReplyTime;
     }
 
     // 创建键盘事件监听
@@ -153,8 +162,7 @@ export default class ScreenShot {
     triggerCallback: Function | undefined,
     cancelCallback: Function | undefined
   ) {
-    const plugInParameters = new PlugInParameters();
-    const canvasSize = plugInParameters.getCanvasSize();
+    const canvasSize = this.plugInParameters.getCanvasSize();
     // 设置截图区域canvas宽高
     this.data.setScreenShotInfo(window.innerWidth, window.innerHeight);
     // 设置截图容器位置
@@ -175,7 +183,7 @@ export default class ScreenShot {
     const context = this.screenShotContainer?.getContext("2d");
     if (context == null) return;
     // 启用webrtc截屏时则修改容器宽高
-    if (plugInParameters.getWebRtcStatus()) {
+    if (this.plugInParameters.getWebRtcStatus()) {
       // 设置为屏幕宽高
       this.data.setScreenShotInfo(window.screen.width, window.screen.height);
       // 设置为屏幕宽高
@@ -193,7 +201,7 @@ export default class ScreenShot {
     }
     // 显示截图区域容器
     this.data.showScreenShotPanel();
-    if (!plugInParameters.getWebRtcStatus()) {
+    if (!this.plugInParameters.getWebRtcStatus()) {
       // 判断用户是否自己传入截屏图片
       if (this.imgSrc != null) {
         const imgContainer = new Image();
@@ -300,8 +308,7 @@ export default class ScreenShot {
 
         // 赋值截图区域canvas画布
         this.screenShotCanvas = context;
-        const plugInParameters = new PlugInParameters();
-        const canvasSize = plugInParameters.getCanvasSize();
+        const canvasSize = this.plugInParameters.getCanvasSize();
         let containerWidth = this.screenShotImageController?.width;
         let containerHeight = this.screenShotImageController?.height;
         // 用户有传宽高时，则使用用户的
@@ -323,7 +330,7 @@ export default class ScreenShot {
         this.initScreenShot(undefined, context, this.screenShotImageController);
         // 停止捕捉屏幕
         this.stopCapture();
-      }, 500);
+      }, this.wrcReplyTime);
     });
   };
 

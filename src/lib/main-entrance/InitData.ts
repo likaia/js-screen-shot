@@ -1,6 +1,7 @@
 import { positionInfoType } from "@/lib/type/ComponentType";
 import { takeOutHistory } from "@/lib/common-methords/TakeOutHistory";
 import { getToolRelativePosition } from "@/lib/common-methords/GetToolRelativePosition";
+import PlugInParameters from "@/lib/main-entrance/PlugInParameters";
 
 // 裁剪框修剪状态
 let draggingTrim = false;
@@ -49,7 +50,8 @@ let colorSelectPanel: HTMLElement | null = null;
 let undoController: HTMLElement | null = null;
 // 屏幕截图容器
 let screenShotImageController: HTMLCanvasElement | null = null;
-
+// 截图容器是否可滚动
+let noScrollStatus = false;
 // 数据初始化标识
 let initStatus = false;
 
@@ -95,7 +97,9 @@ export default class InitData {
     this.getScreenShotContainer();
     if (screenShotController == null) return;
     // 增加截图锁屏
-    document.body.classList.add("__screenshot-lock-scroll");
+    if (noScrollStatus) {
+      document.body.classList.add("__screenshot-lock-scroll");
+    }
     screenShotController.width = width;
     screenShotController.height = height;
   }
@@ -423,6 +427,15 @@ export default class InitData {
     colorSelectController.style.display = "none";
   }
 
+  public getNoScrollStatus() {
+    return noScrollStatus;
+  }
+  public setNoScrollStatus(status?: boolean) {
+    if (status != null) {
+      noScrollStatus = status;
+    }
+  }
+
   public getRightPanel() {
     rightPanel = document.getElementById("rightPanel");
     return rightPanel;
@@ -473,13 +486,18 @@ export default class InitData {
       cutBoxSizeContainer == null
     )
       return;
+    const plugInParameters = new PlugInParameters();
     // 销毁dom
-    document.body.classList.remove("__screenshot-lock-scroll");
+    if (noScrollStatus) {
+      document.body.classList.remove("__screenshot-lock-scroll");
+    }
     document.body.removeChild(screenShotController);
     document.body.removeChild(toolController);
     document.body.removeChild(optionIcoController);
     document.body.removeChild(optionController);
     document.body.removeChild(textInputController);
     document.body.removeChild(cutBoxSizeContainer);
+    // 重置插件全局参数状态
+    plugInParameters.setInitStatus(true);
   }
 }

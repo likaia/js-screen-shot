@@ -69,6 +69,8 @@ sessionStorage.getItem("screenShotImg");
 * `loadCrossImg` 是否加载跨域图片，值为`boolean`类型，默认为`false`。
 * `screenShotDom` 需要进行截图的容器，值为`HTMLElement`类型，默认使用的是`body`。
 * `cropBoxInfo` 初始裁剪框，值为`{ x: number; y: number; w: number; h: number }`类型，默认不加载。
+* `wrcReplyTime` webrtc模式捕捉屏幕时的响应时间，值为`number`类型，默认为500ms。
+* `noScroll` 截图容器是否可滚动，值为`boolean`类型，默认为`true`。
 
 > 上述类型中的`?:`为ts中的可选类型，意思为：这个key是可选的，如果需要就传，不需要就不传。
 
@@ -81,7 +83,7 @@ sessionStorage.getItem("screenShotImg");
 * `Ctrl/Command + z`，按下这两个组合键时，等同于点了截图工具栏的撤销图标。
 
 
-### API文档
+### 额外提供的API
 插件暴露了一些内部变量出来，便于调用者根据自己的需求进行修改。
 
 #### getCanvasController
@@ -100,10 +102,19 @@ const canvasDom = screenShotHandler.getCanvasController();
 
 
 ### 工具栏图标定制
-如果你需要修改截图工具栏的图标，可以通过覆盖元素css类名的方式实现，插件内所有图标的css类名如下所示
-> 注意：下述所有列举的图标还包含点击后的图标样式，它的写法为`.xxx-active {}`，例如：`.square-active {}`
+如果你需要修改截图工具栏的图标，可以通过覆盖元素css类名的方式实现，插件内所有图标的css类名如下所示：
+* square 矩形绘制图标
+* round 圆型绘制图标
+* right-top 箭头绘制图标
+* brush 画笔工具
+* mosaicPen 马赛克工具
+* text 文本工具
+* save 保存
+* close 关闭
+* undo 撤销
+* confirm 确认
 
-#### square 矩形绘制图标
+以`square`为例，要修改它的图标，只需要将下述代码添加进你项目代码的样式中即可。
 ```scss
   .square {
     background-image: url("你的图标路径") !important;
@@ -118,156 +129,6 @@ const canvasDom = screenShotHandler.getCanvasController();
  }
 ```
 
-#### round 圆型绘制图标
-```scss
-  .round {
-    background-image: url("你的图标路径") !important;
-    
-
-    &:hover {
-      background-image: url("你的图标路径") !important;
-    }
-
-    &:active {
-      background-image: url("你的图标路径") !important;
-    }
-  }
-```
-
-#### right-top 箭头绘制图标
-```scss
-  .right-top {
-    background-image: url("你的图标路径") !important;
-    
-
-    &:hover {
-      background-image: url("你的图标路径") !important;
-    }
-
-    &:active {
-      background-image: url("你的图标路径") !important;
-    }
-  }
-```
-
-#### brush 画笔工具
-```scss 
-  .brush {
-    background-image: url("你的图标路径") !important;
-
-    &:hover {
-      background-image: url("你的图标路径") !important;
-    }
-
-    &:active {
-      background-image: url("你的图标路径") !important;
-    }
-  }
-  
-  // 画笔尺寸选择
-  // 分为3种尺寸：small、medium、big
-  // 此处只列举small尺寸的写法，其它两种只需要替换brush-xxx即可
-  .brush-small {
-    
-    background-image: url("你的图标路径") !important;
-
-    &:hover {
-      background-image: url("你的图标路径") !important;
-    }
-    &:active {
-      background-image: url("你的图标路径") !important;
-    }
-  }
-```
-
-#### mosaicPen 马赛克工具
-```scss
-  .mosaicPen {
-    background-image: url("你的图标路径") !important;
-    
-
-    &:hover {
-      background-image: url("你的图标路径") !important;
-    }
-
-    &:active {
-      background-image: url("你的图标路径") !important;
-    }
-  }
-```
-
-#### text 文本工具
-```scss
-  .text {
-    background-image: url("你的图标路径") !important;
-    
-
-    &:hover {
-      background-image: url("你的图标路径") !important;
-    }
-
-    &:active {
-      background-image: url("你的图标路径") !important;
-    }
-  }
-```
-
-#### save 保存
-```scss
-  .save {
-    background-image: url("你的图标路径") !important;
-    
-
-    &:hover {
-      background-image: url("你的图标路径") !important;
-    }
-
-    &:active {
-      background-image: url("你的图标路径") !important;
-    }
-  }
-```
-
-#### close 关闭
-```scss
-  .close {
-    background-image: url("你的图标路径") !important;
-    
-
-    &:hover {
-      background-image: url("你的图标路径") !important;
-    }
-  }
-```
-
-#### undo 撤销
-```scss
-  .undo {
-    
-    background-image: url("你的图标路径") !important;
-  
-    &:hover{
-      background-image: url("你的图标路径") !important;
-    }
-  }
-  // 禁用状态图标
-  .undo-disabled {
-    
-    background-image: url("你的图标路径") !important;
-  }
-```
-
-#### confirm 确认
-```scss
-  .confirm {
-    background-image: url("你的图标路径") !important;
-    
-
-    &:hover {
-      background-image: url("你的图标路径") !important;
-    }
-  }
-```
 
 ## 写在最后
 至此，插件的所有使用方法就介绍完了，该插件的Vue3版本，请移步：[vue-web-screen-shot](https://www.npmjs.com/package/vue-web-screen-shot)

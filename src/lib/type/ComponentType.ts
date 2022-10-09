@@ -60,4 +60,6 @@ export type screenShotType = {
   loadCrossImg?: boolean; // 加载跨域图片状态
   screenShotDom?: HTMLElement | HTMLDivElement | HTMLCanvasElement; // 需要进行截图的容器
   cropBoxInfo?: { x: number; y: number; w: number; h: number }; // 是否加载默认的裁剪框
+  wrcReplyTime?: number; // webrtc捕捉屏幕响应时间，默认为500ms
+  noScroll?: boolean; // 截图容器是否可滚动，默认为true
 };
