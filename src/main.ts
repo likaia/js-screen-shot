@@ -634,7 +634,7 @@ export default class ScreenShot {
     const containerHeight = this.screenShotContainer.height;
     // 当前截取的是全屏，则修改工具栏的位置到截图容器最底部，防止超出
     if (this.getFullScreenStatus) {
-      toolLocation.mouseY -= 64;
+      toolLocation.mouseY = 0;
     }
 
     // 工具栏的位置超出截图容器时，调整工具栏位置防止超出
