@@ -28,6 +28,7 @@ import { getDrawBoundaryStatus } from "@/lib/split-methods/BoundaryJudgment";
 import KeyboardEventHandle from "@/lib/split-methods/KeyboardEventHandle";
 import { setPlugInParameters } from "@/lib/split-methods/SetPlugInParameters";
 import { drawCrossImg } from "@/lib/split-methods/drawCrossImg";
+import { getCanvas2dCtx } from "@/lib/common-methords/CanvasPatch";
 
 export default class ScreenShot {
   // 当前实例的响应式data数据
@@ -97,6 +98,9 @@ export default class ScreenShot {
   private maxUndoNum = 15;
   // 马赛克涂抹区域大小
   private degreeOfBlur = 5;
+  private dpr = window.devicePixelRatio || 1;
+  // 截全屏时工具栏展示的位置要减去的高度
+  private fullScreenDiffHeight = 60;
   // 截图容器位置信息
   private position: { top: number; left: number } = { left: 0, top: 0 };
   private imgSrc: string | null = null;
@@ -180,15 +184,15 @@ export default class ScreenShot {
       this.screenShotImageController.height = canvasSize.canvasHeight;
     }
     // 获取截图区域画canvas容器画布
-    const context = this.screenShotContainer?.getContext("2d");
+    if (this.screenShotContainer == null) return;
+    const context = getCanvas2dCtx(
+      this.screenShotContainer,
+      this.screenShotImageController.width,
+      this.screenShotImageController.height
+    );
     if (context == null) return;
     // 启用webrtc截屏时则修改容器宽高
     if (this.plugInParameters.getWebRtcStatus()) {
-      // 设置为屏幕宽高
-      this.data.setScreenShotInfo(window.screen.width, window.screen.height);
-      // 设置为屏幕宽高
-      this.screenShotImageController.width = window.screen.width;
-      this.screenShotImageController.height = window.screen.height;
       // 用户有传宽高则使用用户传进来的
       if (canvasSize.canvasWidth !== 0 && canvasSize.canvasHeight !== 0) {
         this.data.setScreenShotInfo(
@@ -303,11 +307,7 @@ export default class ScreenShot {
     this.startCapture(cancelCallback).then(() => {
       setTimeout(() => {
         // 获取截图区域canvas容器画布
-        const context = this.screenShotContainer?.getContext("2d");
-        if (context == null || this.screenShotContainer == null) return;
-
-        // 赋值截图区域canvas画布
-        this.screenShotCanvas = context;
+        if (this.screenShotContainer == null) return;
         const canvasSize = this.plugInParameters.getCanvasSize();
         let containerWidth = this.screenShotImageController?.width;
         let containerHeight = this.screenShotImageController?.height;
@@ -316,6 +316,14 @@ export default class ScreenShot {
           containerWidth = canvasSize.canvasWidth;
           containerHeight = canvasSize.canvasHeight;
         }
+        const context = getCanvas2dCtx(
+          this.screenShotContainer,
+          containerWidth,
+          containerHeight
+        );
+        if (context == null) return;
+        // 赋值截图区域canvas画布
+        this.screenShotCanvas = context;
         // 将获取到的屏幕截图绘制到图片容器里
         this.screenShotImageController
           .getContext("2d")
@@ -632,10 +640,6 @@ export default class ScreenShot {
       this.toolController.offsetWidth
     );
     const containerHeight = this.screenShotContainer.height;
-    // 当前截取的是全屏，则修改工具栏的位置到截图容器最底部，防止超出
-    if (this.getFullScreenStatus) {
-      toolLocation.mouseY = 0;
-    }
 
     // 工具栏的位置超出截图容器时，调整工具栏位置防止超出
     if (toolLocation.mouseY > containerHeight - 64) {
@@ -648,6 +652,18 @@ export default class ScreenShot {
       this.data.setToolPositionStatus(true);
       // 隐藏裁剪框尺寸显示容器
       this.data.setCutBoxSizeStatus(false);
+    }
+
+    // 当前截取的是全屏，则修改工具栏的位置到截图容器最底部，防止超出
+    if (this.getFullScreenStatus) {
+      const containerHeight = parseInt(this.screenShotContainer.style.height);
+      // 重新计算工具栏的x轴位置
+      const toolPositionX =
+        (this.drawGraphPosition.width / this.dpr -
+          this.toolController.offsetWidth) /
+        2;
+      toolLocation.mouseY = containerHeight - this.fullScreenDiffHeight;
+      toolLocation.mouseX = toolPositionX;
     }
 
     // 显示并设置截图工具栏位置
@@ -844,7 +860,7 @@ export default class ScreenShot {
           this.cutOutBoxBorderArr[i].height
         );
         // 当前坐标点处于8个可操作点上，修改鼠标指针样式
-        if (context.isPointInPath(currentX, currentY)) {
+        if (context.isPointInPath(currentX * this.dpr, currentY * this.dpr)) {
           switch (this.cutOutBoxBorderArr[i].index) {
             case 1:
               if (this.data.getToolClickStatus()) {

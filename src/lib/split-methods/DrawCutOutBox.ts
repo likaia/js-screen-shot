@@ -90,42 +90,13 @@ export function drawCutOutBox(
   // 使用drawImage将图片绘制到蒙层下方
   context.save();
 
-  // 获取图片canvas容器的宽高信息
-  // const imgWidth = imageController.width;
-  // const imgHeight = imageController.height;
-  // // 修改图片canvas容器的宽高，用原宽高 * 当前设备的像素比，解决模糊问题
-  // imageController.width = imgWidth * window.devicePixelRatio;
-  // imageController.height =
-  //   imgHeight * window.devicePixelRatio;
-  // imageController.style.width = imgWidth + "px";
-  // imageController.style.height = imgHeight + "px";
-  // context.scale(window.devicePixelRatio, window.devicePixelRatio);
-
   context.globalCompositeOperation = "destination-over";
+  // 图片尺寸使用canvas容器的css中的尺寸
   let { imgWidth, imgHeight } = {
-    imgWidth: controller?.width,
-    imgHeight: controller?.height
+    imgWidth: parseInt(controller?.style.width),
+    imgHeight: parseInt(controller?.style.height)
   };
   if (plugInParameters.getWebRtcStatus()) {
-    // // 计算等比例缩放后的图片宽高
-    // const { tempWidth, tempHeight } = imgScaling(
-    //   window.screen.width,
-    //   window.screen.height,
-    //   controller.width,
-    //   controller.height
-    // );
-    // imgWidth = tempWidth;
-    // imgHeight = tempHeight;
-    // 计算等比例缩放后的图片宽高
-    // const { tempWidth, tempHeight } = imgScaling(
-    //   window.screen.width,
-    //   window.screen.height,
-    //   controller.width,
-    //   controller.height
-    // );
-    // imgWidth = tempWidth;
-    // imgHeight = tempHeight;
-
     // 使用当前屏幕宽高
     imgWidth = window.screen.width;
     imgHeight = window.screen.height;

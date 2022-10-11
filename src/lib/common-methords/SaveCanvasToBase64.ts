@@ -1,6 +1,8 @@
 /**
  * 将指定区域的canvas转换为base64格式的图片
  */
+import { getCanvas2dCtx } from "@/lib/common-methords/CanvasPatch";
+
 export function saveCanvasToBase64(
   context: CanvasRenderingContext2D,
   startX: number,
@@ -9,14 +11,19 @@ export function saveCanvasToBase64(
   height: number,
   quality = 0.75
 ) {
+  // 获取设备像素比
+  const dpr = window.devicePixelRatio || 1;
   // 获取裁剪框区域图片信息
-  const img = context.getImageData(startX, startY, width, height);
+  const img = context.getImageData(
+    startX * dpr,
+    startY * dpr,
+    width * dpr,
+    height * dpr
+  );
   // 创建canvas标签，用于存放裁剪区域的图片
   const canvas = document.createElement("canvas");
-  canvas.width = width;
-  canvas.height = height;
   // 获取裁剪框区域画布
-  const imgContext = canvas.getContext("2d");
+  const imgContext = getCanvas2dCtx(canvas, width, height);
   if (imgContext) {
     // 将图片放进canvas中
     imgContext.putImageData(img, 0, 0);
