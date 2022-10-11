@@ -191,18 +191,6 @@ export default class ScreenShot {
       this.screenShotImageController.height
     );
     if (context == null) return;
-    // 启用webrtc截屏时则修改容器宽高
-    if (this.plugInParameters.getWebRtcStatus()) {
-      // 用户有传宽高则使用用户传进来的
-      if (canvasSize.canvasWidth !== 0 && canvasSize.canvasHeight !== 0) {
-        this.data.setScreenShotInfo(
-          canvasSize.canvasWidth,
-          canvasSize.canvasHeight
-        );
-        this.screenShotImageController.width = canvasSize.canvasWidth;
-        this.screenShotImageController.height = canvasSize.canvasHeight;
-      }
-    }
     // 显示截图区域容器
     this.data.showScreenShotPanel();
     if (!this.plugInParameters.getWebRtcStatus()) {
