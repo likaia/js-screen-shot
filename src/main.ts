@@ -196,30 +196,7 @@ export default class ScreenShot {
     if (!this.plugInParameters.getWebRtcStatus()) {
       // 判断用户是否自己传入截屏图片
       if (this.imgSrc != null) {
-        const imgContainer = new Image();
-        imgContainer.src = this.imgSrc;
-        imgContainer.crossOrigin = "Anonymous";
-        imgContainer.onload = () => {
-          // 装载截图的dom为null则退出
-          if (this.screenShotContainer == null) return;
-
-          // 将用户传递的图片绘制到图片容器里
-          this.screenShotImageController
-            .getContext("2d")
-            ?.drawImage(
-              imgContainer,
-              0,
-              0,
-              this.screenShotImageController.width,
-              this.screenShotImageController.height
-            );
-          // 初始化截图容器
-          this.initScreenShot(
-            triggerCallback,
-            context,
-            this.screenShotImageController
-          );
-        };
+        this.drawPictures(triggerCallback, context, this.imgSrc);
         return;
       }
 
@@ -313,15 +290,18 @@ export default class ScreenShot {
         // 赋值截图区域canvas画布
         this.screenShotCanvas = context;
         // 将获取到的屏幕截图绘制到图片容器里
-        this.screenShotImageController
-          .getContext("2d")
-          ?.drawImage(
-            this.videoController,
-            0,
-            0,
-            containerWidth,
-            containerHeight
-          );
+        const imgContext = getCanvas2dCtx(
+          this.screenShotImageController,
+          containerWidth,
+          containerHeight
+        );
+        imgContext?.drawImage(
+          this.videoController,
+          0,
+          0,
+          containerWidth,
+          containerHeight
+        );
         // 初始化截图容器
         this.initScreenShot(undefined, context, this.screenShotImageController);
         // 停止捕捉屏幕
@@ -965,6 +945,45 @@ export default class ScreenShot {
         0
       );
     }
+  }
+
+  /**
+   * 向截图容器中绘制图片
+   * @param triggerCallback
+   * @param context
+   * @param imgSrc
+   * @private
+   */
+  private drawPictures(
+    triggerCallback: Function | undefined,
+    context: CanvasRenderingContext2D,
+    imgSrc: string
+  ) {
+    const imgContainer = new Image();
+
+    imgContainer.src = imgSrc;
+    imgContainer.crossOrigin = "Anonymous";
+    imgContainer.onload = () => {
+      // 装载截图的dom为null则退出
+      if (this.screenShotContainer == null) return;
+
+      // 将用户传递的图片绘制到图片容器里
+      this.screenShotImageController
+        .getContext("2d")
+        ?.drawImage(
+          imgContainer,
+          0,
+          0,
+          this.screenShotImageController.width,
+          this.screenShotImageController.height
+        );
+      // 初始化截图容器
+      this.initScreenShot(
+        triggerCallback,
+        context,
+        this.screenShotImageController
+      );
+    };
   }
 
   /**
