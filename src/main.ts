@@ -221,7 +221,7 @@ export default class ScreenShot {
         });
       return;
     }
-    // 截取整个屏幕
+    // 使用webrtc实现截屏
     this.screenShot(cancelCallback);
   }
 
@@ -235,7 +235,10 @@ export default class ScreenShot {
       // 捕获屏幕
       captureStream = await navigator.mediaDevices.getDisplayMedia({
         audio: false,
-        video: true,
+        video: {
+          width: this.screenShotImageController.width * this.dpr,
+          height: this.screenShotImageController.height * this.dpr
+        },
         // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
         // @ts-ignore
         preferCurrentTab: true

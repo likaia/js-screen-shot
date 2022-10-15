@@ -10,7 +10,6 @@
  * @param imageController 图片canvas容器
  * @private
  */
-import { imgScaling } from "@/lib/common-methords/ImgScaling";
 import PlugInParameters from "@/lib/main-entrance/PlugInParameters";
 
 export function drawCutOutBox(
@@ -92,15 +91,10 @@ export function drawCutOutBox(
 
   context.globalCompositeOperation = "destination-over";
   // 图片尺寸使用canvas容器的css中的尺寸
-  let { imgWidth, imgHeight } = {
+  const { imgWidth, imgHeight } = {
     imgWidth: parseInt(controller?.style.width),
     imgHeight: parseInt(controller?.style.height)
   };
-  if (plugInParameters.getWebRtcStatus()) {
-    // 使用当前屏幕宽高
-    imgWidth = window.screen.width;
-    imgHeight = window.screen.height;
-  }
 
   context.drawImage(imageController, 0, 0, imgWidth, imgHeight);
   context.restore();
