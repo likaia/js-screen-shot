@@ -8,9 +8,9 @@
  * @param borderSize 边框节点直径
  * @param controller 需要进行操作的canvas容器
  * @param imageController 图片canvas容器
+ * @param drawBorders
  * @private
  */
-import PlugInParameters from "@/lib/main-entrance/PlugInParameters";
 
 export function drawCutOutBox(
   mouseX: number,
@@ -26,7 +26,6 @@ export function drawCutOutBox(
   // 获取画布宽高
   const canvasWidth = controller?.width;
   const canvasHeight = controller?.height;
-  const plugInParameters = new PlugInParameters();
 
   // 画布、图片不存在则return
   if (!canvasWidth || !canvasHeight || !imageController || !controller) return;
