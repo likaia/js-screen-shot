@@ -222,7 +222,7 @@ export default class ScreenShot {
       return;
     }
     // 使用webrtc实现截屏
-    this.screenShot(cancelCallback);
+    this.screenShot(cancelCallback, triggerCallback);
   }
 
   // 开始捕捉屏幕
@@ -270,7 +270,10 @@ export default class ScreenShot {
   };
 
   // 截屏
-  private screenShot = (cancelCallback: Function | undefined) => {
+  private screenShot = (
+    cancelCallback: Function | undefined,
+    triggerCallback: Function | undefined
+  ) => {
     // 开始捕捉屏幕
     this.startCapture(cancelCallback).then(() => {
       setTimeout(() => {
@@ -307,6 +310,10 @@ export default class ScreenShot {
         );
         // 初始化截图容器
         this.initScreenShot(undefined, context, this.screenShotImageController);
+        // 执行截图成功回调
+        if (triggerCallback) {
+          triggerCallback({ code: 0, msg: "截图加载完成" });
+        }
         // 停止捕捉屏幕
         this.stopCapture();
       }, this.wrcReplyTime);
