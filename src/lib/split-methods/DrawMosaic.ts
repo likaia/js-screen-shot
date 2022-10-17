@@ -54,8 +54,15 @@ export function drawMosaic(
   degreeOfBlur: number,
   context: CanvasRenderingContext2D
 ) {
+  // 获取设备像素比
+  const dpr = window.devicePixelRatio || 1;
   // 获取鼠标经过区域的图片像素信息
-  const imgData = context.getImageData(mouseX, mouseY, size, size);
+  const imgData = context.getImageData(
+    mouseX * dpr,
+    mouseY * dpr,
+    size * dpr,
+    size * dpr
+  );
   // 获取图像宽高
   const w = imgData.width;
   const h = imgData.height;
@@ -86,5 +93,5 @@ export function drawMosaic(
     }
   }
   // 渲染打上马赛克后的图像信息
-  context.putImageData(imgData, mouseX, mouseY);
+  context.putImageData(imgData, mouseX * dpr, mouseY * dpr);
 }
