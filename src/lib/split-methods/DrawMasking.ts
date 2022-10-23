@@ -9,6 +9,7 @@ export function drawMasking(
   context: CanvasRenderingContext2D,
   imgData?: HTMLCanvasElement
 ) {
+  const data = new PlugInParameters();
   const plugInParameters = new PlugInParameters();
   const canvasSize = plugInParameters.getCanvasSize();
   const maxWidth = Math.max(
@@ -42,7 +43,11 @@ export function drawMasking(
   }
   // 绘制蒙层
   context.save();
+  const maskColor = data.getMaskColor();
   context.fillStyle = "rgba(0, 0, 0, .6)";
+  if (maskColor) {
+    context.fillStyle = `rgba(${maskColor.r}, ${maskColor.g}, ${maskColor.b}, ${maskColor.a})`;
+  }
   if (canvasSize.canvasWidth !== 0 && canvasSize.canvasHeight !== 0) {
     context.fillRect(0, 0, canvasSize.canvasWidth, canvasSize.canvasHeight);
   } else {

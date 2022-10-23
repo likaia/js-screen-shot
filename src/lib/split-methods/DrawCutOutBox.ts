@@ -1,3 +1,5 @@
+import PlugInParameters from "@/lib/main-entrance/PlugInParameters";
+
 /**
  * 绘制裁剪框
  * @param mouseX 鼠标x轴坐标
@@ -26,6 +28,7 @@ export function drawCutOutBox(
   // 获取画布宽高
   const canvasWidth = controller?.width;
   const canvasHeight = controller?.height;
+  const data = new PlugInParameters();
 
   // 画布、图片不存在则return
   if (!canvasWidth || !canvasHeight || !imageController || !controller) return;
@@ -35,7 +38,11 @@ export function drawCutOutBox(
 
   // 绘制蒙层
   context.save();
+  const maskColor = data.getMaskColor();
   context.fillStyle = "rgba(0, 0, 0, .6)";
+  if (maskColor) {
+    context.fillStyle = `rgba(${maskColor.r}, ${maskColor.g}, ${maskColor.b}, ${maskColor.a})`;
+  }
   context.fillRect(0, 0, canvasWidth, canvasHeight);
   // 将蒙层凿开
   context.globalCompositeOperation = "source-atop";

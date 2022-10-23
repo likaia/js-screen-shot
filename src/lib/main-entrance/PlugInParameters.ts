@@ -10,6 +10,9 @@ let canvasHeight = 0;
 // 展示截屏图片至容器
 let showScreenData = false;
 
+// 蒙层颜色
+const maskColor = { r: 0, g: 0, b: 0, a: 0.6 };
+
 export default class PlugInParameters {
   constructor() {
     // 标识为true时则初始化数据
@@ -62,5 +65,17 @@ export default class PlugInParameters {
   // 设置展示图片至容器的状态
   public setShowScreenDataStatus(status: boolean) {
     showScreenData = status;
+  }
+
+  // 设置蒙层颜色
+  public setMaskColor(color: { r: number; g: number; b: number; a: number }) {
+    maskColor.r = color.r;
+    maskColor.g = color.g;
+    maskColor.b = color.b;
+    maskColor.a = color.a;
+  }
+
+  public getMaskColor() {
+    return maskColor;
   }
 }

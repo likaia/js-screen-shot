@@ -19,4 +19,7 @@ export function setPlugInParameters(options: screenShotType) {
   if (options?.showScreenData === true) {
     plugInParameters.setShowScreenDataStatus(true);
   }
+  if (options?.maskColor && typeof options.maskColor === "object") {
+    plugInParameters.setMaskColor(options.maskColor);
+  }
 }
