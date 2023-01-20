@@ -161,6 +161,12 @@ export default class ScreenShot {
     return this.screenShotContainer;
   }
 
+  // 销毁组件方法
+  public destroyComponents(): void {
+    this.data.destroyDOM();
+    this.data.setInitStatus(true);
+  }
+
   // 加载截图组件
   private load(
     triggerCallback: Function | undefined,
