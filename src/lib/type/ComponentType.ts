@@ -62,5 +62,5 @@ export type screenShotType = {
   cropBoxInfo?: { x: number; y: number; w: number; h: number }; // 是否加载默认的裁剪框
   wrcReplyTime?: number; // webrtc捕捉屏幕响应时间，默认为500ms
   noScroll?: boolean; // 截图容器是否可滚动，默认为true
-  maskColor: { r: number; g: number; b: number; a: number }; // 蒙层颜色
+  maskColor?: { r: number; g: number; b: number; a: number }; // 蒙层颜色
 };

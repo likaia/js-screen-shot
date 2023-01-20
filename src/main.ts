@@ -301,13 +301,15 @@ export default class ScreenShot {
           containerWidth,
           containerHeight
         );
-        imgContext?.drawImage(
-          this.videoController,
-          0,
-          0,
-          containerWidth,
-          containerHeight
-        );
+        // 对webrtc源提供的图像宽高进行修复
+        const { videoWidth, videoHeight } = this.videoController;
+        let fixWidth = containerWidth;
+        let fixHeight = (videoHeight * containerWidth) / videoWidth;
+        if (fixHeight > containerHeight) {
+          fixWidth = (containerWidth * containerHeight) / fixHeight;
+          fixHeight = containerHeight;
+        }
+        imgContext?.drawImage(this.videoController, 0, 0, fixWidth, fixHeight);
         // 初始化截图容器
         this.initScreenShot(undefined, context, this.screenShotImageController);
         // 执行截图成功回调
