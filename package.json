@@ -7,7 +7,7 @@
   "types": "dist/type/main.d.ts",
   "publisher": "magicalprogrammer@qq.com",
   "scripts": {
-    "build": "vue-cli-service build --target lib --name screenShotPlugin src/main.ts",
+    "build": "vue-cli-service build --target lib --name screenShotPlugin src/main.ts && rm ./dist/demo.html",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
     "commit": "git-cz"
   },
@@ -66,5 +66,6 @@
   },
   "dependencies": {
     "html2canvas": "^1.0.0-rc.7"
-  }
+  },
+  "files": ["/dist"]
 }
