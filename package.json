@@ -1,6 +1,6 @@
 {
   "name": "js-web-screen-shot",
-  "version": "1.8.2",
+  "version": "1.8.3",
   "description": "web端自定义截屏插件(原生JS版)",
   "main": "dist/screenShotPlugin.common.js",
   "private": false,
@@ -8,6 +8,7 @@
   "publisher": "magicalprogrammer@qq.com",
   "scripts": {
     "build": "vue-cli-service build --target lib --name screenShotPlugin src/main.ts && rm ./dist/demo.html",
+    "build-test": "vue-cli-service build --target lib --name screenShotPlugin src/main.ts",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
     "commit": "git-cz"
   },
@@ -65,7 +66,7 @@
     }
   },
   "dependencies": {
-    "html2canvas": "^1.0.0-rc.7"
+    "html2canvas": "1.4.1"
   },
   "files": ["/dist"]
 }
