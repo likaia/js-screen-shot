@@ -1,4 +1,6 @@
 let enableWebRtc = true;
+// electron环境下使用webrtc需要自己传入屏幕流
+let screenFlow: MediaStream | null = null;
 
 // 数据初始化标识
 let initStatus = false;
@@ -21,6 +23,7 @@ export default class PlugInParameters {
       canvasWidth = 0;
       canvasHeight = 0;
       showScreenData = false;
+      screenFlow = null;
       // 初始化完成设置其值为false
       initStatus = false;
     }
@@ -44,6 +47,16 @@ export default class PlugInParameters {
   // 设置webrtc启用状态
   public setWebRtcStatus(status: boolean) {
     enableWebRtc = status;
+  }
+
+  // 获取屏幕流
+  public getScreenFlow() {
+    return screenFlow;
+  }
+
+  // 设置屏幕流
+  public setScreenFlow(stream: MediaStream) {
+    screenFlow = stream;
   }
 
   // 获取画布宽高

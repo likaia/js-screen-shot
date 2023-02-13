@@ -10,6 +10,11 @@ export function setPlugInParameters(options: screenShotType) {
     plugInParameters.setInitStatus(false);
   }
 
+  // 读取并设置参数中的视频流数据
+  if (options?.screenFlow instanceof MediaStream) {
+    plugInParameters.setScreenFlow(options.screenFlow);
+  }
+
   // 读取参数中的画布宽高, 两者都存在时才设置
   if (options?.canvasWidth && options?.canvasHeight) {
     plugInParameters.setCanvasSize(options.canvasWidth, options.canvasHeight);

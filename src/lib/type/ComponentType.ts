@@ -45,6 +45,7 @@ export type toolbarType = { id: number; title: string };
 
 export type screenShotType = {
   enableWebRtc?: boolean; // 是否启用webrtc，默认是启用状态
+  screenFlow?: MediaStream; // 设备提供的屏幕流数据(用于electron环境下自己传入的视频流数据)
   level?: number; // 截图容器层级
   canvasWidth?: number; // 截图画布宽度
   canvasHeight?: number; // 截图画布高度

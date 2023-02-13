@@ -231,8 +231,85 @@ export default class ScreenShot {
         });
       return;
     }
+    // 调用者有传入屏幕流数据则使用
+    if (this.plugInParameters.getScreenFlow()) {
+      this.sendStream(
+        this.plugInParameters.getScreenFlow(),
+        cancelCallback,
+        triggerCallback
+      );
+      return;
+    }
     // 使用webrtc实现截屏
     this.screenShot(cancelCallback, triggerCallback);
+  }
+
+  private sendStream = (
+    stream: MediaStream | null,
+    cancelCallback: Function | undefined,
+    triggerCallback: Function | undefined
+  ) => {
+    if (stream instanceof MediaStream) {
+      this.videoController.srcObject = stream;
+      this.loadScreenFlowData(triggerCallback);
+    } else {
+      if (cancelCallback != null) {
+        cancelCallback({
+          code: -1,
+          msg: "视频流接入失败"
+        });
+      }
+      // 销毁截图组件
+      this.data.destroyDOM();
+      throw `视频流接入失败`;
+    }
+    return stream;
+  };
+
+  private loadScreenFlowData(triggerCallback: Function | undefined) {
+    setTimeout(() => {
+      // 获取截图区域canvas容器画布
+      if (this.screenShotContainer == null) return;
+      const canvasSize = this.plugInParameters.getCanvasSize();
+      let containerWidth = this.screenShotImageController?.width;
+      let containerHeight = this.screenShotImageController?.height;
+      // 用户有传宽高时，则使用用户的
+      if (canvasSize.canvasWidth !== 0 && canvasSize.canvasHeight !== 0) {
+        containerWidth = canvasSize.canvasWidth;
+        containerHeight = canvasSize.canvasHeight;
+      }
+      const context = getCanvas2dCtx(
+        this.screenShotContainer,
+        containerWidth,
+        containerHeight
+      );
+      if (context == null) return;
+      // 赋值截图区域canvas画布
+      this.screenShotCanvas = context;
+      // 将获取到的屏幕截图绘制到图片容器里
+      const imgContext = getCanvas2dCtx(
+        this.screenShotImageController,
+        containerWidth,
+        containerHeight
+      );
+      // 对webrtc源提供的图像宽高进行修复
+      const { videoWidth, videoHeight } = this.videoController;
+      let fixWidth = containerWidth;
+      let fixHeight = (videoHeight * containerWidth) / videoWidth;
+      if (fixHeight > containerHeight) {
+        fixWidth = (containerWidth * containerHeight) / fixHeight;
+        fixHeight = containerHeight;
+      }
+      imgContext?.drawImage(this.videoController, 0, 0, fixWidth, fixHeight);
+      // 初始化截图容器
+      this.initScreenShot(undefined, context, this.screenShotImageController);
+      // 执行截图成功回调
+      if (triggerCallback) {
+        triggerCallback({ code: 0, msg: "截图加载完成" });
+      }
+      // 停止捕捉屏幕
+      this.stopCapture();
+    }, this.wrcReplyTime);
   }
 
   // 开始捕捉屏幕
@@ -286,49 +363,7 @@ export default class ScreenShot {
   ) => {
     // 开始捕捉屏幕
     this.startCapture(cancelCallback).then(() => {
-      setTimeout(() => {
-        // 获取截图区域canvas容器画布
-        if (this.screenShotContainer == null) return;
-        const canvasSize = this.plugInParameters.getCanvasSize();
-        let containerWidth = this.screenShotImageController?.width;
-        let containerHeight = this.screenShotImageController?.height;
-        // 用户有传宽高时，则使用用户的
-        if (canvasSize.canvasWidth !== 0 && canvasSize.canvasHeight !== 0) {
-          containerWidth = canvasSize.canvasWidth;
-          containerHeight = canvasSize.canvasHeight;
-        }
-        const context = getCanvas2dCtx(
-          this.screenShotContainer,
-          containerWidth,
-          containerHeight
-        );
-        if (context == null) return;
-        // 赋值截图区域canvas画布
-        this.screenShotCanvas = context;
-        // 将获取到的屏幕截图绘制到图片容器里
-        const imgContext = getCanvas2dCtx(
-          this.screenShotImageController,
-          containerWidth,
-          containerHeight
-        );
-        // 对webrtc源提供的图像宽高进行修复
-        const { videoWidth, videoHeight } = this.videoController;
-        let fixWidth = containerWidth;
-        let fixHeight = (videoHeight * containerWidth) / videoWidth;
-        if (fixHeight > containerHeight) {
-          fixWidth = (containerWidth * containerHeight) / fixHeight;
-          fixHeight = containerHeight;
-        }
-        imgContext?.drawImage(this.videoController, 0, 0, fixWidth, fixHeight);
-        // 初始化截图容器
-        this.initScreenShot(undefined, context, this.screenShotImageController);
-        // 执行截图成功回调
-        if (triggerCallback) {
-          triggerCallback({ code: 0, msg: "截图加载完成" });
-        }
-        // 停止捕捉屏幕
-        this.stopCapture();
-      }, this.wrcReplyTime);
+      this.loadScreenFlowData(triggerCallback);
     });
   };
 
