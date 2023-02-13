@@ -1,6 +1,6 @@
 {
   "name": "js-web-screen-shot",
-  "version": "1.8.4",
+  "version": "1.8.5",
   "description": "web端自定义截屏插件(原生JS版)",
   "main": "dist/screenShotPlugin.common.js",
   "private": false,
@@ -20,11 +20,15 @@
     "web-best-screen-shot",
     "web-screen-shot",
     "screen-shot",
+    "js-screen-shot",
     "截屏",
     "截图",
+    "截图插件",
     "屏幕截图",
     "自定义截图",
-    "web端自定义截屏"
+    "web端自定义截屏",
+    "electron",
+    "Electron截图插件"
   ],
   "author": "likaia",
   "license": "MIT",
