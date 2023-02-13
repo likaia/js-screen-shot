@@ -1,4 +1,4 @@
-# js-web-screen-shot · [![npm](https://img.shields.io/badge/npm-v1.8.3-2081C1)](https://www.npmjs.com/package/js-web-screen-shot) [![yarn](https://img.shields.io/badge/yarn-v1.8.3-F37E42)](https://yarnpkg.com/package/js-web-screen-shot) [![github](https://img.shields.io/badge/GitHub-depositary-9A9A9A)](https://github.com/likaia/js-screen-shot) [![](https://img.shields.io/github/issues/likaia/js-screen-shot)](https://github.com/likaia/js-screen-shot/issues) [![](	https://img.shields.io/github/forks/likaia/js-screen-shot)](``https://github.com/likaia/js-screen-shot/network/members) [![](	https://img.shields.io/github/stars/likaia/js-screen-shot)](https://github.com/likaia/js-screen-shot/stargazers)
+# js-web-screen-shot · [![npm](https://img.shields.io/badge/npm-v1.8.4-2081C1)](https://www.npmjs.com/package/js-web-screen-shot) [![yarn](https://img.shields.io/badge/yarn-v1.8.4-F37E42)](https://yarnpkg.com/package/js-web-screen-shot) [![github](https://img.shields.io/badge/GitHub-depositary-9A9A9A)](https://github.com/likaia/js-screen-shot) [![](https://img.shields.io/github/issues/likaia/js-screen-shot)](https://github.com/likaia/js-screen-shot/issues) [![](	https://img.shields.io/github/forks/likaia/js-screen-shot)](``https://github.com/likaia/js-screen-shot/network/members) [![](	https://img.shields.io/github/stars/likaia/js-screen-shot)](https://github.com/likaia/js-screen-shot/stargazers)
 web端自定义截屏插件(原生JS版)，运行视频：[实现web端自定义截屏功能](https://www.bilibili.com/video/BV1Ey4y127cV) ,效果图如下：![截屏效果图](https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/486d810877a24582aa8cf110e643c138~tplv-k3u1fbpfcp-watermark.image)
 
 ## 写在前面
@@ -48,9 +48,76 @@ new ScreenShot();
 ```
 > ⚠️注意：实例化插件时一定要等dom加载完成，否则插件无法正常工作。
 
+### electron环境下使用插件
+由于electron环境下无法直接调用webrtc来获取屏幕流，因此需要调用者自己稍作处理，具体做法如下所示：
+* 直接获取设备的窗口，主线程发送一个IPC消息handle
+```javascript
+// electron主线程
+import { desktopCapturer } from "electron";
+// 获取设备窗口信息
+ipcMain.handle("IPC消息名称", async (_event, _args) => {
+  return await desktopCapturer.getSources({ types: ['window', 'screen'] });
+});
+```
+
+* 渲染线程(前端)发送消息封装处理(相应写法自己调整)
+```typescript
+// xxx.ts
+export const getDesktopCapturerSource = async () => {
+  return await window.electron.ipcRenderer.invoke<Electron.DesktopCapturerSource[]>("IPC消息名称", []);
+}
+```
+
+* 获取指定窗口的媒体流
+```typescript
+// yyy.ts
+export function getInitStream(source: any): Promise<MediaStream | null> {
+    return new Promise((resolve, _reject) => {
+        // 获取指定窗口的媒体流
+        // 此处遵循的是webRTC的接口类型  暂时TS类型没有支持  只能断言成any
+        (navigator.mediaDevices as any).getUserMedia({
+            audio: false,
+            video: {
+                mandatory: {
+                    chromeMediaSource: 'desktop',
+                    chromeMediaSourceId: source.id
+                },
+            }
+        }).then((stream: MediaStream) => {
+            resolve(stream);
+        }).catch((error: any) => {
+            console.log(error);
+            resolve(null);
+        })
+    });
+}
+```
+
+* 前端调用设备窗口信息
+```typescript
+import { getDesktopCapturerSource } from "xxx.ts";
+import { getInitStream } from "yyy.ts";
+import ScreenShot from "js-web-screen-shot";
+
+export const doScreenShot = async ()=>{
+  // 下面这两块自己考虑  
+  const sources = await getDesktopCapturerSource(); // 这里返回的是设备上的所有窗口信息
+  // 这里可以对`sources`数组下面id进行判断  找到当前的electron窗口  这里为了简单直接拿了第一个
+  const stream = await getInitStream(sources[0]);
+
+  new ScreenShot({
+    enableWebRtc: true, // 启用webrtc
+    screenFlow: stream!, // 传入屏幕流数据
+    level: 999,
+  });
+}
+```
+> 感谢 [@Vanisper](https://github.com/Vanisper) 提供的在electron环境下使用本插件的兼容思路。
+
 ### 参数说明
 截图插件有一个可选参数，它接受一个对象，对象每个key的作用如下:
 * `enableWebRtc` 是否启用webrtc，值为`boolean`类型，值为`false`则使用`html2canvas`来截图
+* `screenFlow` 设备提供的屏幕流数据(用于electron环境下自己传入的视频流数据)，需要将**enableWebRtc**属性设为`true`
 * `completeCallback` 截图完成回调函数，值为`Function`类型，最右侧的对号图标点击后会将图片的base64地址回传给你定义的函数，如果不传的话则会将图片的base64地址放到`sessionStorage`中，你可以通过下述方式拿到他：
 ```javascript
 sessionStorage.getItem("screenShotImg");
