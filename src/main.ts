@@ -173,13 +173,17 @@ export default class ScreenShot {
     cancelCallback: Function | undefined
   ) {
     const canvasSize = this.plugInParameters.getCanvasSize();
+    const viewSize = {
+      width: parseFloat(window.getComputedStyle(document.body).width),
+      height: parseFloat(window.getComputedStyle(document.body).height)
+    };
     // 设置截图区域canvas宽高
-    this.data.setScreenShotInfo(window.innerWidth, window.innerHeight);
+    this.data.setScreenShotInfo(viewSize.width, viewSize.height);
     // 设置截图容器位置
     this.data.setScreenShotPosition(this.position.left, this.position.top);
     // 设置截图图片存放容器宽高
-    this.screenShotImageController.width = window.innerWidth;
-    this.screenShotImageController.height = window.innerHeight;
+    this.screenShotImageController.width = viewSize.width;
+    this.screenShotImageController.height = viewSize.height;
     // 用户有传宽高则使用用户传进来的
     if (canvasSize.canvasWidth !== 0 && canvasSize.canvasHeight !== 0) {
       this.data.setScreenShotInfo(
@@ -189,7 +193,7 @@ export default class ScreenShot {
       this.screenShotImageController.width = canvasSize.canvasWidth;
       this.screenShotImageController.height = canvasSize.canvasHeight;
     }
-    // 获取截图区域画canvas容器画布
+    // 获取截图区域canvas容器画布
     if (this.screenShotContainer == null) return;
     const context = getCanvas2dCtx(
       this.screenShotContainer,

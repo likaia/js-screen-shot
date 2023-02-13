@@ -12,14 +12,18 @@ export function drawMasking(
   const data = new PlugInParameters();
   const plugInParameters = new PlugInParameters();
   const canvasSize = plugInParameters.getCanvasSize();
+  const viewSize = {
+    width: parseFloat(window.getComputedStyle(document.body).width),
+    height: parseFloat(window.getComputedStyle(document.body).height)
+  };
   const maxWidth = Math.max(
-    window.innerWidth || 0,
+    viewSize.width || 0,
     Math.max(document.body.scrollWidth, document.documentElement.scrollWidth),
     Math.max(document.body.offsetWidth, document.documentElement.offsetWidth),
     Math.max(document.body.clientWidth, document.documentElement.clientWidth)
   );
   const maxHeight = Math.max(
-    window.innerHeight || 0,
+    viewSize.height || 0,
     Math.max(document.body.scrollHeight, document.documentElement.scrollHeight),
     Math.max(document.body.offsetHeight, document.documentElement.offsetHeight),
     Math.max(document.body.clientHeight, document.documentElement.clientHeight)
