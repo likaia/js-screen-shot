@@ -664,7 +664,7 @@ export default class ScreenShot {
       this.drawGraphPosition,
       this.toolController.offsetWidth
     );
-    const containerHeight = this.screenShotContainer.height;
+    const containerHeight = this.screenShotContainer.height / this.dpr;
 
     // 工具栏的位置超出截图容器时，调整工具栏位置防止超出
     if (toolLocation.mouseY > containerHeight - 64) {
