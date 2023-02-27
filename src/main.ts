@@ -829,7 +829,8 @@ export default class ScreenShot {
       this.data.getBorderSize(),
       this.drawGraphPosition
     );
-    if (this.screenShotContainer != null) {
+    // 鼠标按下且拖动时重新渲染工具栏
+    if (this.screenShotContainer != null && this.dragFlag) {
       // 修改鼠标状态为拖动
       this.screenShotContainer.style.cursor = "move";
       // 显示截图工具栏
