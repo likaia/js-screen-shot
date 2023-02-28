@@ -1,9 +1,9 @@
 import toolbar from "@/lib/config/Toolbar";
 import { screenShotType, toolbarType } from "@/lib/type/ComponentType";
 import { toolClickEvent } from "@/lib/split-methods/ToolClickEvent";
-import { setBrushSize } from "@/lib/common-methords/SetBrushSize";
-import { selectColor } from "@/lib/common-methords/SelectColor";
-import { getColor } from "@/lib/common-methords/GetColor";
+import { setBrushSize } from "@/lib/common-methods/SetBrushSize";
+import { selectColor } from "@/lib/common-methods/SelectColor";
+import { getColor } from "@/lib/common-methods/GetColor";
 
 export default class CreateDom {
   // 截图区域canvas容器

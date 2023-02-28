@@ -1,4 +1,4 @@
-import { nonNegativeData } from "@/lib/common-methords/FixedData";
+import { nonNegativeData } from "@/lib/common-methods/FixedData";
 /**
  * 缩放裁剪框
  * @param currentX 当前鼠标X轴坐标

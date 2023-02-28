@@ -1,6 +1,6 @@
 import { positionInfoType } from "@/lib/type/ComponentType";
-import { takeOutHistory } from "@/lib/common-methords/TakeOutHistory";
-import { getToolRelativePosition } from "@/lib/common-methords/GetToolRelativePosition";
+import { takeOutHistory } from "@/lib/common-methods/TakeOutHistory";
+import { getToolRelativePosition } from "@/lib/common-methods/GetToolRelativePosition";
 import PlugInParameters from "@/lib/main-entrance/PlugInParameters";
 
 // 裁剪框修剪状态

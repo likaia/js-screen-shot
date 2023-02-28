@@ -4,11 +4,11 @@
  * @param index
  * @param mouseEvent
  */
-import { setSelectedClassName } from "@/lib/common-methords/SetSelectedClassName";
+import { setSelectedClassName } from "@/lib/common-methods/SetSelectedClassName";
 import { calculateOptionIcoPosition } from "@/lib/split-methods/CalculateOptionIcoPosition";
 import InitData from "@/lib/main-entrance/InitData";
-import { getCanvasImgData } from "@/lib/common-methords/GetCanvasImgData";
-import { takeOutHistory } from "@/lib/common-methords/TakeOutHistory";
+import { getCanvasImgData } from "@/lib/common-methods/GetCanvasImgData";
+import { takeOutHistory } from "@/lib/common-methods/TakeOutHistory";
 import { drawCutOutBox } from "@/lib/split-methods/DrawCutOutBox";
 
 export function toolClickEvent(

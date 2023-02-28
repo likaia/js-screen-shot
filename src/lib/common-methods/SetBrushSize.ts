@@ -1,5 +1,5 @@
 import InitData from "@/lib/main-entrance/InitData";
-import { setSelectedClassName } from "@/lib/common-methords/SetSelectedClassName";
+import { setSelectedClassName } from "@/lib/common-methods/SetSelectedClassName";
 
 /**
  * 设置画笔大小
