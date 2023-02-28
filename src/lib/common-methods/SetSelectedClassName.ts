@@ -1,5 +1,5 @@
-import { getSelectedClassName } from "@/lib/common-methords/GetSelectedCalssName";
-import { getBrushSelectedName } from "@/lib/common-methords/GetBrushSelectedName";
+import { getSelectedClassName } from "@/lib/common-methods/GetSelectedCalssName";
+import { getBrushSelectedName } from "@/lib/common-methods/GetBrushSelectedName";
 
 /**
  * 为当前点击项添加选中时的class，移除其兄弟元素选中时的class

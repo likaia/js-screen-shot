@@ -1,7 +1,7 @@
 /**
  * 将指定区域的canvas转换为base64格式的图片
  */
-import { getCanvas2dCtx } from "@/lib/common-methords/CanvasPatch";
+import { getCanvas2dCtx } from "@/lib/common-methods/CanvasPatch";
 
 export function saveCanvasToBase64(
   context: CanvasRenderingContext2D,

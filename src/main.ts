@@ -11,7 +11,7 @@ import {
   zoomCutOutBoxReturnType
 } from "@/lib/type/ComponentType";
 import { drawMasking } from "@/lib/split-methods/DrawMasking";
-import { fixedData, nonNegativeData } from "@/lib/common-methords/FixedData";
+import { fixedData, nonNegativeData } from "@/lib/common-methods/FixedData";
 import { drawPencil, initPencil } from "@/lib/split-methods/DrawPencil";
 import { drawText } from "@/lib/split-methods/DrawText";
 import { drawRectangle } from "@/lib/split-methods/DrawRectangle";
@@ -19,8 +19,8 @@ import { drawCircle } from "@/lib/split-methods/DrawCircle";
 import { drawLineArrow } from "@/lib/split-methods/DrawLineArrow";
 import { drawMosaic } from "@/lib/split-methods/DrawMosaic";
 import { drawCutOutBox } from "@/lib/split-methods/DrawCutOutBox";
-import { zoomCutOutBoxPosition } from "@/lib/common-methords/ZoomCutOutBoxPosition";
-import { saveBorderArrInfo } from "@/lib/common-methords/SaveBorderArrInfo";
+import { zoomCutOutBoxPosition } from "@/lib/common-methods/ZoomCutOutBoxPosition";
+import { saveBorderArrInfo } from "@/lib/common-methods/SaveBorderArrInfo";
 import { calculateToolLocation } from "@/lib/split-methods/CalculateToolLocation";
 import html2canvas from "html2canvas";
 import PlugInParameters from "@/lib/main-entrance/PlugInParameters";
@@ -28,7 +28,7 @@ import { getDrawBoundaryStatus } from "@/lib/split-methods/BoundaryJudgment";
 import KeyboardEventHandle from "@/lib/split-methods/KeyboardEventHandle";
 import { setPlugInParameters } from "@/lib/split-methods/SetPlugInParameters";
 import { drawCrossImg } from "@/lib/split-methods/drawCrossImg";
-import { getCanvas2dCtx } from "@/lib/common-methords/CanvasPatch";
+import { getCanvas2dCtx } from "@/lib/common-methods/CanvasPatch";
 
 export default class ScreenShot {
   // 当前实例的响应式data数据

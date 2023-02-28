@@ -1,5 +1,5 @@
-import { saveCanvasToImage } from "@/lib/common-methords/SaveCanvasToImage";
-import { saveCanvasToBase64 } from "@/lib/common-methords/SaveCanvasToBase64";
+import { saveCanvasToImage } from "@/lib/common-methods/SaveCanvasToImage";
+import { saveCanvasToBase64 } from "@/lib/common-methods/SaveCanvasToBase64";
 import InitData from "@/lib/main-entrance/InitData";
 
 /**

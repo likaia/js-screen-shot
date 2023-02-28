@@ -1,4 +1,4 @@
-import { getCanvas2dCtx } from "@/lib/common-methords/CanvasPatch";
+import { getCanvas2dCtx } from "@/lib/common-methods/CanvasPatch";
 
 export function saveCanvasToImage(
   context: CanvasRenderingContext2D,
