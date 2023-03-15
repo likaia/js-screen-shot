@@ -28,149 +28,149 @@
   }
 
   .square {
-    background-image: url("../img/square.png");
+    background-image: url("~@/assets/img/square.png");
     background-size: cover;
 
     &:hover {
-      background-image: url("../img/square-hover.png");
+      background-image: url("~@/assets/img/square-hover.png");
     }
 
     &:active {
-      background-image: url("../img/square-click.png");
+      background-image: url("~@/assets/img/square-click.png");
     }
   }
   .square-active {
-    background-image: url("../img/square-click.png");
+    background-image: url("~@/assets/img/square-click.png");
   }
 
   .round {
-    background-image: url("../img/round.png");
+    background-image: url("~@/assets/img/round.png");
     background-size: cover;
 
     &:hover {
-      background-image: url("../img/round-hover.png");
+      background-image: url("~@/assets/img/round-hover.png");
     }
 
     &:active {
-      background-image: url("../img/round-click.png");
+      background-image: url("~@/assets/img/round-click.png");
     }
   }
   .round-active {
-    background-image: url("../img/round-click.png");
+    background-image: url("~@/assets/img/round-click.png");
   }
 
   .right-top {
-    background-image: url("../img/right-top.png");
+    background-image: url("~@/assets/img/right-top.png");
     background-size: cover;
 
     &:hover {
-      background-image: url("../img/right-top-hover.png");
+      background-image: url("~@/assets/img/right-top-hover.png");
     }
 
     &:active {
-      background-image: url("../img/right-top-click.png");
+      background-image: url("~@/assets/img/right-top-click.png");
     }
   }
   .right-top-active {
-    background-image: url("../img/right-top-click.png");
+    background-image: url("~@/assets/img/right-top-click.png");
   }
 
   .brush {
-    background-image: url("../img/brush.png");
+    background-image: url("~@/assets/img/brush.png");
     background-size: cover;
 
     &:hover {
-      background-image: url("../img/brush-hover.png");
+      background-image: url("~@/assets/img/brush-hover.png");
     }
 
     &:active {
-      background-image: url("../img/brush-click.png");
+      background-image: url("~@/assets/img/brush-click.png");
     }
   }
   .brush-active{
-    background-image: url("../img/brush-click.png");
+    background-image: url("~@/assets/img/brush-click.png");
   }
 
   .mosaicPen {
-    background-image: url("../img/mosaicPen.png");
+    background-image: url("~@/assets/img/mosaicPen.png");
     background-size: cover;
 
     &:hover {
-      background-image: url("../img/mosaicPen-hover.png");
+      background-image: url("~@/assets/img/mosaicPen-hover.png");
     }
 
     &:active {
-      background-image: url("../img/mosaicPen-click.png");
+      background-image: url("~@/assets/img/mosaicPen-click.png");
     }
   }
   .mosaicPen-active {
-    background-image: url("../img/mosaicPen-click.png");
+    background-image: url("~@/assets/img/mosaicPen-click.png");
   }
 
   .separateLine {
     width: 1px;
-    background-image: url("../img/seperateLine.png");
+    background-image: url("~@/assets/img/seperateLine.png");
     background-size: cover;
   }
 
   .text {
-    background-image: url("../img/text.png");
+    background-image: url("~@/assets/img/text.png");
     background-size: cover;
 
     &:hover {
-      background-image: url("../img/text-hover.png");
+      background-image: url("~@/assets/img/text-hover.png");
     }
 
     &:active {
-      background-image: url("../img/text-click.png");
+      background-image: url("~@/assets/img/text-click.png");
     }
   }
   .text-active {
-    background-image: url("../img/text-click.png");
+    background-image: url("~@/assets/img/text-click.png");
   }
 
   .save {
-    background-image: url("../img/save.png");
+    background-image: url("~@/assets/img/save.png");
     background-size: cover;
 
     &:hover {
-      background-image: url("../img/save-hover.png");
+      background-image: url("~@/assets/img/save-hover.png");
     }
 
     &:active {
-      background-image: url("../img/save-click.png");
+      background-image: url("~@/assets/img/save-click.png");
     }
   }
 
   .close {
-    background-image: url("../img/close.png");
+    background-image: url("~@/assets/img/close.png");
     background-size: cover;
 
     &:hover {
-      background-image: url("../img/close-hover.png");
+      background-image: url("~@/assets/img/close-hover.png");
     }
   }
 
   .undo-disabled {
     background-size: cover;
-    background-image: url("../img/undo-disabled.png");
+    background-image: url("~@/assets/img/undo-disabled.png");
   }
 
   .undo {
     background-size: cover;
-    background-image: url("../img/undo.png");
+    background-image: url("~@/assets/img/undo.png");
 
     &:hover{
-      background-image: url("../img/undo-hover.png");
+      background-image: url("~@/assets/img/undo-hover.png");
     }
   }
 
   .confirm {
-    background-image: url("../img/confirm.png");
+    background-image: url("~@/assets/img/confirm.png");
     background-size: cover;
 
     &:hover {
-      background-image: url("../img/confirm-hover.png");
+      background-image: url("~@/assets/img/confirm-hover.png");
     }
   }
 }
@@ -230,48 +230,48 @@
     }
     .brush-small {
       background-size: cover;
-      background-image: url("../img/round-normal-small.png");
+      background-image: url("~@/assets/img/round-normal-small.png");
 
       &:hover {
-        background-image: url("../img/round-selected-small.png");
+        background-image: url("~@/assets/img/round-selected-small.png");
       }
       &:active {
-        background-image: url("../img/round-selected-small.png");
+        background-image: url("~@/assets/img/round-selected-small.png");
       }
     }
     .brush-small-active {
-      background-image: url("../img/round-selected-small.png");
+      background-image: url("~@/assets/img/round-selected-small.png");
     }
 
     .brush-medium {
       background-size: cover;
-      background-image: url("../img/round-normal-medium.png");
+      background-image: url("~@/assets/img/round-normal-medium.png");
 
       &:hover {
-        background-image: url("../img/round-selected-medium.png");
+        background-image: url("~@/assets/img/round-selected-medium.png");
       }
       &:active {
-        background-image: url("../img/round-selected-medium.png");
+        background-image: url("~@/assets/img/round-selected-medium.png");
       }
     }
     .brush-medium-active{
-      background-image: url("../img/round-selected-medium.png");
+      background-image: url("~@/assets/img/round-selected-medium.png");
     }
 
     .brush-big {
       background-size: cover;
-      background-image: url("../img/round-normal-big.png");
+      background-image: url("~@/assets/img/round-normal-big.png");
 
       &:hover {
-        background-image: url("../img/round-selected-big.png");
+        background-image: url("~@/assets/img/round-selected-big.png");
       }
       &:active {
-        background-image: url("../img/round-selected-big.png");
+        background-image: url("~@/assets/img/round-selected-big.png");
       }
     }
 
     .brush-big-active {
-      background-image: url("../img/round-selected-big.png");
+      background-image: url("~@/assets/img/round-selected-big.png");
     }
   }
 
@@ -346,7 +346,7 @@
       height: 8px;
       margin-left: 10px;
       background-size: cover;
-      background-image: url("../img/PopoverPullDownArrow.png");
+      background-image: url("~@/assets/img/PopoverPullDownArrow.png");
     }
   }
 
