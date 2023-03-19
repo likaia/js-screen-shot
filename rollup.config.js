@@ -129,7 +129,8 @@ export default {
     enablePKGStats(showModulePKGInfo),
     ...enableDevServer(useDevServer),
     progress({
-      format: "[:bar] :percent (:current/:total)"
+      format: "[:bar] :percent (:current/:total)",
+      clearLine: false
     }),
     copy({
       targets: buildCopyTargetsConfig(useDevServer)
