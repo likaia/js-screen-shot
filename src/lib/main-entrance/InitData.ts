@@ -54,6 +54,8 @@ let screenShotImageController: HTMLCanvasElement | null = null;
 let noScrollStatus = false;
 // 数据初始化标识
 let initStatus = false;
+// 当前工具栏内选中的工具
+let activeTool = "";
 
 export default class InitData {
   constructor() {
@@ -434,6 +436,14 @@ export default class InitData {
     if (status != null) {
       noScrollStatus = status;
     }
+  }
+
+  public setActiveToolName(toolName: string) {
+    activeTool = toolName;
+  }
+
+  public getActiveToolName() {
+    return activeTool;
   }
 
   public getRightPanel() {

@@ -370,15 +370,14 @@
 
 #textInputPanel {
   min-width: 20px;
-  min-height: 30px;
-  line-height: 30px;
-  padding: 5px;
+  min-height: 20px;
+  padding: 0;
+  margin: 0;
   box-sizing: border-box;
   position: absolute;
   outline: none;
   z-index: 9999;
   top: 0;
   left: 0;
-  color: red;
-  border: solid 1px red;
+  border: none;
 }

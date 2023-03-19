@@ -22,6 +22,7 @@ export function toolClickEvent(
   const textInputController = data.getTextInputController();
   const screenShotController = data.getScreenShotContainer();
   const ScreenShotImageController = data.getScreenShotImageController();
+  data.setActiveToolName(toolName);
   if (screenShotController == null || ScreenShotImageController == null) return;
   // 获取canvas容器
   const screenShotCanvas = screenShotController.getContext(

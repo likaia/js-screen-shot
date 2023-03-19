@@ -29,6 +29,7 @@ import KeyboardEventHandle from "@/lib/split-methods/KeyboardEventHandle";
 import { setPlugInParameters } from "@/lib/split-methods/SetPlugInParameters";
 import { drawCrossImg } from "@/lib/split-methods/drawCrossImg";
 import { getCanvas2dCtx } from "@/lib/common-methods/CanvasPatch";
+import { updateContainerMouseStyle } from "@/lib/common-methods/UpdateContainerMouseStyle";
 
 export default class ScreenShot {
   // 当前实例的响应式data数据
@@ -399,8 +400,6 @@ export default class ScreenShot {
       this.screenShotContainer &&
       this.screenShotCanvas
     ) {
-      // 修改鼠标样式
-      this.screenShotContainer.style.cursor = "text";
       // 显示文本输入区域
       this.data.setTextStatus(true);
       // 判断输入框位置是否变化
@@ -431,14 +430,23 @@ export default class ScreenShot {
         this.addHistory();
       }
       // 计算文本框显示位置, 需要加上截图容器的位置信息
-      const textMouseX = mouseX - 15 + this.position.left;
-      const textMouseY = mouseY - 15 + this.position.top;
-      // 修改文本区域位置
+      const textMouseX = mouseX + this.position.left;
+      // 设置文本框位置等信息
       this.textInputController.style.left = textMouseX + "px";
-      this.textInputController.style.top = textMouseY + "px";
+      this.textInputController.style.fontSize = this.fontSize + "px";
+      this.textInputController.style.color = this.data.getSelectedColor();
+
+      // 部分操作需要等dom渲染完毕执行
       setTimeout(() => {
-        // 获取焦点
         if (this.textInputController) {
+          // 获取输入框容器的高度
+          const containerHeight = this.textInputController.offsetHeight;
+          // 输入框容器y轴的位置需要在坐标的基础上再加上容器高度的一半，容器的位置就正好居中于光标
+          // canvas渲染的时候就不会出现位置不一致的问题了
+          const textMouseY =
+            mouseY - Math.floor(containerHeight / 2) + this.position.top;
+          this.textInputController.style.top = textMouseY + "px";
+          // 获取焦点
           this.textInputController.focus();
           // 记录当前输入框位置
           this.textInputPosition = { mouseX: mouseX, mouseY: mouseY };
@@ -890,7 +898,11 @@ export default class ScreenShot {
           switch (this.cutOutBoxBorderArr[i].index) {
             case 1:
               if (this.data.getToolClickStatus()) {
-                this.screenShotContainer.style.cursor = "crosshair";
+                // 修改截图容器内的鼠标样式
+                updateContainerMouseStyle(
+                  this.screenShotContainer,
+                  this.data.getActiveToolName()
+                );
               } else {
                 this.screenShotContainer.style.cursor = "move";
               }
