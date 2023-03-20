@@ -106,6 +106,7 @@ export default class ScreenShot {
   private position: { top: number; left: number } = { left: 0, top: 0 };
   private imgSrc: string | null = null;
   private loadCrossImg = false;
+  private proxyUrl: undefined | string = undefined;
   private drawStatus = false;
   private cropBoxInfo: {
     x: number;
@@ -141,7 +142,11 @@ export default class ScreenShot {
 
     // 加载截图组件
     this.load(options?.triggerCallback, options?.cancelCallback);
-    if (this.toolController == null || this.screenShotContainer == null) {
+    if (
+      this.toolController == null ||
+      this.screenShotContainer == null ||
+      this.textInputController == null
+    ) {
       return;
     }
     // 调整层级
@@ -155,6 +160,8 @@ export default class ScreenShot {
 
     // 创建键盘事件监听
     new KeyboardEventHandle(this.screenShotContainer, this.toolController);
+    // 给输入容器设置快捷键监听
+    this.registerContainerShortcuts(this.textInputController);
   }
 
   // 获取截图区域canvas容器
@@ -213,7 +220,8 @@ export default class ScreenShot {
 
       // html2canvas截屏
       html2canvas(this.screenShotDom ? this.screenShotDom : document.body, {
-        onclone: this.loadCrossImg ? drawCrossImg : undefined
+        onclone: this.loadCrossImg ? drawCrossImg : undefined,
+        proxy: this.proxyUrl
       })
         .then(canvas => {
           // 装载截图的dom为null则退出
@@ -665,6 +673,40 @@ export default class ScreenShot {
     }
   }
 
+  // 为指定容器绑定快捷键
+  private registerContainerShortcuts(container: HTMLElement) {
+    container.addEventListener("keydown", (event: KeyboardEvent) => {
+      if (this.screenShotCanvas == null) return;
+      // command/ctrl + enter 将输入框的文字绘制到画布内
+      // 按下ESC时如果有内容则绘制
+      if (
+        ((event.metaKey || event.ctrlKey) && event.code === "Enter") ||
+        event.code === "Escape"
+      ) {
+        const text = container.innerText;
+        if (!text || text === "") {
+          // 隐藏输入框
+          this.data.setTextStatus(false);
+          return;
+        }
+        drawText(
+          text,
+          this.textInputPosition.mouseX,
+          this.textInputPosition.mouseY,
+          this.data.getSelectedColor(),
+          this.fontSize,
+          this.screenShotCanvas
+        );
+        // 清空文本输入区域的内容
+        container.innerHTML = "";
+        // 隐藏输入框
+        this.data.setTextStatus(false);
+        // 保存绘制记录
+        this.addHistory();
+      }
+    });
+  }
+
   private showToolBar(): void {
     if (this.toolController == null || this.screenShotContainer == null) return;
     // 计算截图工具栏位置
@@ -741,6 +783,11 @@ export default class ScreenShot {
     // 是否加载跨域图片
     if (options?.loadCrossImg === true) {
       this.loadCrossImg = true;
+    }
+    // 跨域时的代理服务器地址
+    if (options?.proxyUrl) {
+      console.log("有地址", options.proxyUrl);
+      this.proxyUrl = options.proxyUrl;
     }
     // 设置截图容器的位置信息
     if (options?.position != null) {

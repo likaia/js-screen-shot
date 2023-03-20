@@ -134,6 +134,7 @@ sessionStorage.getItem("screenShotImg");
 * `showScreenData` 截图组件加载完毕后，是否显示截图内容至canvas画布内，值为`boolean`类型，默认为`false`。
 * `imgSrc` 截图内容，如果你已经通过其他方式获取到了屏幕内容（例如`electron`环境），那么可以将获取到的内容传入，此时插件将使用你传进来的图片，值为`string`类型（可以为图片`url`地址或者`base64`），默认为`null`。
 * `loadCrossImg` 是否加载跨域图片，值为`boolean`类型，默认为`false`。
+* `proxyUrl` 代理服务器地址，值为`string`类型，默认为""
 * `screenShotDom` 需要进行截图的容器，值为`HTMLElement`类型，默认使用的是`body`。
 * `cropBoxInfo` 初始裁剪框，值为`{ x: number; y: number; w: number; h: number }`类型，默认不加载。
 * `wrcReplyTime` webrtc模式捕捉屏幕时的响应时间，值为`number`类型，默认为500ms。
