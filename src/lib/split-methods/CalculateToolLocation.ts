@@ -10,7 +10,8 @@ export function calculateToolLocation(
   toolWidth: number
 ) {
   // 工具栏X轴坐标 = (裁剪框的宽度 - 工具栏的宽度) / 2 + 裁剪框距离左侧的距离
-  const mouseX = (position.width - toolWidth) / 2 + position.startX;
+  let mouseX = (position.width - toolWidth) / 2 + position.startX;
+  if (mouseX < 0) mouseX = 0;
   // 工具栏Y轴坐标
   let mouseY = position.startY + position.height + 10;
   if (
