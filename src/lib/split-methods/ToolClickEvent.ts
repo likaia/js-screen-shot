@@ -10,6 +10,8 @@ import InitData from "@/lib/main-entrance/InitData";
 import { getCanvasImgData } from "@/lib/common-methods/GetCanvasImgData";
 import { takeOutHistory } from "@/lib/common-methods/TakeOutHistory";
 import { drawCutOutBox } from "@/lib/split-methods/DrawCutOutBox";
+import { drawText } from "@/lib/split-methods/DrawText";
+import { addHistory } from "@/lib/split-methods/AddHistoryData";
 
 export function toolClickEvent(
   toolName: string,
@@ -77,6 +79,13 @@ export function toolClickEvent(
     (textInputController != null && data.getTextStatus()) ||
     (textInputController != null && toolName !== "text")
   ) {
+    const text = textInputController.innerText;
+    if (text && text !== "") {
+      const { positionX, positionY, color, size } = data.getTextInfo();
+      drawText(text, positionX, positionY, color, size, screenShotCanvas);
+      // 添加历史记录
+      addHistory();
+    }
     textInputController.innerHTML = "";
     data.setTextStatus(false);
   }

@@ -1,4 +1,4 @@
-import { positionInfoType } from "@/lib/type/ComponentType";
+import { positionInfoType, textInfoType } from "@/lib/type/ComponentType";
 import { takeOutHistory } from "@/lib/common-methods/TakeOutHistory";
 import { getToolRelativePosition } from "@/lib/common-methods/GetToolRelativePosition";
 import PlugInParameters from "@/lib/main-entrance/PlugInParameters";
@@ -56,6 +56,9 @@ let noScrollStatus = false;
 let initStatus = false;
 // 当前工具栏内选中的工具
 let activeTool = "";
+let textInfo: textInfoType;
+// 最大可撤销次数
+const maxUndoNum = 15;
 
 export default class InitData {
   constructor() {
@@ -444,6 +447,18 @@ export default class InitData {
 
   public getActiveToolName() {
     return activeTool;
+  }
+
+  public setTextInfo(info: textInfoType) {
+    textInfo = info;
+  }
+
+  public getTextInfo() {
+    return textInfo;
+  }
+
+  public getMaxUndoNum() {
+    return maxUndoNum;
   }
 
   public getRightPanel() {

@@ -30,6 +30,7 @@ import { setPlugInParameters } from "@/lib/split-methods/SetPlugInParameters";
 import { drawCrossImg } from "@/lib/split-methods/drawCrossImg";
 import { getCanvas2dCtx } from "@/lib/common-methods/CanvasPatch";
 import { updateContainerMouseStyle } from "@/lib/common-methods/UpdateContainerMouseStyle";
+import { addHistory } from "@/lib/split-methods/AddHistoryData";
 
 export default class ScreenShot {
   // 当前实例的响应式data数据
@@ -95,8 +96,6 @@ export default class ScreenShot {
   private drawGraphPrevX = 0;
   private drawGraphPrevY = 0;
   private fontSize = 17;
-  // 最大可撤销次数
-  private maxUndoNum = 15;
   // 马赛克涂抹区域大小
   private degreeOfBlur = 5;
   private dpr = window.devicePixelRatio || 1;
@@ -435,7 +434,7 @@ export default class ScreenShot {
         // 清空文本输入区域的内容
         this.textInputController.innerHTML = "";
         // 保存绘制记录
-        this.addHistory();
+        addHistory();
       }
       // 计算文本框显示位置, 需要加上截图容器的位置信息
       const textMouseX = mouseX + this.position.left;
@@ -458,6 +457,12 @@ export default class ScreenShot {
           this.textInputController.focus();
           // 记录当前输入框位置
           this.textInputPosition = { mouseX: mouseX, mouseY: mouseY };
+          this.data.setTextInfo({
+            positionX: mouseX,
+            positionY: mouseY,
+            color: this.data.getSelectedColor(),
+            size: this.fontSize
+          });
         }
       });
     }
@@ -702,7 +707,7 @@ export default class ScreenShot {
         // 隐藏输入框
         this.data.setTextStatus(false);
         // 保存绘制记录
-        this.addHistory();
+        addHistory();
       }
     });
   }
@@ -866,7 +871,7 @@ export default class ScreenShot {
     // 工具栏已点击且进行了绘制
     if (this.data.getToolClickStatus() && this.drawStatus) {
       // 保存绘制记录
-      this.addHistory();
+      addHistory();
       return;
     } else if (this.data.getToolClickStatus() && !this.drawStatus) {
       // 工具栏点击了但尚未进行绘制
@@ -1054,7 +1059,7 @@ export default class ScreenShot {
     if (this.screenShotCanvas != null) {
       const context = this.screenShotCanvas;
       if (this.data.getHistory().length <= 0) {
-        this.addHistory();
+        addHistory();
       }
       context.putImageData(
         this.data.getHistory()[this.data.getHistory().length - 1]["data"],
@@ -1140,28 +1145,6 @@ export default class ScreenShot {
     // 是否初始化裁剪框
     if (this.cropBoxInfo != null && Object.keys(this.cropBoxInfo).length == 4) {
       this.initCropBox(this.cropBoxInfo);
-    }
-  }
-
-  /**
-   * 保存当前画布状态
-   * @private
-   */
-  private addHistory() {
-    if (this.screenShotCanvas != null && this.screenShotContainer != null) {
-      // 获取canvas画布与容器
-      const context = this.screenShotCanvas;
-      const controller = this.screenShotContainer;
-      if (this.data.getHistory().length > this.maxUndoNum) {
-        // 删除最早的一条画布记录
-        this.data.shiftHistory();
-      }
-      // 保存当前画布状态
-      this.data.pushHistory({
-        data: context.getImageData(0, 0, controller.width, controller.height)
-      });
-      // 启用撤销按钮
-      this.data.setUndoStatus(true);
     }
   }
 }

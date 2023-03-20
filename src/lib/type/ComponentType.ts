@@ -22,6 +22,13 @@ export type positionInfoType = {
   height: number;
 };
 
+export type textInfoType = {
+  positionX: number;
+  positionY: number;
+  color: string;
+  size: number;
+};
+
 // 裁剪框缩放时所返回的数据类型
 export type zoomCutOutBoxReturnType = {
   tempStartX: number;
