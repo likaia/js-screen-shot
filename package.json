@@ -1,10 +1,12 @@
 {
   "name": "js-web-screen-shot",
-  "version": "1.8.7",
+  "version": "1.8.8",
   "description": "web端自定义截屏插件(原生JS版)",
   "main":  "dist/screenShotPlugin.common.js",
   "private": false,
-  "types": "dist/type/main.d.ts",
+  "types": "dist/main.d.ts",
+  "module": "dist/screenShotPlugin.esm.js",
+  "umd:main": "dist/screenShotPlugin.umd.js",
   "publisher": "magicalprogrammer@qq.com",
   "scripts": {
     "build-rollup": "rollup -c --splitCss false --compState false --showPKGInfo true",
