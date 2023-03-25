@@ -1004,17 +1004,31 @@ export default class ScreenShot {
       // 当前操作节点为1时则为移动裁剪框
       if (this.borderOption === 1) {
         // 计算要移动的x轴坐标
-        const x = fixedData(
+        let x = fixedData(
           currentX - (moveStartX - startX),
           width,
           this.screenShotContainer.width
         );
         // 计算要移动的y轴坐标
-        const y = fixedData(
+        let y = fixedData(
           currentY - (moveStartY - startY),
           height,
           this.screenShotContainer.height
         );
+        // 计算画布面积
+        const containerWidth = this.screenShotContainer.width / this.dpr;
+        const containerHeight = this.screenShotContainer.height / this.dpr;
+        // 计算裁剪框在画布上所占的面积
+        const cutOutBoxSizeX = x + width;
+        const cutOutBoxSizeY = y + height;
+        // 超出画布的可视区域，进行位置修正
+        if (cutOutBoxSizeX > containerWidth) {
+          x = containerWidth - width;
+        }
+        if (cutOutBoxSizeY > containerHeight) {
+          y = containerHeight - height;
+        }
+
         // 重新绘制裁剪框
         this.tempGraphPosition = drawCutOutBox(
           x,
