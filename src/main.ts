@@ -441,6 +441,7 @@ export default class ScreenShot {
       // 设置文本框位置等信息
       this.textInputController.style.left = textMouseX + "px";
       this.textInputController.style.fontSize = this.fontSize + "px";
+      this.textInputController.style.fontFamily = "none";
       this.textInputController.style.color = this.data.getSelectedColor();
 
       // 部分操作需要等dom渲染完毕执行
