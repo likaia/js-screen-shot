@@ -718,7 +718,8 @@ export default class ScreenShot {
     // 计算截图工具栏位置
     const toolLocation = calculateToolLocation(
       this.drawGraphPosition,
-      this.toolController.offsetWidth
+      this.toolController.offsetWidth,
+      this.screenShotContainer.width / this.dpr
     );
     const containerHeight = this.screenShotContainer.height / this.dpr;
 
