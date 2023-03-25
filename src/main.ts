@@ -726,7 +726,8 @@ export default class ScreenShot {
       toolLocation.mouseY -= this.drawGraphPosition.height + 64;
       // 超出屏幕顶部时
       if (toolLocation.mouseY < 0) {
-        toolLocation.mouseY += 64;
+        const containerHeight = parseInt(this.screenShotContainer.style.height);
+        toolLocation.mouseY = containerHeight - this.fullScreenDiffHeight;
       }
       // 设置工具栏超出状态为true
       this.data.setToolPositionStatus(true);
@@ -890,7 +891,10 @@ export default class ScreenShot {
       this.drawGraphPosition
     );
     // 鼠标按下且拖动时重新渲染工具栏
-    if (this.screenShotContainer != null && this.dragFlag) {
+    if (
+      (this.screenShotContainer != null && this.dragFlag) ||
+      this.clickCutFullScreen
+    ) {
       // 修改鼠标状态为拖动
       this.screenShotContainer.style.cursor = "move";
       // 显示截图工具栏
