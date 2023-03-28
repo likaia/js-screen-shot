@@ -38,7 +38,7 @@ body:
       description: |
         What browser are you seeing the problem on? Also, we'd like to know its exact version.
         你是在哪个浏览器中发现的这个问题？最好可以提供浏览器准确的版本号。
-      placeholder: eg. MacOS Google Chrome 111.0.5563.110
+      placeholder: eg. Google Chrome 111.0.5563.110
     validations:
       required: false
   - type: input
