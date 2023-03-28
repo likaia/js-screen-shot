@@ -1,0 +1,69 @@
+name: Bug Report
+description: File a bug report
+labels: ['bug']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to fill out this bug report!
+        感谢反馈问题，请填写下方的表单完成本次问题的反馈
+  - type: input
+    id: js-screen-shot-version
+    attributes:
+      label: Version of js-screen-shot
+      description: |
+        The exact version of js-screen-shot you are using.
+        你所使用的 js-screen-shot 的准确版本。
+      placeholder: eg. 1.0.0
+    validations:
+      required: true
+  - type: dropdown
+    id: operating-system
+    attributes:
+      label: Operating system and its version
+      description: |
+        What operating system are you seeing the problem on?
+        你是在哪个操作系统平台上发现的这个问题？
+      multiple: true
+      options:
+        - MacOS
+        - Windows
+        - Linux
+    validations:
+      required: false
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and its version
+      description: |
+        What browser are you seeing the problem on? Also, we'd like to know its exact version.
+        你是在哪个浏览器中发现的这个问题？最好可以提供浏览器准确的版本号。
+      placeholder: eg. MacOS Google Chrome 111.0.5563.110
+    validations:
+      required: false
+  - type: input
+    id: reproduce
+    attributes:
+      label: Sandbox to reproduce
+      description: |
+        If possible, please try to attach a sandbox link to reproduce. 
+        **尽可能提供一个复现 demo**。
+    validations:
+      required: false
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: |
+        Also tell us ?
+        出现了什么问题？
+    validations:
+      required: false
+  - type: textarea
+    id: logs
+    attributes:
+      label: 报错信息
+      description: |
+        Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+        如果有的话，请粘贴你遇到的报错信息或日志。下面输入框中的内容在 issue 提交后会被自动格式化成代码块。
+      render: shell

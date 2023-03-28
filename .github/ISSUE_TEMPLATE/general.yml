@@ -1,0 +1,21 @@
+name: General Issue
+description: Open a blank issue
+body:
+  - type: input
+    id: js-screen-shot-version
+    attributes:
+      label: Version of js-screen-shot
+      description: |
+        The exact version of antd-mobile you are using.
+        你所使用的 js-screen-shot 的准确版本。
+      placeholder: eg. 1.0.0
+    validations:
+      required: false
+  - type: textarea
+    id: description
+    attributes:
+      label: 问题描述
+      placeholder: 请尽可能详细地告诉我你所遇到的问题
+    validations:
+      required: false
+
