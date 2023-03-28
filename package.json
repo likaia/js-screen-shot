@@ -1,6 +1,6 @@
 {
   "name": "js-web-screen-shot",
-  "version": "1.8.9",
+  "version": "1.8.9-rc.0",
   "description": "web端自定义截屏插件(原生JS版)",
   "main": "dist/screenShotPlugin.common.js",
   "private": false,
@@ -11,7 +11,7 @@
   "scripts": {
     "build-rollup": "rollup -c --splitCss false --compState false --showPKGInfo true",
     "build-rollup:dev": "rollup -wc --splitCss false --compState false --showPKGInfo true --useDServer true --pkgFormat umd",
-    "build-rollup:prod": "rollup -c --splitCss false --compState true",
+    "build-rollup:prod": "rollup -c --splitCss false --compState true --pkgFormat umd,common",
     "test": "jest",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
     "commit": "git-cz"
