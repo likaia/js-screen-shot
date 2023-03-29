@@ -66,7 +66,11 @@ export default {
     rollupWarn(warning);
   },
   plugins: [
-    nodeResolve(),
+    nodeResolve({
+      // 读取.browserslist文件
+      browser: true,
+      preferBuiltins: false
+    }),
     commonjs(),
     alias({
       entries: [{ find: "@", replacement: path.resolve(__dirname, "src") }]
@@ -121,11 +125,7 @@ export default {
       // 超过10kb则拷贝否则转base64
       limit: 10 * 1024 // 10KB
     }),
-    babel({
-      exclude: "node_modules/**",
-      babelHelpers: "bundled",
-      bundled: "auto"
-    }),
+    babel(),
     enablePKGStats(showModulePKGInfo),
     ...enableDevServer(useDevServer),
     progress({

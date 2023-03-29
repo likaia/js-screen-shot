@@ -1,0 +1,30 @@
+name: Update Actions
+
+on:
+  push:
+    branches: main
+  workflow_dispatch:
+  schedule:
+    - cron: "30 16 * * *"
+
+jobs:
+  update-actions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Install
+        run: yarn
+
+      - name: Update
+        run: node ./scripts/update-profile.js
+
+      - name: Commit and push if changed
+        run: |-
+          git diff
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "github-actions"
+          git pull
+          git add -A
+          git commit -m "🤖 Auto updated actions" || exit 0
+          git push

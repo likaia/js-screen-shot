@@ -109,7 +109,9 @@ const buildTSConfig = (useDevServer = "false") => {
     tsconfigOverride: {
       compilerOptions: {
         // dev模式下不生成.d.ts文件
-        declaration: useDevServer !== "true"
+        declaration: useDevServer !== "true",
+        // 指定目标环境为es5
+        target: "es5"
       }
     },
     clean: true
