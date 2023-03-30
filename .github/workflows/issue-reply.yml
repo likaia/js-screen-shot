@@ -1,0 +1,31 @@
+name: Issue Reply
+
+on:
+  issues:
+    types: [labeled]
+
+jobs:
+  reply-helper:
+    runs-on: ubuntu-latest
+    steps:
+      - name: feature request
+        if: github.event.label.name == 'enhancement'
+        uses: actions-cool/issues-helper@v2.5.0
+        with:
+          actions: 'create-comment'
+          token: ${{ secrets.GITHUBTOKEN }}
+          issue-number: ${{ github.event.issue.number }}
+          body: |
+            Hello @${{ github.event.issue.user.login }}. Your suggestion has been received, and you will be notified in the issue area after the evaluation is completed.
+            你好 @${{ github.event.issue.user.login }}，已收到你的建议，评估完成后将在issue区域通知你。
+
+      - name: need reproduction
+        if: github.event.label.name == 'bug'
+        uses: actions-cool/issues-helper@v2.5.0
+        with:
+          actions: 'create-comment'
+          token: ${{ secrets.GITHUBTOKEN }}
+          issue-number: ${{ github.event.issue.number }}
+          body: |
+            Hello @${{ github.event.issue.user.login }}. Your feedback has been received, and you will be notified in the issue area when the problem is resolved.
+            你好 @${{ github.event.issue.user.login }}，已收到你反馈的问题，问题解决后将在issue区域通知你。
