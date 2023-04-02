@@ -1,0 +1,74 @@
+name: Build and Release
+
+# 定义本Action需要对仓库中的文件进行写操作的权限。
+permissions:
+  contents: write
+
+# 推送的tag中以v开头则执行此action
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build-release:
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "Checkout code"
+        uses: actions/checkout@v3
+
+      # 设置node版本
+      - name: "Set up Node.js"
+        uses: actions/setup-node@v3
+        with:
+          node-version: '14.18.0'
+      # 安装依赖
+      - name: "Install dependencies"
+        run: npm install
+      # 执行构建命令
+      - name: "Install dependencies"
+        run: npm run build-rollup:prod
+      # 将dist目录打成zip包
+      - name: Zip Dist
+        run: zip -r dist.zip dist
+      # 创建Release
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUBTOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          draft: false
+          prerelease: false
+      # 上传zip包
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUBTOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./dist.zip
+          asset_name: js-screen-shot-dist.zip
+          asset_content_type: application/zip
+
+
+  create-changelog:
+    runs-on: ubuntu-latest
+    # 需要等build结束后才执行此处
+    needs: build-release
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16.x
+
+      # 生成版本更新日志
+      - run: npx changelogithub
+        env:
+          GITHUB_TOKEN: ${{secrets.GITHUBTOKEN}}
+
