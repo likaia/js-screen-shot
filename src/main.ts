@@ -8,6 +8,7 @@ import {
   movePositionType,
   positionInfoType,
   screenShotType,
+  toolPositionValType,
   zoomCutOutBoxReturnType
 } from "@/lib/type/ComponentType";
 import { drawMasking } from "@/lib/split-methods/DrawMasking";
@@ -121,6 +122,9 @@ export default class ScreenShot {
     mouseX: 0,
     mouseY: 0
   };
+  // 工具栏显示位置
+  private placement: toolPositionValType = "center";
+
   constructor(options: screenShotType) {
     this.plugInParameters = new PlugInParameters();
     // 提取options中的有用参数设置到全局参数中
@@ -729,7 +733,8 @@ export default class ScreenShot {
     const toolLocation = calculateToolLocation(
       this.drawGraphPosition,
       this.toolController.offsetWidth,
-      this.screenShotContainer.width / this.dpr
+      this.screenShotContainer.width / this.dpr,
+      this.placement
     );
     const containerHeight = this.screenShotContainer.height / this.dpr;
 
@@ -823,6 +828,10 @@ export default class ScreenShot {
     // 是否初始化裁剪框
     if (options?.cropBoxInfo) {
       this.cropBoxInfo = options.cropBoxInfo;
+    }
+    // 是否需要更改工具栏的展示位置
+    if (options?.toolPosition) {
+      this.placement = options.toolPosition;
     }
   }
 

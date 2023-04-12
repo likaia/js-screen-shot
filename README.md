@@ -150,6 +150,10 @@ sessionStorage.getItem("screenShotImg");
 * `wrcReplyTime` webrtc模式捕捉屏幕时的响应时间，值为`number`类型，默认为500ms。
 * `noScroll` 截图容器是否可滚动，值为`boolean`类型，默认为`true`。
 * `maskColor` 蒙层颜色，值为`{ r: number; g: number; b: number; a: number }`类型,默认为:`{ r: 0; g: 0; b: 0; a: 0.6 }`
+* `toolPosition` 工具栏展示位置，值为`string`类型，默认为居中展示，提供三个选项：
+  * `left` 左对齐于裁剪框
+  * `center` 居中对齐于裁剪框
+  * `right` 右对齐于裁剪框
 
 > 上述类型中的`?:`为ts中的可选类型，意思为：这个key是可选的，如果需要就传，不需要就不传。
 

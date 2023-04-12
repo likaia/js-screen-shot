@@ -37,6 +37,9 @@ export type zoomCutOutBoxReturnType = {
   tempHeight: number;
 };
 
+// 工具栏的展示位置
+export type toolPositionValType = "left" | "right" | "center";
+
 // 绘制裁剪框所返回的数据类型
 export type drawCutOutBoxReturnType = {
   startX: number;
@@ -84,4 +87,5 @@ export type screenShotType = {
   wrcReplyTime?: number; // webrtc捕捉屏幕响应时间，默认为500ms
   noScroll?: boolean; // 截图容器是否可滚动，默认为true
   maskColor?: { r: number; g: number; b: number; a: number }; // 蒙层颜色
+  toolPosition?: toolPositionValType; // 工具栏显示位置，默认为居中
 };
