@@ -107,6 +107,8 @@ export default class ScreenShot {
   private loadCrossImg = false;
   private proxyUrl: undefined | string = undefined;
   private drawStatus = false;
+  // webrtc模式下的屏幕流数据
+  private captureStream: MediaStream | null = null;
   private cropBoxInfo: {
     x: number;
     y: number;
@@ -311,9 +313,15 @@ export default class ScreenShot {
       imgContext?.drawImage(this.videoController, 0, 0, fixWidth, fixHeight);
       // 初始化截图容器
       this.initScreenShot(undefined, context, this.screenShotImageController);
+      let displaySurface = null;
+      if (this.captureStream) {
+        // 获取当前选择的窗口类型
+        displaySurface = this.captureStream.getVideoTracks()[0].getSettings()
+          ?.displaySurface;
+      }
       // 执行截图成功回调
       if (triggerCallback) {
-        triggerCallback({ code: 0, msg: "截图加载完成" });
+        triggerCallback({ code: 0, msg: "截图加载完成", displaySurface });
       }
       // 停止捕捉屏幕
       this.stopCapture();
@@ -340,6 +348,8 @@ export default class ScreenShot {
       });
       // 将MediaStream输出至video标签
       this.videoController.srcObject = captureStream;
+      // 储存屏幕流数据
+      this.captureStream = captureStream;
     } catch (err) {
       if (cancelCallback != null) {
         cancelCallback({
