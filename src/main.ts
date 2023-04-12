@@ -318,14 +318,22 @@ export default class ScreenShot {
       // 初始化截图容器
       this.initScreenShot(undefined, context, this.screenShotImageController);
       let displaySurface = null;
+      let displayLabel = null;
       if (this.captureStream) {
         // 获取当前选择的窗口类型
         displaySurface = this.captureStream.getVideoTracks()[0].getSettings()
           ?.displaySurface;
+        // 获取当前选择的标签页标识
+        displayLabel = this.captureStream.getVideoTracks()[0].label;
       }
       // 执行截图成功回调
       if (triggerCallback) {
-        triggerCallback({ code: 0, msg: "截图加载完成", displaySurface });
+        triggerCallback({
+          code: 0,
+          msg: "截图加载完成",
+          displaySurface,
+          displayLabel
+        });
       }
       // 停止捕捉屏幕
       this.stopCapture();
