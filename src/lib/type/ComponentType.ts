@@ -45,7 +45,19 @@ export type drawCutOutBoxReturnType = {
   height: number;
 };
 
-type toolIcoType = { save?: boolean; undo?: boolean; confirm?: boolean };
+export type toolIcoType = {
+  [key: string]: boolean | undefined;
+  square?: boolean;
+  round?: boolean;
+  rightTop?: boolean;
+  brush?: boolean;
+  mosaicPen?: boolean;
+  text?: boolean;
+  separateLine?: boolean;
+  save?: boolean;
+  undo?: boolean;
+  confirm?: boolean;
+};
 
 // 截图工具栏图标数据类型
 export type toolbarType = { id: number; title: string };

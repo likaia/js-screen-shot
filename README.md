@@ -130,7 +130,17 @@ sessionStorage.getItem("screenShotImg");
 * `canvasHeight` 画布高度，值为number类型，必须与宽度一起设置，单独设置无效。
 * `position` 截图容器位置，值为`{left?: number, top?: number}`类型
 * `clickCutFullScreen` 单击截全屏启用状态,值为`boolean`类型， 默认为`false`
-* `hiddenToolIco` 需要隐藏的截图工具栏图标，值为`{ save?: boolean; undo?: boolean; confirm?: boolean }`类型，默认为`{}`。传你需要隐藏的图标名称，将值设为`true`即可。
+* `hiddenToolIco` 需要隐藏的截图工具栏图标，值为`Object`类型，默认为`{}`。传你需要隐藏的图标名称，将值设为`true`即可，除关闭图标外，其他图标均可隐藏。可隐藏的key如下所示：
+  * `square` 矩形绘制
+  * `round` 圆形绘制
+  * `rightTop` 箭头绘制
+  * `brush` 涂鸦
+  * `mosaicPen`马赛克工具
+  * `text` 文本工具
+  * `separateLine` 分割线
+  * `save` 下载图片
+  * `undo` 撤销工具
+  * `confirm` 保存图片
 * `showScreenData` 截图组件加载完毕后，是否显示截图内容至canvas画布内，值为`boolean`类型，默认为`false`。
 * `imgSrc` 截图内容，如果你已经通过其他方式获取到了屏幕内容（例如`electron`环境），那么可以将获取到的内容传入，此时插件将使用你传进来的图片，值为`string`类型（可以为图片`url`地址或者`base64`），默认为`null`。
 * `loadCrossImg` 是否加载跨域图片，值为`boolean`类型，默认为`false`。

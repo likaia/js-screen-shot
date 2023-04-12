@@ -50,14 +50,10 @@ export default class CreateDom {
 
     // 筛选需要隐藏的图标
     if (options?.hiddenToolIco) {
-      if (options.hiddenToolIco?.save === true) {
-        this.hiddenIcoArr.push("save");
-      }
-      if (options.hiddenToolIco?.undo === true) {
-        this.hiddenIcoArr.push("undo");
-      }
-      if (options.hiddenToolIco?.confirm === true) {
-        this.hiddenIcoArr.push("confirm");
+      for (const iconKey in options.hiddenToolIco) {
+        if (options.hiddenToolIco[iconKey]) {
+          this.filterHideIcon(iconKey);
+        }
       }
     }
     // 为所有dom设置id
@@ -114,7 +110,7 @@ export default class CreateDom {
     }
     // 有需要隐藏的截图工具栏时，则修改其最小宽度
     if (this.hiddenIcoArr.length > 0) {
-      this.toolController.style.minWidth = "275px";
+      this.toolController.style.minWidth = "24px";
     }
   }
 
@@ -230,5 +226,17 @@ export default class CreateDom {
   // 设置画笔绘制选项顶部ico样式
   private setOptionIcoClassName() {
     this.optionIcoController.className = "ico-panel";
+  }
+
+  // 将需要隐藏的图标放入对应的数组中
+  private filterHideIcon(icons: string) {
+    switch (icons) {
+      case "rightTop":
+        this.hiddenIcoArr.push("right-top");
+        break;
+      default:
+        this.hiddenIcoArr.push(icons);
+        break;
+    }
   }
 }
