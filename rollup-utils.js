@@ -112,7 +112,9 @@ const buildTSConfig = (useDevServer = "false") => {
         declaration: useDevServer !== "true",
         // 指定目标环境为es5
         target: "es5"
-      }
+      },
+      // 打包时排除tests目录
+      exclude: ["tests"]
     },
     clean: true
   };
