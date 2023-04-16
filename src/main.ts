@@ -376,7 +376,8 @@ export default class ScreenShot {
       if (cancelCallback != null) {
         cancelCallback({
           code: -1,
-          msg: "浏览器不支持webrtc或者用户未授权"
+          msg: "浏览器不支持webrtc或者用户未授权",
+          errorInfo: err
         });
       }
       // 销毁截图组件
