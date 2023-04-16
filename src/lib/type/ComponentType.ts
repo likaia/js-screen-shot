@@ -85,6 +85,7 @@ export type screenShotType = {
   screenShotDom?: HTMLElement | HTMLDivElement | HTMLCanvasElement; // 需要进行截图的容器
   cropBoxInfo?: { x: number; y: number; w: number; h: number }; // 是否加载默认的裁剪框
   wrcReplyTime?: number; // webrtc捕捉屏幕响应时间，默认为500ms
+  wrcImgPosition?: { x: number; y: number; w: number; h: number }; // webrtc模式下是否需要对图像进行裁剪
   noScroll?: boolean; // 截图容器是否可滚动，默认为true
   maskColor?: { r: number; g: number; b: number; a: number }; // 蒙层颜色
   toolPosition?: toolPositionValType; // 工具栏显示位置，默认为居中

@@ -180,6 +180,7 @@ sessionStorage.getItem("screenShotImg");
 * `screenShotDom` 需要进行截图的容器，值为`HTMLElement`类型，默认使用的是`body`。
 * `cropBoxInfo` 初始裁剪框，值为`{ x: number; y: number; w: number; h: number }`类型，默认不加载。
 * `wrcReplyTime` webrtc模式捕捉屏幕时的响应时间，值为`number`类型，默认为500ms。
+* `wrcImgPosition` webrtc模式下是否需要对图像进行裁剪，值为`{ x: number; y: number; w: number; h: number }`类型，默认为不裁剪。
 * `noScroll` 截图容器是否可滚动，值为`boolean`类型，默认为`true`。
 * `maskColor` 蒙层颜色，值为`{ r: number; g: number; b: number; a: number }`类型,默认为:`{ r: 0; g: 0; b: 0; a: 0.6 }`
 * `toolPosition` 工具栏展示位置，值为`string`类型，默认为居中展示，提供三个选项：

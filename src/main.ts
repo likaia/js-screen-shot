@@ -74,6 +74,7 @@ export default class ScreenShot {
     width: 0,
     height: 0
   };
+  private wrcImgPosition = { x: 0, y: 0, w: 0, h: 0 };
   // 裁剪框边框节点坐标事件
   private cutOutBoxBorderArr: Array<cutOutBoxBorder> = [];
   // 当前操作的边框节点
@@ -314,7 +315,16 @@ export default class ScreenShot {
         fixWidth = (containerWidth * containerHeight) / fixHeight;
         fixHeight = containerHeight;
       }
-      imgContext?.drawImage(this.videoController, 0, 0, fixWidth, fixHeight);
+      // 对视频容器的内容进行裁剪
+      fixWidth = this.wrcImgPosition.w > 0 ? this.wrcImgPosition.w : fixWidth;
+      fixHeight = this.wrcImgPosition.h > 0 ? this.wrcImgPosition.h : fixHeight;
+      imgContext?.drawImage(
+        this.videoController,
+        this.wrcImgPosition.x,
+        this.wrcImgPosition.y,
+        fixWidth,
+        fixHeight
+      );
       // 初始化截图容器
       this.initScreenShot(undefined, context, this.screenShotImageController);
       let displaySurface = null;
@@ -840,6 +850,13 @@ export default class ScreenShot {
     // 是否需要更改工具栏的展示位置
     if (options?.toolPosition) {
       this.placement = options.toolPosition;
+    }
+    // 是否需要对webrtc模式下捕获到的内容进行裁剪
+    if (options?.wrcImgPosition) {
+      const { x, y } = options.wrcImgPosition;
+      // 坐标需要取负数才能正确的裁剪
+      this.wrcImgPosition.x = Math.abs(x) * -1;
+      this.wrcImgPosition.y = Math.abs(y) * -1;
     }
   }
 
