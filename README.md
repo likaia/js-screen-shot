@@ -53,10 +53,38 @@ new ScreenShot();
 * 直接获取设备的窗口，主线程发送一个IPC消息handle
 ```javascript
 // electron主线程
-import { desktopCapturer } from "electron";
+import { desktopCapturer, webContents } from "electron";
+
+// 修复electron18.0.0-beta.5 之后版本的BUG: 无法获取当前程序页面视频流
+const selfWindws = async () =>
+        await Promise.all(
+                webContents
+                        .getAllWebContents()
+                        .filter(item => {
+                          const win = BrowserWindow.fromWebContents(item);
+                          return win && win.isVisible();
+                        })
+                        .map(async item => {
+                          const win = BrowserWindow.fromWebContents(item);
+                          const thumbnail = await win?.capturePage();
+                          // 当程序窗口打开DevTool的时候  也会计入
+                          return {
+                            name:
+                                    win?.getTitle() + (item.devToolsWebContents === null ? "" : "-dev"), // 给dev窗口加上后缀
+                            id: win?.getMediaSourceId(),
+                            thumbnail,
+                            display_id: "",
+                            appIcon: null
+                          };
+                        })
+        );
+
 // 获取设备窗口信息
 ipcMain.handle("IPC消息名称", async (_event, _args) => {
-  return await desktopCapturer.getSources({ types: ['window', 'screen'] });
+  return [
+    ...(await desktopCapturer.getSources({ types: ["window", "screen"] })),
+    ...(await selfWindws())
+  ];
 });
 ```
 
