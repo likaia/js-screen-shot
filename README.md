@@ -142,6 +142,10 @@ export const doScreenShot = async ()=>{
 ```
 > 感谢 [@Vanisper](https://github.com/Vanisper) 提供的在electron环境下使用本插件的兼容思路。
 
+### electron示例代码
+如果你看完上个章节的使用方法，依然不是很理解的话，这里准备了一份在electron环境下使用本插件的demo，请移步[electron-js-web-screen-shot-demo](https://github.com/Vanisper/electron-js-web-screen-shot-demo)。
+
+
 ### 参数说明
 截图插件有一个可选参数，它接受一个对象，对象每个key的作用如下:
 * `enableWebRtc` 是否启用webrtc，值为`boolean`类型，值为`false`则使用`html2canvas`来截图
