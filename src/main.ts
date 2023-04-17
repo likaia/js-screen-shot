@@ -17,7 +17,7 @@ import { drawPencil, initPencil } from "@/lib/split-methods/DrawPencil";
 import { drawText } from "@/lib/split-methods/DrawText";
 import { drawRectangle } from "@/lib/split-methods/DrawRectangle";
 import { drawCircle } from "@/lib/split-methods/DrawCircle";
-import { drawLineArrow } from "@/lib/split-methods/DrawLineArrow";
+import { DrawArrow } from "@/lib/split-methods/DrawArrow";
 import { drawMosaic } from "@/lib/split-methods/DrawMosaic";
 import { drawCutOutBox } from "@/lib/split-methods/DrawCutOutBox";
 import { zoomCutOutBoxPosition } from "@/lib/common-methods/ZoomCutOutBoxPosition";
@@ -125,6 +125,8 @@ export default class ScreenShot {
   };
   // 工具栏显示位置
   private placement: toolPositionValType = "center";
+  // 递增变粗箭头的实现
+  private drawArrow = new DrawArrow();
 
   constructor(options: screenShotType) {
     this.plugInParameters = new PlugInParameters();
@@ -589,15 +591,12 @@ export default class ScreenShot {
           );
           break;
         case "right-top":
-          drawLineArrow(
+          this.drawArrow.draw(
             this.screenShotCanvas,
             startX,
             startY,
             currentX,
             currentY,
-            30,
-            10,
-            this.data.getPenSize(),
             this.data.getSelectedColor()
           );
           break;
