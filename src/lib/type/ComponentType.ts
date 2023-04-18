@@ -89,4 +89,5 @@ export type screenShotType = {
   noScroll?: boolean; // 截图容器是否可滚动，默认为true
   maskColor?: { r: number; g: number; b: number; a: number }; // 蒙层颜色
   toolPosition?: toolPositionValType; // 工具栏显示位置，默认为居中
+  writeBase64?: boolean; // 是否将截图内容写入剪切板
 };

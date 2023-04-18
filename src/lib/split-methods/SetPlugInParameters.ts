@@ -27,4 +27,9 @@ export function setPlugInParameters(options: screenShotType) {
   if (options?.maskColor && typeof options.maskColor === "object") {
     plugInParameters.setMaskColor(options.maskColor);
   }
+
+  // 调用者关闭了剪切板写入，则修改全局变量（默认为true）
+  if (options?.writeBase64 === false) {
+    plugInParameters.setWriteImgState(options.writeBase64);
+  }
 }

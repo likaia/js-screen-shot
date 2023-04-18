@@ -187,6 +187,7 @@ sessionStorage.getItem("screenShotImg");
   * `left` 左对齐于裁剪框
   * `center` 居中对齐于裁剪框
   * `right` 右对齐于裁剪框
+* `writeBase64` 是否将截图内容写入剪切板，值为`boolean`类型，默认为`true`
 
 > 上述类型中的`?:`为ts中的可选类型，意思为：这个key是可选的，如果需要就传，不需要就不传。
 

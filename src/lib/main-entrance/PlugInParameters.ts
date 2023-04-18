@@ -14,6 +14,7 @@ let showScreenData = false;
 
 // 蒙层颜色
 const maskColor = { r: 0, g: 0, b: 0, a: 0.6 };
+let writeBase64 = true;
 
 export default class PlugInParameters {
   constructor() {
@@ -23,6 +24,7 @@ export default class PlugInParameters {
       canvasWidth = 0;
       canvasHeight = 0;
       showScreenData = false;
+      writeBase64 = true;
       screenFlow = null;
       // 初始化完成设置其值为false
       initStatus = false;
@@ -90,5 +92,13 @@ export default class PlugInParameters {
 
   public getMaskColor() {
     return maskColor;
+  }
+
+  // 设置截图数据的写入状态
+  public setWriteImgState(state: boolean) {
+    writeBase64 = state;
+  }
+  public getWriteImgState() {
+    return writeBase64;
   }
 }
