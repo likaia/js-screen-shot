@@ -32,6 +32,7 @@ import { drawCrossImg } from "@/lib/split-methods/drawCrossImg";
 import { getCanvas2dCtx } from "@/lib/common-methods/CanvasPatch";
 import { updateContainerMouseStyle } from "@/lib/common-methods/UpdateContainerMouseStyle";
 import { addHistory } from "@/lib/split-methods/AddHistoryData";
+import { saveCanvasToImage } from "@/lib/common-methods/SaveCanvasToImage";
 
 export default class ScreenShot {
   // 当前实例的响应式data数据
@@ -303,30 +304,36 @@ export default class ScreenShot {
       if (context == null) return;
       // 赋值截图区域canvas画布
       this.screenShotCanvas = context;
+      // 对webrtc源提供的图像宽高进行修复
+      const { videoWidth, videoHeight } = this.videoController;
+      const bodyImgData = this.getWindowContentData(
+        videoWidth,
+        videoHeight,
+        containerWidth * this.dpr,
+        containerHeight * this.dpr
+      );
+      console.log("视频容器尺寸", videoWidth, videoHeight);
+      console.log("截图容器尺寸", containerWidth, containerHeight);
+      const diffHeight = videoHeight - containerHeight;
+      // let fixWidth = containerWidth;
+      // let fixHeight = (videoHeight * containerWidth) / videoWidth;
+      // if (fixHeight > containerHeight) {
+      //   fixWidth = (containerWidth * containerHeight) / fixHeight;
+      //   fixHeight = containerHeight;
+      // }
+      // // 对视频容器的内容进行裁剪
+      // fixWidth = this.wrcImgPosition.w > 0 ? this.wrcImgPosition.w : fixWidth;
+      // fixHeight = this.wrcImgPosition.h > 0 ? this.wrcImgPosition.h : fixHeight;
+
+      if (bodyImgData == null) return;
       // 将获取到的屏幕截图绘制到图片容器里
       const imgContext = getCanvas2dCtx(
         this.screenShotImageController,
-        containerWidth,
-        containerHeight
+        containerWidth * this.dpr,
+        containerHeight * this.dpr
       );
-      // 对webrtc源提供的图像宽高进行修复
-      const { videoWidth, videoHeight } = this.videoController;
-      let fixWidth = containerWidth;
-      let fixHeight = (videoHeight * containerWidth) / videoWidth;
-      if (fixHeight > containerHeight) {
-        fixWidth = (containerWidth * containerHeight) / fixHeight;
-        fixHeight = containerHeight;
-      }
-      // 对视频容器的内容进行裁剪
-      fixWidth = this.wrcImgPosition.w > 0 ? this.wrcImgPosition.w : fixWidth;
-      fixHeight = this.wrcImgPosition.h > 0 ? this.wrcImgPosition.h : fixHeight;
-      imgContext?.drawImage(
-        this.videoController,
-        this.wrcImgPosition.x,
-        this.wrcImgPosition.y,
-        fixWidth,
-        fixHeight
-      );
+      imgContext?.putImageData(bodyImgData, 0, 0);
+
       // 初始化截图容器
       this.initScreenShot(undefined, context, this.screenShotImageController);
       let displaySurface = null;
@@ -363,11 +370,15 @@ export default class ScreenShot {
       captureStream = await navigator.mediaDevices.getDisplayMedia({
         audio: false,
         video: {
-          width: this.screenShotImageController.width * this.dpr,
-          height: this.screenShotImageController.height * this.dpr
+          width: window.screen.width * this.dpr,
+          height: window.screen.height * this.dpr,
+          displaySurface: "window",
+          // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+          // @ts-ignore
+          logicalSurface: true,
+          cursor: "never"
         },
-        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-        // @ts-ignore
+        // 当前标签页
         preferCurrentTab: true
       });
       // 将MediaStream输出至video标签
@@ -709,6 +720,41 @@ export default class ScreenShot {
       // 渲染截图工具栏
       this.showToolBar();
     }
+  }
+
+  /**
+   * 从窗口数据流中截取页面body内容
+   * @param videoWidth 窗口宽度
+   * @param videoHeight 窗口高度
+   * @param containerWidth body内容宽度
+   * @param containerHeight body内容高度
+   * @private
+   */
+  private getWindowContentData(
+    videoWidth: number,
+    videoHeight: number,
+    containerWidth: number,
+    containerHeight: number
+  ) {
+    const videoCanvas = document.createElement("canvas");
+    videoCanvas.width = videoWidth;
+    videoCanvas.height = videoHeight;
+    const videoContext = getCanvas2dCtx(videoCanvas, videoWidth, videoHeight);
+    if (videoContext) {
+      videoContext.drawImage(this.videoController, 0, 0);
+      const startX = 0;
+      const startY = videoHeight - containerHeight;
+      const width = containerWidth;
+      const height = videoHeight - startY;
+      // 获取裁剪框区域图片信息;
+      return videoContext.getImageData(
+        startX * this.dpr,
+        startY * this.dpr,
+        width * this.dpr,
+        height * this.dpr
+      );
+    }
+    return null;
   }
 
   // 为指定容器绑定快捷键
