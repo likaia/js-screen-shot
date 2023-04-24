@@ -59,6 +59,8 @@ let activeTool = "";
 let textInfo: textInfoType;
 // 最大可撤销次数
 const maxUndoNum = 15;
+// 是否需要还原页面的滚动条状态
+let resetScrollbarState = false;
 
 export default class InitData {
   constructor() {
@@ -79,6 +81,7 @@ export default class InitData {
         height: 0
       };
       toolClickStatus = false;
+      resetScrollbarState = false;
       toolPositionStatus = false;
       selectedColor = "#F53340";
       toolName = "";
@@ -251,6 +254,13 @@ export default class InitData {
   // 设置截图工具栏点击状态
   public setToolClickStatus(status: boolean) {
     toolClickStatus = status;
+  }
+
+  public setResetScrollbarState(state: boolean) {
+    resetScrollbarState = state;
+  }
+  public getResetScrollbarState() {
+    return resetScrollbarState;
   }
 
   // 获取裁剪框位置信息
@@ -522,6 +532,11 @@ export default class InitData {
     document.body.removeChild(optionController);
     document.body.removeChild(textInputController);
     document.body.removeChild(cutBoxSizeContainer);
+    if (resetScrollbarState) {
+      // 还原滚动条状态
+      document.documentElement.classList.remove("hidden-screen-shot-scroll");
+      document.body.classList.remove("hidden-screen-shot-scroll");
+    }
     // 重置插件全局参数状态
     plugInParameters.setInitStatus(true);
   }

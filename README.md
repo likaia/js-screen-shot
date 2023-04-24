@@ -188,6 +188,20 @@ sessionStorage.getItem("screenShotImg");
   * `center` 居中对齐于裁剪框
   * `right` 右对齐于裁剪框
 * `writeBase64` 是否将截图内容写入剪切板，值为`boolean`类型，默认为`true`
+* `wrcWindowMode` 是否启用窗口截图模式，值为`boolean`类型，默认为`false`，即当前标签页截图。如果标签页截图的内容有滚动条或者底部有空缺，可以考虑启用此模式。
+* `hiddenScrollBar` 是否隐藏滚动条，用webrtc模式截图时chrome 112版本的浏览器在部分系统下会挤压出现滚动条，如果出现你可以尝试通过此参数来进行修复。值为`Object`类型，有4个属性：
+  * `state: boolean`; 启用状态, 默认为`false`
+  * `fillState?: boolean`; 填充状态，默认为`false`
+  * `color?: string`; 填充层颜色，滚动条隐藏后可能会出现空缺，需要进行填充，默认填充色为黑色。
+  * `fillWidth?: number`; 填充层宽度，默认为截图容器的宽度
+  * `fillHeight?: number`; 填充层高度，默认为空缺区域的高度
+
+> 使用当前标签页进行截图相对而言用户体验是最好的，但是因为`chrome 112`版本的bug会造成页面内容挤压导致截取到的内容不完整，因此只能采用其他方案来解决此问题了。`wrcWindowMode`和`hiddenScrollBar`都可以解决这个问题。
+> * `wrcWindowMode`方案会更完美些，但是用户授权时会出现其他的应用程序选项，用户体验会差一些
+> * `hiddenScrollBar`方案还是采用标签页截图，但是会造成内容挤压，底部出现空白。
+>
+> 两种方案的优点与缺点讲完了，最好的办法还是希望`chrome`能在之后的版本更新中修复此问题。
+
 
 > 上述类型中的`?:`为ts中的可选类型，意思为：这个key是可选的，如果需要就传，不需要就不传。
 

@@ -40,6 +40,14 @@ export type zoomCutOutBoxReturnType = {
 // 工具栏的展示位置
 export type toolPositionValType = "left" | "right" | "center";
 
+export type hideBarInfoType = {
+  state: boolean;
+  color?: string;
+  fillWidth?: number;
+  fillHeight?: number;
+  fillState?: boolean;
+};
+
 // 绘制裁剪框所返回的数据类型
 export type drawCutOutBoxReturnType = {
   startX: number;
@@ -90,4 +98,6 @@ export type screenShotType = {
   maskColor?: { r: number; g: number; b: number; a: number }; // 蒙层颜色
   toolPosition?: toolPositionValType; // 工具栏显示位置，默认为居中
   writeBase64?: boolean; // 是否将截图内容写入剪切板
+  hiddenScrollBar?: hideBarInfoType; // 是否隐藏滚动条
+  wrcWindowMode?: boolean; // 是否启用窗口截图模式，默认为当前标签页截图
 };

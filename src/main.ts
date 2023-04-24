@@ -5,6 +5,7 @@ import InitData from "@/lib/main-entrance/InitData";
 import {
   cutOutBoxBorder,
   drawCutOutBoxReturnType,
+  hideBarInfoType,
   movePositionType,
   positionInfoType,
   screenShotType,
@@ -76,6 +77,15 @@ export default class ScreenShot {
     height: 0
   };
   private wrcImgPosition = { x: 0, y: 0, w: 0, h: 0 };
+  // 是否隐藏页面滚动条
+  private hiddenScrollBar = {
+    color: "#000000",
+    fillState: false,
+    state: false,
+    fillWidth: 0,
+    fillHeight: 0
+  };
+  private wrcWindowMode = false;
   // 裁剪框边框节点坐标事件
   private cutOutBoxBorderArr: Array<cutOutBoxBorder> = [];
   // 当前操作的边框节点
@@ -176,12 +186,6 @@ export default class ScreenShot {
   // 获取截图区域canvas容器
   public getCanvasController(): HTMLCanvasElement | null | undefined {
     return this.screenShotContainer;
-  }
-
-  // 销毁组件方法
-  public destroyComponents(): void {
-    this.data.destroyDOM();
-    this.data.setInitStatus(true);
   }
 
   // 加载截图组件
@@ -296,43 +300,78 @@ export default class ScreenShot {
         containerWidth = canvasSize.canvasWidth;
         containerHeight = canvasSize.canvasHeight;
       }
+      let imgContainerWidth = containerWidth;
+      let imgContainerHeight = containerHeight;
+      if (this.wrcWindowMode) {
+        imgContainerWidth = containerWidth * this.dpr;
+        imgContainerHeight = containerHeight * this.dpr;
+      }
       const context = getCanvas2dCtx(
         this.screenShotContainer,
         containerWidth,
         containerHeight
       );
-      if (context == null) return;
-      // 赋值截图区域canvas画布
-      this.screenShotCanvas = context;
-      // 对webrtc源提供的图像宽高进行修复
-      const { videoWidth, videoHeight } = this.videoController;
-      const bodyImgData = this.getWindowContentData(
-        videoWidth,
-        videoHeight,
-        containerWidth * this.dpr,
-        containerHeight * this.dpr
-      );
-      console.log("视频容器尺寸", videoWidth, videoHeight);
-      console.log("截图容器尺寸", containerWidth, containerHeight);
-      const diffHeight = videoHeight - containerHeight;
-      // let fixWidth = containerWidth;
-      // let fixHeight = (videoHeight * containerWidth) / videoWidth;
-      // if (fixHeight > containerHeight) {
-      //   fixWidth = (containerWidth * containerHeight) / fixHeight;
-      //   fixHeight = containerHeight;
-      // }
-      // // 对视频容器的内容进行裁剪
-      // fixWidth = this.wrcImgPosition.w > 0 ? this.wrcImgPosition.w : fixWidth;
-      // fixHeight = this.wrcImgPosition.h > 0 ? this.wrcImgPosition.h : fixHeight;
-
-      if (bodyImgData == null) return;
-      // 将获取到的屏幕截图绘制到图片容器里
       const imgContext = getCanvas2dCtx(
         this.screenShotImageController,
-        containerWidth * this.dpr,
-        containerHeight * this.dpr
+        imgContainerWidth,
+        imgContainerHeight
       );
-      imgContext?.putImageData(bodyImgData, 0, 0);
+      if (context == null || imgContext == null) return;
+      // 赋值截图区域canvas画布
+      this.screenShotCanvas = context;
+      const { videoWidth, videoHeight } = this.videoController;
+      if (this.wrcWindowMode) {
+        // 从窗口视频流中获取body内容
+        const bodyImgData = this.getWindowContentData(
+          videoWidth,
+          videoHeight,
+          containerWidth * this.dpr,
+          containerHeight * this.dpr
+        );
+        if (bodyImgData == null) return;
+        // 将body内容绘制到图片容器里
+        imgContext.putImageData(bodyImgData, 0, 0);
+      } else {
+        // 对webrtc源提供的图像宽高进行修复
+        let fixWidth = containerWidth;
+        let fixHeight = (videoHeight * containerWidth) / videoWidth;
+        if (fixHeight > containerHeight) {
+          fixWidth = (containerWidth * containerHeight) / fixHeight;
+          fixHeight = containerHeight;
+        }
+        // 对视频容器的内容进行裁剪
+        fixWidth = this.wrcImgPosition.w > 0 ? this.wrcImgPosition.w : fixWidth;
+        fixHeight =
+          this.wrcImgPosition.h > 0 ? this.wrcImgPosition.h : fixHeight;
+        imgContext?.drawImage(
+          this.videoController,
+          this.wrcImgPosition.x,
+          this.wrcImgPosition.y,
+          fixWidth,
+          fixHeight
+        );
+        // 隐藏滚动条会出现部分内容未截取到，需要进行修复
+        const diffHeight = containerHeight - fixHeight;
+        if (
+          this.hiddenScrollBar.state &&
+          diffHeight > 0 &&
+          this.hiddenScrollBar.fillState
+        ) {
+          // 填充容器的剩余部分
+          imgContext.beginPath();
+          let fillWidth = containerWidth;
+          let fillHeight = diffHeight;
+          if (this.hiddenScrollBar.fillWidth > 0) {
+            fillWidth = this.hiddenScrollBar.fillWidth;
+          }
+          if (this.hiddenScrollBar.fillHeight > 0) {
+            fillHeight = this.hiddenScrollBar.fillHeight;
+          }
+          imgContext.rect(0, fixHeight, fillWidth, fillHeight);
+          imgContext.fillStyle = this.hiddenScrollBar.color;
+          imgContext.fill();
+        }
+      }
 
       // 初始化截图容器
       this.initScreenShot(undefined, context, this.screenShotImageController);
@@ -362,24 +401,33 @@ export default class ScreenShot {
   // 开始捕捉屏幕
   private startCapture = async (cancelCallback: Function | undefined) => {
     let captureStream = null;
+    let mediaWidth = this.screenShotImageController.width * this.dpr;
+    let mediaHeight = this.screenShotImageController.height * this.dpr;
+    let curTabState = true;
+    let displayConfig = {};
+    // 窗口模式启用时则
+    if (this.wrcWindowMode) {
+      mediaWidth = window.screen.width * this.dpr;
+      mediaHeight = window.screen.height * this.dpr;
+      curTabState = false;
+      displayConfig = {
+        displaySurface: "window"
+      };
+    }
 
     try {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-      // @ts-ignore
       // 捕获屏幕
       captureStream = await navigator.mediaDevices.getDisplayMedia({
         audio: false,
         video: {
-          width: window.screen.width * this.dpr,
-          height: window.screen.height * this.dpr,
-          displaySurface: "window",
-          // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-          // @ts-ignore
-          logicalSurface: true,
-          cursor: "never"
+          width: mediaWidth,
+          height: mediaHeight,
+          ...displayConfig
         },
+        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
+        // @ts-ignore
         // 当前标签页
-        preferCurrentTab: true
+        preferCurrentTab: curTabState
       });
       // 将MediaStream输出至video标签
       this.videoController.srcObject = captureStream;
@@ -903,6 +951,33 @@ export default class ScreenShot {
       // 坐标需要取负数才能正确的裁剪
       this.wrcImgPosition.x = Math.abs(x) * -1;
       this.wrcImgPosition.y = Math.abs(y) * -1;
+    }
+    // 是否隐藏滚动条
+    if (options?.hiddenScrollBar != null) {
+      const {
+        state,
+        color,
+        fillWidth,
+        fillHeight,
+        fillState
+      } = options.hiddenScrollBar;
+      this.hiddenScrollBar = {
+        state,
+        color: color ? color : "#000000",
+        fillWidth: fillWidth ? fillWidth : 0,
+        fillHeight: fillHeight ? fillHeight : 0,
+        fillState: fillState ? fillState : false
+      };
+      if (state) {
+        this.data.setResetScrollbarState(true);
+        // 设置页面宽高并隐藏滚动条
+        document.documentElement.classList.add("hidden-screen-shot-scroll");
+        document.body.classList.add("hidden-screen-shot-scroll");
+      }
+    }
+    // 是否启用窗口截图模式
+    if (options?.wrcWindowMode != null) {
+      this.wrcWindowMode = options.wrcWindowMode;
     }
   }
 

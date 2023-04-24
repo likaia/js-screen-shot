@@ -382,3 +382,8 @@
   left: 0;
   border: none;
 }
+.hidden-screen-shot-scroll {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
