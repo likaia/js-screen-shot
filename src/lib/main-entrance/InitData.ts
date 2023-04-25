@@ -69,6 +69,7 @@ export default class InitData {
       // 初始化完成设置其值为false
       initStatus = false;
       screenShotController = null;
+      dragging = false;
       toolController = null;
       textInputController = null;
       optionController = null;

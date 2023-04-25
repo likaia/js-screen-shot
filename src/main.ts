@@ -3,9 +3,9 @@ import CreateDom from "@/lib/main-entrance/CreateDom";
 import "@/assets/scss/screen-shot.scss";
 import InitData from "@/lib/main-entrance/InitData";
 import {
+  crcEventType,
   cutOutBoxBorder,
   drawCutOutBoxReturnType,
-  hideBarInfoType,
   movePositionType,
   positionInfoType,
   screenShotType,
@@ -33,7 +33,6 @@ import { drawCrossImg } from "@/lib/split-methods/drawCrossImg";
 import { getCanvas2dCtx } from "@/lib/common-methods/CanvasPatch";
 import { updateContainerMouseStyle } from "@/lib/common-methods/UpdateContainerMouseStyle";
 import { addHistory } from "@/lib/split-methods/AddHistoryData";
-import { saveCanvasToImage } from "@/lib/common-methods/SaveCanvasToImage";
 
 export default class ScreenShot {
   // 当前实例的响应式data数据
@@ -118,6 +117,8 @@ export default class ScreenShot {
   private position: { top: number; left: number } = { left: 0, top: 0 };
   private imgSrc: string | null = null;
   private loadCrossImg = false;
+  // 鼠标是否在裁剪框内
+  private mouseInsideCropBox = false;
   private proxyUrl: undefined | string = undefined;
   private drawStatus = false;
   // webrtc模式下的屏幕流数据
@@ -138,6 +139,9 @@ export default class ScreenShot {
   private placement: toolPositionValType = "center";
   // 递增变粗箭头的实现
   private drawArrow = new DrawArrow();
+  private customRightClickEvent: crcEventType = {
+    state: false
+  };
 
   constructor(options: screenShotType) {
     this.plugInParameters = new PlugInParameters();
@@ -168,24 +172,40 @@ export default class ScreenShot {
     ) {
       return;
     }
-    // 调整层级
-    if (options?.level) {
-      this.adjustContainerLevels(options.level);
-    }
-    // webrtc截图等待时间
-    if (options?.wrcReplyTime) {
-      this.wrcReplyTime = options.wrcReplyTime;
-    }
 
     // 创建键盘事件监听
     new KeyboardEventHandle(this.screenShotContainer, this.toolController);
     // 给输入容器设置快捷键监听
     this.registerContainerShortcuts(this.textInputController);
+    if (this.customRightClickEvent.state) {
+      // 给截图容器添加右键事件监听
+      this.registerForRightClickEvent(this.screenShotContainer);
+    }
   }
 
   // 获取截图区域canvas容器
   public getCanvasController(): HTMLCanvasElement | null | undefined {
     return this.screenShotContainer;
+  }
+
+  // 销毁组件方法
+  public destroyComponents(): void {
+    this.data.destroyDOM();
+    this.data.setInitStatus(true);
+  }
+
+  // 注册右键事件
+  private registerForRightClickEvent(container: HTMLElement) {
+    container.addEventListener("contextmenu", e => {
+      e.preventDefault();
+      // 调用者传入了自定义事件则执行
+      if (this.customRightClickEvent.handleFn) {
+        this.customRightClickEvent.handleFn();
+        return;
+      }
+      // 销毁组件
+      this.destroyComponents();
+    });
   }
 
   // 加载截图组件
@@ -471,6 +491,8 @@ export default class ScreenShot {
 
   // 鼠标按下事件
   private mouseDownEvent = (event: MouseEvent) => {
+    // 非鼠标左键按下则终止
+    if (event.button != 0) return;
     // 当前操作的是撤销
     if (this.data.getToolName() == "undo") return;
     this.data.setDragging(true);
@@ -501,6 +523,9 @@ export default class ScreenShot {
       this.screenShotContainer &&
       this.screenShotCanvas
     ) {
+      if (!this.mouseInsideCropBox) {
+        return;
+      }
       // 显示文本输入区域
       this.data.setTextStatus(true);
       // 判断输入框位置是否变化
@@ -937,6 +962,14 @@ export default class ScreenShot {
     if (options?.screenShotDom) {
       this.screenShotDom = options.screenShotDom;
     }
+    // 调整层级
+    if (options?.level) {
+      this.adjustContainerLevels(options.level);
+    }
+    // webrtc截图等待时间
+    if (options?.wrcReplyTime) {
+      this.wrcReplyTime = options.wrcReplyTime;
+    }
     // 是否初始化裁剪框
     if (options?.cropBoxInfo) {
       this.cropBoxInfo = options.cropBoxInfo;
@@ -979,6 +1012,9 @@ export default class ScreenShot {
     if (options?.wrcWindowMode != null) {
       this.wrcWindowMode = options.wrcWindowMode;
     }
+    if (options?.customRightClickEvent != null) {
+      this.customRightClickEvent = options.customRightClickEvent;
+    }
   }
 
   // 鼠标抬起事件
@@ -999,6 +1035,12 @@ export default class ScreenShot {
       !this.dragFlag &&
       !this.clickCutFullScreen
     ) {
+      // 复原裁剪框的坐标
+      this.drawGraphPosition.startX = this.drawGraphPrevX;
+      this.drawGraphPosition.startY = this.drawGraphPrevY;
+      return;
+    }
+    if (!this.data.getToolClickStatus() && !this.dragFlag) {
       // 复原裁剪框的坐标
       this.drawGraphPosition.startX = this.drawGraphPrevX;
       this.drawGraphPosition.startY = this.drawGraphPrevY;
@@ -1155,6 +1197,7 @@ export default class ScreenShot {
           break;
         }
       }
+      this.mouseInsideCropBox = flag;
       context.closePath();
       if (!flag) {
         // 鼠标移出裁剪框重置鼠标样式

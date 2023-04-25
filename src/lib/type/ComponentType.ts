@@ -72,6 +72,7 @@ export type toolIcoType = {
 
 // 截图工具栏图标数据类型
 export type toolbarType = { id: number; title: string };
+export type crcEventType = { state: boolean; handleFn?: () => void };
 
 export type screenShotType = {
   enableWebRtc?: boolean; // 是否启用webrtc，默认是启用状态
@@ -100,4 +101,5 @@ export type screenShotType = {
   writeBase64?: boolean; // 是否将截图内容写入剪切板
   hiddenScrollBar?: hideBarInfoType; // 是否隐藏滚动条
   wrcWindowMode?: boolean; // 是否启用窗口截图模式，默认为当前标签页截图
+  customRightClickEvent: crcEventType; // 是否自定义容器的右键点击事件
 };
