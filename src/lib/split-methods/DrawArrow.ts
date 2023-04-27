@@ -11,6 +11,7 @@ export class DrawArrow {
     edgeLen: 50, // 箭头的头部长度
     angle: 30 // 箭头的头部角度
   };
+  private size = 1;
 
   /**
    * 绘制箭头
@@ -20,6 +21,7 @@ export class DrawArrow {
    * @param x 当前鼠标x轴坐标
    * @param y 当前鼠标y轴坐标
    * @param color 箭头颜色
+   * @param size 箭头尺寸
    */
   public draw(
     ctx: CanvasRenderingContext2D,
@@ -27,7 +29,8 @@ export class DrawArrow {
     originY: number,
     x: number,
     y: number,
-    color: string
+    color: string,
+    size: number
   ) {
     this.beginPoint.x = originX;
     this.beginPoint.y = originY;
@@ -36,6 +39,20 @@ export class DrawArrow {
     this.arrowCord(this.beginPoint, this.stopPoint);
     this.sideCord();
     this.drawArrow(ctx, color);
+    switch (size) {
+      case 2:
+        this.size = 1;
+        break;
+      case 5:
+        this.size = 1.3;
+        break;
+      case 10:
+        this.size = 1.7;
+        break;
+      default:
+        this.size = 1;
+        break;
+    }
   }
 
   // 在画布上画出递增变粗的箭头
@@ -88,7 +105,7 @@ export class DrawArrow {
         Math.PI) *
       180;
 
-    this.setArrowInfo(50, 30);
+    this.setArrowInfo(50 * this.size, 30 * this.size);
     this.dynArrowSize();
   }
 

@@ -675,13 +675,15 @@ export default class ScreenShot {
           );
           break;
         case "right-top":
+          console.log(this.data.getPenSize());
           this.drawArrow.draw(
             this.screenShotCanvas,
             startX,
             startY,
             currentX,
             currentY,
-            this.data.getSelectedColor()
+            this.data.getSelectedColor(),
+            this.data.getPenSize()
           );
           break;
         case "brush":
