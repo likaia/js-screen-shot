@@ -55,18 +55,65 @@ export class DrawArrow {
     }
   }
 
-  // 在画布上画出递增变粗的箭头
-  private drawArrow(ctx: CanvasRenderingContext2D, color: string) {
-    ctx.fillStyle = color;
-    ctx.beginPath();
-    ctx.moveTo(this.polygonVertex[0], this.polygonVertex[1]);
-    ctx.lineTo(this.polygonVertex[2], this.polygonVertex[3]);
-    ctx.lineTo(this.polygonVertex[4], this.polygonVertex[5]);
-    ctx.lineTo(this.polygonVertex[6], this.polygonVertex[7]);
-    ctx.lineTo(this.polygonVertex[8], this.polygonVertex[9]);
-    ctx.lineTo(this.polygonVertex[10], this.polygonVertex[11]);
-    ctx.closePath();
-    ctx.fill();
+  // 计算箭头底边两个点位置信息
+  private arrowCord(
+    beginPoint: { x: number; y: number },
+    stopPoint: { x: number; y: number }
+  ) {
+    this.polygonVertex[0] = beginPoint.x;
+    // 多边形的第一个顶点设为起点
+    this.polygonVertex[1] = beginPoint.y;
+    this.polygonVertex[6] = stopPoint.x;
+    // 第七个顶点设为终点
+    this.polygonVertex[7] = stopPoint.y;
+    // 计算夹角
+    this.getRadian(beginPoint, stopPoint);
+    // 使用三角函数计算出8、9顶点的坐标
+    this.polygonVertex[8] =
+      stopPoint.x -
+      this.arrowInfo.edgeLen *
+        Math.cos((Math.PI / 180) * (this.angle + this.arrowInfo.angle));
+    this.polygonVertex[9] =
+      stopPoint.y -
+      this.arrowInfo.edgeLen *
+        Math.sin((Math.PI / 180) * (this.angle + this.arrowInfo.angle));
+    // 使用三角函数计算出4、5顶点的坐标
+    this.polygonVertex[4] =
+      stopPoint.x -
+      this.arrowInfo.edgeLen *
+        Math.cos((Math.PI / 180) * (this.angle - this.arrowInfo.angle));
+    this.polygonVertex[5] =
+      stopPoint.y -
+      this.arrowInfo.edgeLen *
+        Math.sin((Math.PI / 180) * (this.angle - this.arrowInfo.angle));
+  }
+
+  // 计算两个点之间的夹角
+  private getRadian(
+    beginPoint: { x: number; y: number },
+    stopPoint: { x: number; y: number }
+  ) {
+    // 使用atan2算出夹角（弧度），并将其转换为角度值(弧度 / 180)
+    this.angle =
+      (Math.atan2(stopPoint.y - beginPoint.y, stopPoint.x - beginPoint.x) /
+        Math.PI) *
+      180;
+
+    this.setArrowInfo(50 * this.size, 30 * this.size);
+    this.dynArrowSize();
+  }
+
+  // 计算另两个底边侧面点
+  private sideCord() {
+    const midpoint: { x: number; y: number } = { x: 0, y: 0 };
+
+    midpoint.x = (this.polygonVertex[4] + this.polygonVertex[8]) / 2;
+    // 通过求出第5个顶点和第9个顶点的横纵坐标的平均值，得到多边形的中心点坐标，
+    midpoint.y = (this.polygonVertex[5] + this.polygonVertex[9]) / 2;
+    this.polygonVertex[2] = (this.polygonVertex[4] + midpoint.x) / 2;
+    this.polygonVertex[3] = (this.polygonVertex[5] + midpoint.y) / 2;
+    this.polygonVertex[10] = (this.polygonVertex[8] + midpoint.x) / 2;
+    this.polygonVertex[11] = (this.polygonVertex[9] + midpoint.y) / 2;
   }
 
   /**
@@ -84,8 +131,10 @@ export class DrawArrow {
   private dynArrowSize() {
     const x = this.stopPoint.x - this.beginPoint.x;
     const y = this.stopPoint.y - this.beginPoint.y;
+    // 计算两点之间的直线距离
     const length = Math.sqrt(x ** 2 + y ** 2);
 
+    // 根据箭头始点和终点之间的距离自适应地调整箭头大小。
     if (length < 50) {
       this.arrowInfo.edgeLen = length / 2;
     } else if (length < 250) {
@@ -95,56 +144,17 @@ export class DrawArrow {
     }
   }
 
-  // 计算起点与X轴之间的夹角角度值
-  private getRadian(
-    beginPoint: { x: number; y: number },
-    stopPoint: { x: number; y: number }
-  ) {
-    this.angle =
-      (Math.atan2(stopPoint.y - beginPoint.y, stopPoint.x - beginPoint.x) /
-        Math.PI) *
-      180;
-
-    this.setArrowInfo(50 * this.size, 30 * this.size);
-    this.dynArrowSize();
-  }
-
-  // 计算箭头底边两个点位置信息
-  private arrowCord(
-    beginPoint: { x: number; y: number },
-    stopPoint: { x: number; y: number }
-  ) {
-    this.polygonVertex[0] = beginPoint.x;
-    this.polygonVertex[1] = beginPoint.y;
-    this.polygonVertex[6] = stopPoint.x;
-    this.polygonVertex[7] = stopPoint.y;
-    this.getRadian(beginPoint, stopPoint);
-    this.polygonVertex[8] =
-      stopPoint.x -
-      this.arrowInfo.edgeLen *
-        Math.cos((Math.PI / 180) * (this.angle + this.arrowInfo.angle));
-    this.polygonVertex[9] =
-      stopPoint.y -
-      this.arrowInfo.edgeLen *
-        Math.sin((Math.PI / 180) * (this.angle + this.arrowInfo.angle));
-    this.polygonVertex[4] =
-      stopPoint.x -
-      this.arrowInfo.edgeLen *
-        Math.cos((Math.PI / 180) * (this.angle - this.arrowInfo.angle));
-    this.polygonVertex[5] =
-      stopPoint.y -
-      this.arrowInfo.edgeLen *
-        Math.sin((Math.PI / 180) * (this.angle - this.arrowInfo.angle));
-  }
-
-  // 计算另两个底边侧面点
-  private sideCord() {
-    const midpoint: { x: number; y: number } = { x: 0, y: 0 };
-    midpoint.x = (this.polygonVertex[4] + this.polygonVertex[8]) / 2;
-    midpoint.y = (this.polygonVertex[5] + this.polygonVertex[9]) / 2;
-    this.polygonVertex[2] = (this.polygonVertex[4] + midpoint.x) / 2;
-    this.polygonVertex[3] = (this.polygonVertex[5] + midpoint.y) / 2;
-    this.polygonVertex[10] = (this.polygonVertex[8] + midpoint.x) / 2;
-    this.polygonVertex[11] = (this.polygonVertex[9] + midpoint.y) / 2;
+  // 在画布上画出递增变粗的箭头
+  private drawArrow(ctx: CanvasRenderingContext2D, color: string) {
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(this.polygonVertex[0], this.polygonVertex[1]);
+    ctx.lineTo(this.polygonVertex[2], this.polygonVertex[3]);
+    ctx.lineTo(this.polygonVertex[4], this.polygonVertex[5]);
+    ctx.lineTo(this.polygonVertex[6], this.polygonVertex[7]);
+    ctx.lineTo(this.polygonVertex[8], this.polygonVertex[9]);
+    ctx.lineTo(this.polygonVertex[10], this.polygonVertex[11]);
+    ctx.closePath();
+    ctx.fill();
   }
 }
