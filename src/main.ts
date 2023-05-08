@@ -172,6 +172,8 @@ export default class ScreenShot {
     ) {
       return;
     }
+    // 截图组件加载完毕后，对层级进行调整
+    this.adjustContainerLevels(options?.level ? options.level : 0);
 
     // 创建键盘事件监听
     new KeyboardEventHandle(this.screenShotContainer, this.toolController);
@@ -744,7 +746,8 @@ export default class ScreenShot {
       this.textInputController == null ||
       this.optionIcoController == null ||
       this.optionController == null ||
-      this.cutBoxSizeContainer == null
+      this.cutBoxSizeContainer == null ||
+      level <= 0
     ) {
       return;
     }
@@ -963,10 +966,6 @@ export default class ScreenShot {
     // 截图容器dom
     if (options?.screenShotDom) {
       this.screenShotDom = options.screenShotDom;
-    }
-    // 调整层级
-    if (options?.level) {
-      this.adjustContainerLevels(options.level);
     }
     // webrtc截图等待时间
     if (options?.wrcReplyTime) {
