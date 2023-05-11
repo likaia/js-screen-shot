@@ -11,6 +11,7 @@ let canvasHeight = 0;
 
 // 展示截屏图片至容器
 let showScreenData = false;
+let screenShotDom: null | HTMLElement = null;
 
 // 蒙层颜色
 const maskColor = { r: 0, g: 0, b: 0, a: 0.6 };
@@ -28,6 +29,7 @@ export default class PlugInParameters {
       screenFlow = null;
       // 初始化完成设置其值为false
       initStatus = false;
+      screenShotDom = null;
     }
   }
 
@@ -49,6 +51,14 @@ export default class PlugInParameters {
   // 设置webrtc启用状态
   public setWebRtcStatus(status: boolean) {
     enableWebRtc = status;
+  }
+
+  public setScreenShotDom(dom: HTMLElement) {
+    screenShotDom = dom;
+  }
+
+  public getScreenShotDom() {
+    return screenShotDom;
   }
 
   // 获取屏幕流

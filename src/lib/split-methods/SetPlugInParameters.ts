@@ -32,4 +32,9 @@ export function setPlugInParameters(options: screenShotType) {
   if (options?.writeBase64 === false) {
     plugInParameters.setWriteImgState(options.writeBase64);
   }
+
+  // 调用者传入了截图dom
+  if (options?.screenShotDom) {
+    plugInParameters.setScreenShotDom(options.screenShotDom);
+  }
 }

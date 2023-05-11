@@ -97,10 +97,17 @@ export function drawCutOutBox(
 
   context.globalCompositeOperation = "destination-over";
   // 图片尺寸使用canvas容器的css中的尺寸
-  const { imgWidth, imgHeight } = {
+  let { imgWidth, imgHeight } = {
     imgWidth: parseInt(controller?.style.width),
     imgHeight: parseInt(controller?.style.height)
   };
+
+  // 用户有传入截图dom绘制时使用其dom的尺寸
+  const screenShotDom = data.getScreenShotDom();
+  if (screenShotDom != null) {
+    imgWidth = screenShotDom.clientWidth;
+    imgHeight = screenShotDom.clientHeight;
+  }
 
   context.drawImage(imageController, 0, 0, imgWidth, imgHeight);
   context.restore();
