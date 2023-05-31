@@ -17,7 +17,11 @@ npm install js-web-screen-shot --save
 
 ## 插件使用
 由于插件采用原生js编写且不依赖任何第三方库，因此它可以在任意一台支持js的设备上运行。
-> 注意⚠️： 如果需要使用插件的webrtc模式或者截图写入剪切板功能，需要你的网站运行在`https`环境或者`localhost`环境。
+> 注意⚠️： 如果需要使用插件的webrtc模式或者截图写入剪切板功能，需要你的网站运行在`https`环境或者`localhost`环境。当然，也可以通过修改浏览器设置的方式实现在所有环境下都能运行。步骤如下：
+> 1.打开谷歌浏览器，在地址栏输入`chrome://flags/#unsafely-treat-insecure-origin-as-secure`
+> 2.在打开的界面中：下拉框选择enabled，地址填写你的项目访问路径。
+> ![img.png](https://www.kaisir.cn/uploads/MarkDownImg/20230531/5e49de8f32f54f8bb972b4f472d4272e.png)
+
 ### import形式使用插件
 * 在需要使用截屏插件的业务代码中导入插件
 ```javascript
