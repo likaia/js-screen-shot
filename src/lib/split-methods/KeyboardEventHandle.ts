@@ -10,8 +10,8 @@ export default class KeyboardEventHandle {
     this.toolController = toolController;
     // 调整截图容器显示权重
     screenShotController.tabIndex = 9999;
-    // 监听截图容器键盘按下事件
-    screenShotController.addEventListener("keydown", (event: KeyboardEvent) => {
+    // 监听全局键盘按下事件
+    document.body.addEventListener("keydown", (event: KeyboardEvent) => {
       if (event.code === "Escape") {
         // ESC按下，触发取消截图事件
         this.triggerEvent("close");

@@ -175,6 +175,7 @@ export default class ScreenShot {
     // 截图组件加载完毕后，对层级进行调整
     this.adjustContainerLevels(options?.level ? options.level : 0);
 
+    console.log("创建键盘监听事件");
     // 创建键盘事件监听
     new KeyboardEventHandle(this.screenShotContainer, this.toolController);
     // 给输入容器设置快捷键监听
