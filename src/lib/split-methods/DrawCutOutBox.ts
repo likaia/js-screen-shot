@@ -28,6 +28,7 @@ export function drawCutOutBox(
   // 获取画布宽高
   const canvasWidth = controller?.width;
   const canvasHeight = controller?.height;
+  const dpr = window.devicePixelRatio || 1;
   const data = new PlugInParameters();
 
   // 画布、图片不存在则return
@@ -107,6 +108,12 @@ export function drawCutOutBox(
   if (screenShotDom != null) {
     imgWidth = screenShotDom.clientWidth;
     imgHeight = screenShotDom.clientHeight;
+  }
+
+  // 非webrtc模式且未传入截图dom时，图片的宽高不做处理
+  if (!data.getWebRtcStatus() && screenShotDom == null) {
+    imgWidth = imageController.width / dpr;
+    imgHeight = imageController.height / dpr;
   }
 
   context.drawImage(imageController, 0, 0, imgWidth, imgHeight);
