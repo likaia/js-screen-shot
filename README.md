@@ -150,6 +150,9 @@ export const doScreenShot = async ()=>{
 如果你看完上个章节的使用方法，依然不是很理解的话，这里准备了一份在electron环境下使用本插件的demo，请移步[electron-js-web-screen-shot-demo](https://github.com/Vanisper/electron-js-web-screen-shot-demo)。
 
 
+### Vue项目下使用乱码问题
+当你vue项目中使用h2c模式进行截图时，画布左上角可能会出现一些奇怪的字符，这是由于`noscript`标签导致的，将其删除即可。
+
 ### 参数说明
 截图插件有一个可选参数，它接受一个对象，对象每个key的作用如下:
 * `enableWebRtc` 是否启用webrtc，值为`boolean`类型，值为`false`则使用`html2canvas`来截图
