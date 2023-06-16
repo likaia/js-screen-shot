@@ -34,7 +34,7 @@ export default class KeyboardEventHandle {
    * @param eventName 事件名, 与截图工具栏中的data-title属性值保持一致
    * @private
    */
-  private triggerEvent(eventName: string): void {
+  public triggerEvent(eventName: string): void {
     if (this.toolController == null) return;
     for (let i = 0; i < this.toolController.childNodes.length; i++) {
       const childNode = this.toolController.childNodes[i] as HTMLDivElement;

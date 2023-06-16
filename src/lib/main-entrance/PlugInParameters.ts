@@ -16,6 +16,7 @@ let screenShotDom: null | HTMLElement = null;
 // 蒙层颜色
 const maskColor = { r: 0, g: 0, b: 0, a: 0.6 };
 let writeBase64 = true;
+let cutBoxBdColor = "#2CABFF";
 
 export default class PlugInParameters {
   constructor() {
@@ -24,6 +25,7 @@ export default class PlugInParameters {
       enableWebRtc = true;
       canvasWidth = 0;
       canvasHeight = 0;
+      cutBoxBdColor = "#2CABFF";
       showScreenData = false;
       writeBase64 = true;
       screenFlow = null;
@@ -55,6 +57,14 @@ export default class PlugInParameters {
 
   public setScreenShotDom(dom: HTMLElement) {
     screenShotDom = dom;
+  }
+
+  public getCutBoxBdColor() {
+    return cutBoxBdColor;
+  }
+
+  public setCutBoxBdColor(color: string) {
+    cutBoxBdColor = color;
   }
 
   public getScreenShotDom() {

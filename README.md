@@ -162,6 +162,7 @@ sessionStorage.getItem("screenShotImg");
 * `triggerCallback` 截图响应回调函数，值为`Function`类型，使用html2canvas截屏时，页面图片过多时响应会较慢；使用webrtc截屏时用户点了分享，该函数为响应完成后触发的事件。回调函数返回一个对象，类型为: `{code: number,msg: string, displaySurface: string | null,displayLabel: string | null}`，code为0时代表截图加载完成，displaySurface返回的的是当前选择的窗口类型，displayLabel返回的是当前选择的标签页标识，浏览器不支持时此值为null。
 * `cancelCallback` 取消分享回到函数，值为`Function`类型，使用webrtc模式截屏时，用户点了取消或者浏览器不支持时所触发的事件。回调函数返回一个对象，类型为：`{code: number,msg: string, errorInfo: string}`，code为-1时代表用户未授权或者浏览器不支持webrtc。
 * `level` 截图容器层级，值为number类型。 
+* `cutBoxBdColor` 裁剪区域边框像素点颜色，值为number类型。
 * `canvasWidth` 画布宽度，值为number类型，必须与高度一起设置，单独设置无效。
 * `canvasHeight` 画布高度，值为number类型，必须与宽度一起设置，单独设置无效。
 * `position` 截图容器位置，值为`{left?: number, top?: number}`类型
@@ -248,7 +249,27 @@ import ScreenShot from "js-web-screen-shot";
 const screenShotHandler = new ScreenShot();
 screenShotHandler.destroyComponents()
 ```
+#### completeScreenshot
+该函数用于将框选区域的截图内容写入剪切版，无返回值。
 
+该方法可以跟`cropBoxInfo`参数结合起来实现指定位置的自动截图，截图内容默认写入剪切版内，如果你想拿到截取到的base64内容可以通过`completeCallback`参数拿到，或者直接从sessionStorage中获取。
+
+示例代码：
+```javascript
+      const plugin = new screenShotPlugin(
+        {
+          clickCutFullScreen:true,
+          wrcWindowMode: true,
+          cropBoxInfo:{x:350, y:20, w:300, h:300},
+          completeCallback: (base64) => {
+            console.log(base64);
+          },
+          triggerCallback:() => {
+            // 截图组件加载完毕调用此方法来完成框选区域的截图
+            plugin.completeScreenshot()
+          }
+        });
+```
 
 ### 工具栏图标定制
 如果你需要修改截图工具栏的图标，可以通过覆盖元素css类名的方式实现，插件内所有图标的css类名如下所示：

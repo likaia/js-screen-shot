@@ -61,6 +61,7 @@ export default class ScreenShot {
   private cutBoxSizeContainer: HTMLDivElement | null | undefined;
   private plugInParameters: PlugInParameters;
   private wrcReplyTime = 500;
+  private keyboardEventHandle: null | KeyboardEventHandle = null;
   // 图形位置参数
   private drawGraphPosition: positionInfoType = {
     startX: 0,
@@ -175,9 +176,11 @@ export default class ScreenShot {
     // 截图组件加载完毕后，对层级进行调整
     this.adjustContainerLevels(options?.level ? options.level : 0);
 
-    console.log("创建键盘监听事件");
     // 创建键盘事件监听
-    new KeyboardEventHandle(this.screenShotContainer, this.toolController);
+    this.keyboardEventHandle = new KeyboardEventHandle(
+      this.screenShotContainer,
+      this.toolController
+    );
     // 给输入容器设置快捷键监听
     this.registerContainerShortcuts(this.textInputController);
     if (this.customRightClickEvent.state) {
@@ -195,6 +198,13 @@ export default class ScreenShot {
   public destroyComponents(): void {
     this.data.destroyDOM();
     this.data.setInitStatus(true);
+  }
+
+  // 确认截图方法
+  public completeScreenshot() {
+    if (this.keyboardEventHandle) {
+      this.keyboardEventHandle.triggerEvent("confirm");
+    }
   }
 
   // 注册右键事件

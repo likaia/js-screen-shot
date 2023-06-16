@@ -37,4 +37,9 @@ export function setPlugInParameters(options: screenShotType) {
   if (options?.screenShotDom) {
     plugInParameters.setScreenShotDom(options.screenShotDom);
   }
+
+  // 调用者传入了裁剪区域边框像素点颜色信息
+  if (options?.cutBoxBdColor) {
+    plugInParameters.setCutBoxBdColor(options.cutBoxBdColor);
+  }
 }

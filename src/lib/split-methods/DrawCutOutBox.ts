@@ -51,7 +51,7 @@ export function drawCutOutBox(
   context.clearRect(mouseX, mouseY, width, height);
   // 绘制8个边框像素点并保存坐标信息以及事件参数
   context.globalCompositeOperation = "source-over";
-  context.fillStyle = "#2CABFF";
+  context.fillStyle = data.getCutBoxBdColor();
   // 是否绘制裁剪框的8个像素点
   if (drawBorders) {
     // 像素点大小
