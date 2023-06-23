@@ -1,4 +1,6 @@
 // 键盘按下事件处理类
+import InitData from "@/lib/main-entrance/InitData";
+
 export default class KeyboardEventHandle {
   // 截图工具栏容器
   private readonly toolController: HTMLDivElement | null = null;
@@ -7,17 +9,28 @@ export default class KeyboardEventHandle {
     screenShotController: HTMLCanvasElement,
     toolController: HTMLDivElement
   ) {
+    const data = new InitData();
+    const textInputContainer = document.getElementById("textInputPanel");
     this.toolController = toolController;
     // 调整截图容器显示权重
     screenShotController.tabIndex = 9999;
     // 监听全局键盘按下事件
     document.body.addEventListener("keydown", (event: KeyboardEvent) => {
+      // 文本输入框存在时则终止
+      if (data.getTextEditState()) {
+        data.setTextEditState(false);
+        return;
+      }
       if (event.code === "Escape") {
         // ESC按下，触发取消截图事件
         this.triggerEvent("close");
       }
 
-      if (event.code === "Enter") {
+      if (
+        event.code === "Enter" &&
+        textInputContainer &&
+        textInputContainer.style.display !== "block"
+      ) {
         // Enter按下，触发确认截图事件
         this.triggerEvent("confirm");
       }

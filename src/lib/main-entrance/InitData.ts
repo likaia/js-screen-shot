@@ -61,6 +61,8 @@ let textInfo: textInfoType;
 const maxUndoNum = 15;
 // 是否需要还原页面的滚动条状态
 let resetScrollbarState = false;
+// 当前是否处于文本编辑状态
+let textEditState = false;
 
 export default class InitData {
   constructor() {
@@ -83,6 +85,7 @@ export default class InitData {
       };
       toolClickStatus = false;
       resetScrollbarState = false;
+      textEditState = false;
       toolPositionStatus = false;
       selectedColor = "#F53340";
       toolName = "";
@@ -206,6 +209,13 @@ export default class InitData {
       sscTop = parseInt(screenShotController.style.top);
     }
     cutBoxSizeContainer.style.top = top + sscTop + "px";
+  }
+
+  public setTextEditState(state: boolean) {
+    textEditState = state;
+  }
+  public getTextEditState() {
+    return textEditState;
   }
 
   // 设置裁剪框尺寸

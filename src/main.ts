@@ -856,6 +856,7 @@ export default class ScreenShot {
         ((event.metaKey || event.ctrlKey) && event.code === "Enter") ||
         event.code === "Escape"
       ) {
+        this.data.setTextEditState(true);
         const text = container.innerText;
         if (!text || text === "") {
           // 隐藏输入框
