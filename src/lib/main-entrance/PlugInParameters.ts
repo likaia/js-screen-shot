@@ -17,6 +17,7 @@ let screenShotDom: null | HTMLElement = null;
 const maskColor = { r: 0, g: 0, b: 0, a: 0.6 };
 let writeBase64 = true;
 let cutBoxBdColor = "#2CABFF";
+let saveCallback: ((code: number, msg: string) => void) | null = null;
 
 export default class PlugInParameters {
   constructor() {
@@ -32,6 +33,7 @@ export default class PlugInParameters {
       // 初始化完成设置其值为false
       initStatus = false;
       screenShotDom = null;
+      saveCallback = null;
     }
   }
 
@@ -120,5 +122,13 @@ export default class PlugInParameters {
   }
   public getWriteImgState() {
     return writeBase64;
+  }
+
+  public setSaveCallback(saveFn: (code: number, msg: string) => void) {
+    saveCallback = saveFn;
+  }
+
+  public getSaveCallback() {
+    return saveCallback;
   }
 }

@@ -42,4 +42,9 @@ export function setPlugInParameters(options: screenShotType) {
   if (options?.cutBoxBdColor) {
     plugInParameters.setCutBoxBdColor(options.cutBoxBdColor);
   }
+
+  // 调用者传入了保存截图回调
+  if (options?.saveCallback) {
+    plugInParameters.setSaveCallback(options.saveCallback);
+  }
 }

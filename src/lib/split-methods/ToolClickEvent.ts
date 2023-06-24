@@ -12,6 +12,7 @@ import { takeOutHistory } from "@/lib/common-methods/TakeOutHistory";
 import { drawCutOutBox } from "@/lib/split-methods/DrawCutOutBox";
 import { drawText } from "@/lib/split-methods/DrawText";
 import { addHistory } from "@/lib/split-methods/AddHistoryData";
+import PlugInParameters from "@/lib/main-entrance/PlugInParameters";
 
 export function toolClickEvent(
   toolName: string,
@@ -21,6 +22,7 @@ export function toolClickEvent(
   closeCallback: Function | undefined
 ) {
   const data = new InitData();
+  const plugInParameters = new PlugInParameters();
   const textInputController = data.getTextInputController();
   const screenShotController = data.getScreenShotContainer();
   const ScreenShotImageController = data.getScreenShotImageController();
@@ -96,6 +98,10 @@ export function toolClickEvent(
   // 保存图片
   if (toolName == "save") {
     getCanvasImgData(true);
+    const callback = plugInParameters.getSaveCallback();
+    if (callback) {
+      callback(0, "保存成功");
+    }
     // 销毁组件
     data.destroyDOM();
     data.setInitStatus(true);
