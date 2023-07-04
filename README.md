@@ -41,8 +41,8 @@ new ScreenShot();
 * 在业务代码中使用时实例化插件即可
 ```javascript
     // 截图确认按钮回调函数
-    const callback = (base64) =>{
-      console.log(base64);
+    const callback = ({base64, cutInfo})=>{
+      console.log(base64, cutInfo);
     }
     // 截图取消时的回调函数
     const closeFn = ()=>{
@@ -157,7 +157,7 @@ export const doScreenShot = async ()=>{
 截图插件有一个可选参数，它接受一个对象，对象每个key的作用如下:
 * `enableWebRtc` 是否启用webrtc，值为`boolean`类型，值为`false`则使用`html2canvas`来截图
 * `screenFlow` 设备提供的屏幕流数据(用于electron环境下自己传入的视频流数据)，需要将**enableWebRtc**属性设为`true`
-* `completeCallback` 截图完成回调函数，值为`Function`类型，最右侧的对号图标点击后会将图片的base64地址回传给你定义的函数，如果不传的话则会将图片的base64地址放到`sessionStorage`中，你可以通过下述方式拿到他：
+* `completeCallback` 截图完成回调函数，值为`Function`类型，最右侧的对号图标点击后会将图片的base64地址与裁剪信息回传给你定义的函数，如果不传的话则会将这些数据放到`sessionStorage`中，你可以通过下述方式拿到他：
 ```javascript
 sessionStorage.getItem("screenShotImg");
 ```
@@ -267,8 +267,8 @@ screenShotHandler.destroyComponents()
           clickCutFullScreen:true,
           wrcWindowMode: true,
           cropBoxInfo:{x:350, y:20, w:300, h:300},
-          completeCallback: (base64) => {
-            console.log(base64);
+          completeCallback: ({base64, cutInfo}) => {
+            console.log(base64, cutInfo);
           },
           triggerCallback:() => {
             // 截图组件加载完毕调用此方法来完成框选区域的截图

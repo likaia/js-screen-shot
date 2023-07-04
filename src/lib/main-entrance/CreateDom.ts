@@ -1,5 +1,9 @@
 import toolbar from "@/lib/config/Toolbar";
-import { screenShotType, toolbarType } from "@/lib/type/ComponentType";
+import {
+  positionInfoType,
+  screenShotType,
+  toolbarType
+} from "@/lib/type/ComponentType";
 import { toolClickEvent } from "@/lib/split-methods/ToolClickEvent";
 import { setBrushSize } from "@/lib/common-methods/SetBrushSize";
 import { selectColor } from "@/lib/common-methods/SelectColor";
@@ -43,8 +47,11 @@ export default class CreateDom {
       !options ||
       !Object.prototype.hasOwnProperty.call(options, "completeCallback")
     ) {
-      this.completeCallback = (base64: string) => {
-        sessionStorage.setItem("screenShotImg", base64);
+      this.completeCallback = (imgInfo: {
+        base64: string;
+        cutInfo: positionInfoType;
+      }) => {
+        sessionStorage.setItem("screenShotImg", JSON.stringify(imgInfo));
       };
     }
 

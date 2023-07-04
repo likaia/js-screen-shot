@@ -120,7 +120,7 @@ export function toolClickEvent(
     const base64 = getCanvasImgData(false);
     // 触发回调函数，截图数据回传给插件调用者
     if (completeCallback) {
-      completeCallback(base64);
+      completeCallback({ base64, cutInfo: data.getCutOutBoxPosition() });
     }
     // 销毁组件
     data.destroyDOM();
