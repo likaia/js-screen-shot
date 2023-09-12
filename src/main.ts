@@ -888,7 +888,8 @@ export default class ScreenShot {
       this.drawGraphPosition,
       this.toolController.offsetWidth,
       this.screenShotContainer.width / this.dpr,
-      this.placement
+      this.placement,
+      this.position
     );
     const containerHeight = this.screenShotContainer.height / this.dpr;
 
