@@ -11,7 +11,8 @@
   "scripts": {
     "build-rollup": "rollup -c --splitCss false --compState false --showPKGInfo true",
     "build-rollup:dev": "rollup -wc --splitCss false --compState false --showPKGInfo true --useDServer true --pkgFormat umd",
-    "build-rollup:prod": "rollup -c --splitCss false --compState true",
+    "build-rollup:prod": "rollup -c --splitCss false --compState true && yarn run fix-dts-path",
+    "fix-dts-path": "tsc-alias --outDir ./dist/",
     "test": "jest",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",
     "commit": "git-cz"
@@ -84,6 +85,7 @@
     "sass": "^1.26.5",
     "sass-loader": "^8.0.2",
     "ts-jest": "^29.0.5",
+    "tsc-alias": "^1.8.7",
     "typescript": "~5.0.4",
     "yargs": "^17.7.1"
   },
