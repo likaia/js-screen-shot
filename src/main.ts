@@ -504,6 +504,8 @@ export default class ScreenShot {
 
   // 鼠标按下事件
   private mouseDownEvent = (event: MouseEvent) => {
+    // 隐藏颜色选择面板
+    this.data.setColorPanelStatus(false);
     // 非鼠标左键按下则终止
     if (event.button != 0) return;
     // 当前操作的是撤销
