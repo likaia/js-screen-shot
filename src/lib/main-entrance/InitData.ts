@@ -15,7 +15,7 @@ let selectedColor = "#F53340";
 // 当前点击的工具栏名称
 let toolName = "";
 //  当前选择的画笔大小
-let penSize = 2;
+let penSize = 10;
 // 裁剪框顶点边框直径大小
 const borderSize = 10;
 // 撤销点击次数
