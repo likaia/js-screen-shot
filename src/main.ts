@@ -503,11 +503,24 @@ export default class ScreenShot {
   };
 
   // 鼠标按下事件
-  private mouseDownEvent = (event: MouseEvent) => {
+  private mouseDownEvent = (event: MouseEvent | TouchEvent) => {
     // 隐藏颜色选择面板
     this.data.setColorPanelStatus(false);
     // 非鼠标左键按下则终止
-    if (event.button != 0) return;
+    if (event instanceof MouseEvent && event.button != 0) return;
+
+    // 当前处于移动端触摸时，需要在按下时判断当前坐标点是否处于裁剪框内，主动更新draggingTrim状态（移动端的move事件只会在按下时才会触发）
+    if (event instanceof TouchEvent && this.screenShotCanvas) {
+      this.operatingCutOutBox(
+        event.touches[0].pageX,
+        event.touches[0].pageY,
+        this.tempGraphPosition.startX,
+        this.tempGraphPosition.startY,
+        this.tempGraphPosition.width,
+        this.tempGraphPosition.height,
+        this.screenShotCanvas
+      );
+    }
     // 当前操作的是撤销
     if (this.data.getToolName() == "undo") return;
     this.data.setDragging(true);
@@ -515,8 +528,12 @@ export default class ScreenShot {
     // 重置工具栏超出状态
     this.data.setToolPositionStatus(false);
     this.clickFlag = true;
-    const mouseX = nonNegativeData(event.offsetX);
-    const mouseY = nonNegativeData(event.offsetY);
+    const mouseX = nonNegativeData(
+      event instanceof MouseEvent ? event.offsetX : event.touches[0].pageX
+    );
+    const mouseY = nonNegativeData(
+      event instanceof MouseEvent ? event.offsetY : event.touches[0].pageY
+    );
 
     // 如果当前操作的是截图工具栏
     if (this.data.getToolClickStatus()) {
@@ -620,7 +637,7 @@ export default class ScreenShot {
   };
 
   // 鼠标移动事件
-  private mouseMoveEvent = (event: MouseEvent) => {
+  private mouseMoveEvent = (event: MouseEvent | TouchEvent) => {
     if (
       this.screenShotCanvas == null ||
       this.screenShotContainer == null ||
@@ -628,6 +645,8 @@ export default class ScreenShot {
     ) {
       return;
     }
+    // 去除默认事件
+    event.preventDefault();
 
     // 工具栏未选择且鼠标处于按下状态时
     if (!this.data.getToolClickStatus() && this.data.getDragging()) {
@@ -642,8 +661,12 @@ export default class ScreenShot {
     // 获取当前绘制中的工具位置信息
     const { startX, startY, width, height } = this.drawGraphPosition;
     // 获取当前鼠标坐标
-    const currentX = nonNegativeData(event.offsetX);
-    const currentY = nonNegativeData(event.offsetY);
+    const currentX = nonNegativeData(
+      event instanceof MouseEvent ? event.offsetX : event.touches[0].pageX
+    );
+    const currentY = nonNegativeData(
+      event instanceof MouseEvent ? event.offsetY : event.touches[0].pageY
+    );
     // 绘制中工具的临时宽高
     const tempWidth = currentX - startX;
     const tempHeight = currentY - startY;
@@ -690,7 +713,6 @@ export default class ScreenShot {
           );
           break;
         case "right-top":
-          console.log(this.data.getPenSize());
           this.drawArrow.draw(
             this.screenShotCanvas,
             startX,
@@ -966,7 +988,6 @@ export default class ScreenShot {
     }
     // 跨域时的代理服务器地址
     if (options?.proxyUrl) {
-      console.log("有地址", options.proxyUrl);
       this.proxyUrl = options.proxyUrl;
     }
     // 设置截图容器的位置信息
@@ -1386,6 +1407,23 @@ export default class ScreenShot {
       this.mouseMoveEvent
     );
     this.screenShotContainer?.addEventListener("mouseup", this.mouseUpEvent);
+
+    // 设置触摸监听
+    this.screenShotContainer?.addEventListener(
+      "touchstart",
+      this.mouseDownEvent,
+      false
+    );
+    this.screenShotContainer?.addEventListener(
+      "touchmove",
+      this.mouseMoveEvent,
+      false
+    );
+    this.screenShotContainer?.addEventListener(
+      "touchend",
+      this.mouseUpEvent,
+      false
+    );
     // 是否初始化裁剪框
     if (this.cropBoxInfo != null && Object.keys(this.cropBoxInfo).length == 4) {
       this.initCropBox(this.cropBoxInfo);
