@@ -5,7 +5,10 @@ import {
   toolbarType
 } from "@/lib/type/ComponentType";
 import { toolClickEvent } from "@/lib/split-methods/ToolClickEvent";
-import { setBrushSize } from "@/lib/common-methods/SetBrushSize";
+import {
+  setBrushSize,
+  setMosaicPenSize
+} from "@/lib/common-methods/SetBrushSize";
 import { selectColor } from "@/lib/common-methods/SelectColor";
 import { getColor } from "@/lib/common-methods/GetColor";
 
@@ -136,18 +139,21 @@ export default class CreateDom {
           itemPanel.classList.add("brush-small-active");
           itemPanel.addEventListener("click", e => {
             setBrushSize("small", 1, e);
+            setMosaicPenSize("small", 1, e);
           });
           break;
         case 1:
           itemPanel.classList.add("brush-medium");
           itemPanel.addEventListener("click", e => {
             setBrushSize("medium", 2, e);
+            setMosaicPenSize("medium", 2, e);
           });
           break;
         case 2:
           itemPanel.classList.add("brush-big");
           itemPanel.addEventListener("click", e => {
             setBrushSize("big", 3, e);
+            setMosaicPenSize("big", 3, e);
           });
           break;
       }

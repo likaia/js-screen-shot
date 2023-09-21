@@ -716,7 +716,7 @@ export default class ScreenShot {
           drawMosaic(
             currentX - 10,
             currentY - 10,
-            this.data.getPenSize(),
+            this.data.getMosaicPenSize(),
             this.degreeOfBlur,
             this.screenShotCanvas
           );

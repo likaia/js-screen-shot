@@ -15,6 +15,36 @@ export function setBrushSize(
   const data = new InitData();
   // 为当前点击项添加选中时的class名
   setSelectedClassName(mouseEvent, index, true);
+  let sizeNum = 2;
+  switch (size) {
+    case "small":
+      sizeNum = 2;
+      break;
+    case "medium":
+      sizeNum = 5;
+      break;
+    case "big":
+      sizeNum = 10;
+      break;
+  }
+  data.setPenSize(sizeNum);
+  return sizeNum;
+}
+
+/**
+ * 设置马赛克工具的笔触大小
+ * @param size
+ * @param index
+ * @param mouseEvent
+ */
+export function setMosaicPenSize(
+  size: string,
+  index: number,
+  mouseEvent: MouseEvent
+) {
+  const data = new InitData();
+  // 为当前点击项添加选中时的class名
+  setSelectedClassName(mouseEvent, index, true);
   let sizeNum = 10;
   switch (size) {
     case "small":
@@ -27,6 +57,6 @@ export function setBrushSize(
       sizeNum = 40;
       break;
   }
-  data.setPenSize(sizeNum);
+  data.setMosaicPenSize(sizeNum);
   return sizeNum;
 }

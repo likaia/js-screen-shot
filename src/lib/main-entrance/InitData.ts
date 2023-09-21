@@ -15,7 +15,9 @@ let selectedColor = "#F53340";
 // 当前点击的工具栏名称
 let toolName = "";
 //  当前选择的画笔大小
-let penSize = 10;
+let penSize = 2;
+// 马赛克工具的笔触大小
+let mosaicPenSize = 10;
 // 裁剪框顶点边框直径大小
 const borderSize = 10;
 // 撤销点击次数
@@ -90,6 +92,7 @@ export default class InitData {
       selectedColor = "#F53340";
       toolName = "";
       penSize = 2;
+      mosaicPenSize = 10;
       history = [];
       undoClickNum = 0;
       colorSelectController = null;
@@ -410,6 +413,14 @@ export default class InitData {
   }
   public setPenSize(size: number) {
     penSize = size;
+  }
+
+  public getMosaicPenSize() {
+    return mosaicPenSize;
+  }
+
+  public setMosaicPenSize(size: number) {
+    mosaicPenSize = size;
   }
 
   public getBorderSize() {
