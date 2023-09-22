@@ -150,6 +150,34 @@ export const doScreenShot = async ()=>{
 如果你看完上个章节的使用方法，依然不是很理解的话，这里准备了一份在electron环境下使用本插件的demo，请移步[electron-js-web-screen-shot-demo](https://github.com/Vanisper/electron-js-web-screen-shot-demo)。
 
 
+### 兼容移动端
+插件对触屏设备做了兼容处理，如果你是pc端的触屏设备可以支持webrtc模式，如果是移动端那么就只能使用html2canvas模式。
+```javascript
+import ScreenShot from "js-web-screen-shot";
+
+const config = {
+    enableWebRtc: false
+};
+const screenShotHandler = new ScreenShot(config);
+```
+
+```html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<!--禁止移动端浏览器的缩放-->
+<meta name="viewport" content="user-scalable=no">
+</head>
+<body>
+/body>
+</html>
+```
+
+> 注意：在移动端使用时，需要在head标签里禁止浏览器的缩放行为，否则就会出现在使用撤销功能时，多次双击造成界面放大问题。
+
+
+
+
 ### Vue项目下使用乱码问题
 当你vue项目中使用h2c模式进行截图时，画布左上角可能会出现一些奇怪的字符，这是由于`noscript`标签导致的，将其删除即可。
 
