@@ -554,6 +554,9 @@ export default class InitData {
     document.body.removeChild(optionController);
     document.body.removeChild(textInputController);
     document.body.removeChild(cutBoxSizeContainer);
+    if (document.body.classList.contains("no-cursor")) {
+      document.body.classList.remove("no-cursor");
+    }
     if (resetScrollbarState) {
       // 还原滚动条状态
       document.documentElement.classList.remove("hidden-screen-shot-scroll");

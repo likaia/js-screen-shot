@@ -295,6 +295,8 @@ export default class ScreenShot {
       );
       return;
     }
+    // 隐藏光标
+    document.body.classList.add("no-cursor");
     // 使用webrtc实现截屏
     this.screenShot(cancelCallback, triggerCallback);
   }
@@ -428,6 +430,8 @@ export default class ScreenShot {
       }
       // 停止捕捉屏幕
       this.stopCapture();
+      // 重置光标状态
+      document.body.classList.remove("no-cursor");
     }, this.wrcReplyTime);
   }
 
