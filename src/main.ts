@@ -33,6 +33,7 @@ import { drawCrossImg } from "@/lib/split-methods/drawCrossImg";
 import { getCanvas2dCtx } from "@/lib/common-methods/CanvasPatch";
 import { updateContainerMouseStyle } from "@/lib/common-methods/UpdateContainerMouseStyle";
 import { addHistory } from "@/lib/split-methods/AddHistoryData";
+import { isPC } from "@/lib/common-methods/DeviceTypeVerif";
 
 export default class ScreenShot {
   // 当前实例的响应式data数据
@@ -514,7 +515,7 @@ export default class ScreenShot {
     if (event instanceof MouseEvent && event.button != 0) return;
 
     // 当前处于移动端触摸时，需要在按下时判断当前坐标点是否处于裁剪框内，主动更新draggingTrim状态（移动端的move事件只会在按下时才会触发）
-    if (event instanceof TouchEvent && this.screenShotCanvas) {
+    if (!isPC() && event instanceof TouchEvent && this.screenShotCanvas) {
       this.operatingCutOutBox(
         event.touches[0].pageX,
         event.touches[0].pageY,
@@ -1338,6 +1339,39 @@ export default class ScreenShot {
     }
   }
 
+  // 为截图容器添加鼠标||触摸的事件监听
+  private setScreenShotContainerEventListener() {
+    if (isPC()) {
+      // 添加鼠标事件监听
+      this.screenShotContainer?.addEventListener(
+        "mousedown",
+        this.mouseDownEvent
+      );
+      this.screenShotContainer?.addEventListener(
+        "mousemove",
+        this.mouseMoveEvent
+      );
+      this.screenShotContainer?.addEventListener("mouseup", this.mouseUpEvent);
+      return;
+    }
+    // 设置触摸监听
+    this.screenShotContainer?.addEventListener(
+      "touchstart",
+      this.mouseDownEvent,
+      false
+    );
+    this.screenShotContainer?.addEventListener(
+      "touchmove",
+      this.mouseMoveEvent,
+      false
+    );
+    this.screenShotContainer?.addEventListener(
+      "touchend",
+      this.mouseUpEvent,
+      false
+    );
+  }
+
   /**
    * 向截图容器中绘制图片
    * @param triggerCallback
@@ -1400,34 +1434,8 @@ export default class ScreenShot {
 
     // 绘制蒙层
     drawMasking(context, screenShotContainer);
-
-    // 添加监听
-    this.screenShotContainer?.addEventListener(
-      "mousedown",
-      this.mouseDownEvent
-    );
-    this.screenShotContainer?.addEventListener(
-      "mousemove",
-      this.mouseMoveEvent
-    );
-    this.screenShotContainer?.addEventListener("mouseup", this.mouseUpEvent);
-
-    // 设置触摸监听
-    this.screenShotContainer?.addEventListener(
-      "touchstart",
-      this.mouseDownEvent,
-      false
-    );
-    this.screenShotContainer?.addEventListener(
-      "touchmove",
-      this.mouseMoveEvent,
-      false
-    );
-    this.screenShotContainer?.addEventListener(
-      "touchend",
-      this.mouseUpEvent,
-      false
-    );
+    // 截图容器添加鼠标点击/触摸事件的监听
+    this.setScreenShotContainerEventListener();
     // 是否初始化裁剪框
     if (this.cropBoxInfo != null && Object.keys(this.cropBoxInfo).length == 4) {
       this.initCropBox(this.cropBoxInfo);
