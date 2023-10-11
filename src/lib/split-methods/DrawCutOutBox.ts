@@ -36,8 +36,8 @@ export function drawCutOutBox(
 
   // 清除画布
   context.clearRect(0, 0, canvasWidth, canvasHeight);
-  width = width > 0 ? width : 5;
-  height = height > 0 ? height : 5;
+  width = width != 0 ? width : 5;
+  height = height != 0 ? height : 5;
 
   // 绘制蒙层
   context.save();
