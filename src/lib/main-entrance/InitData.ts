@@ -59,8 +59,6 @@ let initStatus = false;
 // 当前工具栏内选中的工具
 let activeTool = "";
 let textInfo: textInfoType;
-// 最大可撤销次数
-const maxUndoNum = 15;
 // 是否需要还原页面的滚动条状态
 let resetScrollbarState = false;
 // 当前是否处于文本编辑状态
@@ -487,10 +485,6 @@ export default class InitData {
 
   public getTextInfo() {
     return textInfo;
-  }
-
-  public getMaxUndoNum() {
-    return maxUndoNum;
   }
 
   public getRightPanel() {

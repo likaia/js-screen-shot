@@ -104,4 +104,5 @@ export type screenShotType = {
   wrcWindowMode?: boolean; // 是否启用窗口截图模式，默认为当前标签页截图
   customRightClickEvent?: crcEventType; // 是否自定义容器的右键点击事件
   cutBoxBdColor?: string; // 裁剪区域边框像素点颜色
+  maxUndoNum?: number; // 最大可撤销次数
 };

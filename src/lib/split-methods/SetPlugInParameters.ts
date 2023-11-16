@@ -47,4 +47,9 @@ export function setPlugInParameters(options: screenShotType) {
   if (options?.saveCallback) {
     plugInParameters.setSaveCallback(options.saveCallback);
   }
+
+  // 设置最大撤销次数
+  if (options?.maxUndoNum) {
+    plugInParameters.setMaxUndoNum(options.maxUndoNum);
+  }
 }

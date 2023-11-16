@@ -17,6 +17,8 @@ let screenShotDom: null | HTMLElement = null;
 const maskColor = { r: 0, g: 0, b: 0, a: 0.6 };
 let writeBase64 = true;
 let cutBoxBdColor = "#2CABFF";
+// 最大可撤销次数
+let maxUndoNum = 15;
 let saveCallback: ((code: number, msg: string) => void) | null = null;
 
 export default class PlugInParameters {
@@ -34,6 +36,7 @@ export default class PlugInParameters {
       initStatus = false;
       screenShotDom = null;
       saveCallback = null;
+      maxUndoNum = 15;
     }
   }
 
@@ -130,5 +133,13 @@ export default class PlugInParameters {
 
   public getSaveCallback() {
     return saveCallback;
+  }
+
+  public setMaxUndoNum(num: number) {
+    maxUndoNum = num;
+  }
+
+  public getMaxUndoNum() {
+    return maxUndoNum;
   }
 }
