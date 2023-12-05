@@ -1082,12 +1082,6 @@ export default class ScreenShot {
       this.drawGraphPosition.startY = this.drawGraphPrevY;
       return;
     }
-    if (!this.data.getToolClickStatus() && !this.dragFlag) {
-      // 复原裁剪框的坐标
-      this.drawGraphPosition.startX = this.drawGraphPrevX;
-      this.drawGraphPosition.startY = this.drawGraphPrevY;
-      return;
-    }
 
     // 调用者尚未拖拽生成选区
     // 鼠标尚未拖动
