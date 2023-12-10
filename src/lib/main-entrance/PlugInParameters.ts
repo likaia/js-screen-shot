@@ -19,6 +19,9 @@ let writeBase64 = true;
 let cutBoxBdColor = "#2CABFF";
 // 最大可撤销次数
 let maxUndoNum = 15;
+// 是否使用等比例箭头
+let useRatioArrow = false;
+
 let saveCallback: ((code: number, msg: string) => void) | null = null;
 
 export default class PlugInParameters {
@@ -37,6 +40,7 @@ export default class PlugInParameters {
       screenShotDom = null;
       saveCallback = null;
       maxUndoNum = 15;
+      useRatioArrow = false;
     }
   }
 
@@ -141,5 +145,13 @@ export default class PlugInParameters {
 
   public getMaxUndoNum() {
     return maxUndoNum;
+  }
+
+  public setRatioArrow(state: boolean) {
+    useRatioArrow = state;
+  }
+
+  public getRatioArrow() {
+    return useRatioArrow;
   }
 }

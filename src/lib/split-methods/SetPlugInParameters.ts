@@ -52,4 +52,9 @@ export function setPlugInParameters(options: screenShotType) {
   if (options?.maxUndoNum) {
     plugInParameters.setMaxUndoNum(options.maxUndoNum);
   }
+
+  // 箭头绘制工具是否使用等比例绘制方式
+  if (options?.useRatioArrow) {
+    plugInParameters.setRatioArrow(options.useRatioArrow);
+  }
 }

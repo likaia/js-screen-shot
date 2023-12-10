@@ -105,4 +105,5 @@ export type screenShotType = {
   customRightClickEvent?: crcEventType; // 是否自定义容器的右键点击事件
   cutBoxBdColor?: string; // 裁剪区域边框像素点颜色
   maxUndoNum?: number; // 最大可撤销次数
+  useRatioArrow: boolean; // 是否使用等比例箭头, 默认为false(递增变粗的箭头)
 };

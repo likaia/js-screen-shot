@@ -34,6 +34,7 @@ import { getCanvas2dCtx } from "@/lib/common-methods/CanvasPatch";
 import { updateContainerMouseStyle } from "@/lib/common-methods/UpdateContainerMouseStyle";
 import { addHistory } from "@/lib/split-methods/AddHistoryData";
 import { isPC } from "@/lib/common-methods/DeviceTypeVerif";
+import { drawLineArrow } from "@/lib/split-methods/DrawLineArrow";
 
 export default class ScreenShot {
   // 当前实例的响应式data数据
@@ -718,6 +719,21 @@ export default class ScreenShot {
           );
           break;
         case "right-top":
+          // 绘制等比例箭头
+          if (this.plugInParameters.getRatioArrow()) {
+            drawLineArrow(
+              this.screenShotCanvas,
+              startX,
+              startY,
+              currentX,
+              currentY,
+              30,
+              10,
+              this.data.getPenSize(),
+              this.data.getSelectedColor()
+            );
+            return;
+          }
           this.drawArrow.draw(
             this.screenShotCanvas,
             startX,
