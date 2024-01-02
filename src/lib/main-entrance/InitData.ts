@@ -45,6 +45,11 @@ let cutBoxSizeContainer: HTMLDivElement | null = null;
 let textInputController: HTMLDivElement | null = null;
 // 截图工具栏画笔选择dom
 let optionIcoController: HTMLDivElement | null = null;
+// 截图工具栏文字大小选择dom
+let optionTextSizeController: HTMLDivElement | null = null;
+let brushSelectionController: HTMLDivElement | null = null;
+let textSizeContainer: HTMLDivElement | null = null;
+let fontSize = 17;
 let optionController: HTMLDivElement | null = null;
 let colorSelectController: HTMLElement | null = null;
 let rightPanel: HTMLElement | null = null;
@@ -76,6 +81,9 @@ export default class InitData {
       textInputController = null;
       optionController = null;
       optionIcoController = null;
+      optionTextSizeController = null;
+      brushSelectionController = null;
+      textSizeContainer = null;
       cutBoxSizeContainer = null;
       cutOutBoxPosition = {
         startX: 0,
@@ -90,6 +98,7 @@ export default class InitData {
       selectedColor = "#F53340";
       toolName = "";
       penSize = 2;
+      fontSize = 17;
       mosaicPenSize = 10;
       history = [];
       undoClickNum = 0;
@@ -316,6 +325,10 @@ export default class InitData {
     cutOutBoxPosition.height = height;
   }
 
+  public setFontSize(size: number) {
+    fontSize = size;
+  }
+
   // 设置截图工具栏画笔选择工具展示状态
   public setOptionStatus(status: boolean) {
     // 获取截图工具栏与三角形角标容器
@@ -329,6 +342,42 @@ export default class InitData {
     }
     optionIcoController.style.display = "none";
     optionController.style.display = "none";
+  }
+
+  public getFontSize() {
+    return fontSize;
+  }
+
+  // 设置截图工具栏文字大小下拉框选项选择工具展示状态
+  public setTextSizeOptionStatus(status: boolean) {
+    optionTextSizeController = this.getOptionTextSizeController();
+    if (optionTextSizeController == null) return;
+    if (status) {
+      optionTextSizeController.style.display = "flex";
+      return;
+    }
+    optionTextSizeController.style.display = "none";
+  }
+
+  public setTextSizePanelStatus(status: boolean) {
+    textSizeContainer = this.getTextSizeContainer();
+    if (textSizeContainer == null) return;
+    if (status) {
+      console.log("显示");
+      textSizeContainer.style.display = "flex";
+      return;
+    }
+    textSizeContainer.style.display = "none";
+  }
+
+  public setBrushSelectionStatus(status: boolean) {
+    brushSelectionController = this.getBrushSelectionController();
+    if (brushSelectionController == null) return;
+    if (status) {
+      brushSelectionController.style.display = "block";
+      return;
+    }
+    brushSelectionController.style.display = "none";
   }
 
   // 隐藏画笔工具栏三角形角标
@@ -345,6 +394,28 @@ export default class InitData {
     ) as HTMLDivElement | null;
     return optionIcoController;
   }
+
+  public getTextSizeContainer() {
+    textSizeContainer = document.getElementById(
+      "textSizePanel"
+    ) as HTMLDivElement | null;
+    return textSizeContainer;
+  }
+
+  public getOptionTextSizeController() {
+    optionTextSizeController = document.getElementById(
+      "textSelectPanel"
+    ) as HTMLDivElement | null;
+    return optionTextSizeController;
+  }
+
+  public getBrushSelectionController() {
+    brushSelectionController = document.getElementById(
+      "brushSelectPanel"
+    ) as HTMLDivElement | null;
+    return brushSelectionController;
+  }
+
   public getOptionController() {
     optionController = document.getElementById(
       "optionPanel"

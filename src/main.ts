@@ -110,7 +110,6 @@ export default class ScreenShot {
   // 上一个裁剪框坐标信息
   private drawGraphPrevX = 0;
   private drawGraphPrevY = 0;
-  private fontSize = 17;
   // 马赛克涂抹区域大小
   private degreeOfBlur = 5;
   private dpr = window.devicePixelRatio || 1;
@@ -512,6 +511,8 @@ export default class ScreenShot {
   private mouseDownEvent = (event: MouseEvent | TouchEvent) => {
     // 隐藏颜色选择面板
     this.data.setColorPanelStatus(false);
+    // 隐藏文字大小选择面板
+    this.data.setTextSizeOptionStatus(false);
     // 非鼠标左键按下则终止
     if (event instanceof MouseEvent && event.button != 0) return;
 
@@ -578,7 +579,7 @@ export default class ScreenShot {
           this.textInputPosition.mouseX,
           this.textInputPosition.mouseY,
           this.data.getSelectedColor(),
-          this.fontSize,
+          this.data.getFontSize(),
           this.screenShotCanvas
         );
 
@@ -597,7 +598,7 @@ export default class ScreenShot {
       const textMouseX = mouseX + this.position.left;
       // 设置文本框位置等信息
       this.textInputController.style.left = textMouseX + "px";
-      this.textInputController.style.fontSize = this.fontSize + "px";
+      this.textInputController.style.fontSize = this.data.getFontSize() + "px";
       this.textInputController.style.fontFamily = "none";
       this.textInputController.style.color = this.data.getSelectedColor();
 
@@ -619,7 +620,7 @@ export default class ScreenShot {
             positionX: mouseX,
             positionY: mouseY,
             color: this.data.getSelectedColor(),
-            size: this.fontSize
+            size: this.data.getFontSize()
           });
         }
       });
@@ -913,7 +914,7 @@ export default class ScreenShot {
           this.textInputPosition.mouseX,
           this.textInputPosition.mouseY,
           this.data.getSelectedColor(),
-          this.fontSize,
+          this.data.getFontSize(),
           this.screenShotCanvas
         );
         // 清空文本输入区域的内容

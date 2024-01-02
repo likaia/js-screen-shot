@@ -61,15 +61,23 @@ export function toolClickEvent(
   data.setToolName(toolName);
   // 为当前点击项添加选中时的class名
   setSelectedClassName(mouseEvent, index, false);
-  if (toolName != "text") {
-    // 显示画笔选择工具栏
-    data.setOptionStatus(true);
-    // 设置画笔选择工具栏位置
-    data.setOptionPosition(calculateOptionIcoPosition(index));
+  if (toolName === "text") {
+    // 显示文字选择容器
+    data.setTextSizePanelStatus(true);
+    // 隐藏画笔尺寸选择容器
+    data.setBrushSelectionStatus(false);
+    // 颜色选择容器添加布局兼容样式
+    data.getColorSelectPanel()?.classList.add("text-select-status");
   } else {
-    // 隐藏画笔工具栏
-    data.setOptionStatus(false);
+    // 隐藏下拉选择框
+    data.setTextSizePanelStatus(false);
+    // 显示画笔尺寸选择容器
+    data.setBrushSelectionStatus(true);
   }
+  // 显示选项面板
+  data.setOptionStatus(true);
+  // 设置选项面板位置
+  data.setOptionPosition(calculateOptionIcoPosition(index));
   data.setRightPanel(true);
   if (toolName == "mosaicPen") {
     // 马赛克工具隐藏右侧颜色面板与角标

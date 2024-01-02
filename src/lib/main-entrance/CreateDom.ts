@@ -11,6 +11,13 @@ import {
 } from "@/lib/common-methods/SetBrushSize";
 import { selectColor } from "@/lib/common-methods/SelectColor";
 import { getColor } from "@/lib/common-methods/GetColor";
+import {
+  getTextSize,
+  hiddenColorPanelStatus,
+  hiddenTextSizeOptionStatus,
+  selectTextSize,
+  setTextSize
+} from "@/lib/common-methods/SelectTextSize";
 
 export default class CreateDom {
   // 截图区域canvas容器
@@ -35,6 +42,22 @@ export default class CreateDom {
   // 截图工具栏图标
   private readonly toolbar: Array<toolbarType>;
 
+  private readonly textFontSizeList = [
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    20,
+    24,
+    36,
+    48,
+    64,
+    72,
+    96
+  ];
+
   constructor(options: screenShotType) {
     this.screenShotController = document.createElement("canvas");
     this.toolController = document.createElement("div");
@@ -45,6 +68,15 @@ export default class CreateDom {
     this.completeCallback = options?.completeCallback;
     this.closeCallback = options?.closeCallback;
     this.hiddenIcoArr = [];
+    this.optionController.addEventListener("click", evt => {
+      const target = evt.target as HTMLElement;
+      if (target.id === "colorSelectPanel" || target.id === "textSizePanel") {
+        return;
+      }
+      // 点击工具栏的其他位置则隐藏文字大小选择面板与颜色选择面板
+      hiddenTextSizeOptionStatus();
+      hiddenColorPanelStatus();
+    });
     // 成功回调函数不存在则设置一个默认的
     if (
       !options ||
@@ -73,6 +105,8 @@ export default class CreateDom {
     this.toolbar = toolbar;
     // 渲染工具栏
     this.setToolBarIco();
+    // 渲染文字大小选择容器
+    this.setTextSizeSelectPanel();
     // 渲染画笔相关选项
     this.setBrushSelectPanel();
     // 渲染文本输入
@@ -124,10 +158,52 @@ export default class CreateDom {
     }
   }
 
+  // 渲染文字大小选择容器
+  private setTextSizeSelectPanel() {
+    // 创建文字展示容器
+    const textSizePanel = document.createElement("div");
+    textSizePanel.className = "text-size-panel";
+    textSizePanel.innerText = `${getTextSize()} px`;
+    textSizePanel.id = "textSizePanel";
+    // 创建文字大小选择容器
+    const textSelectPanel = document.createElement("div");
+    textSelectPanel.className = "text-select-panel";
+    textSelectPanel.id = "textSelectPanel";
+    // 创建文字选择下拉
+    for (let i = 0; i < this.textFontSizeList.length; i++) {
+      const itemPanel = document.createElement("div");
+      const size = this.textFontSizeList[i];
+      itemPanel.className = "text-item";
+      itemPanel.setAttribute("data-value", `${size}`);
+      itemPanel.innerText = `${size} px`;
+      // 添加点击监听
+      itemPanel.addEventListener("click", () => {
+        // 隐藏容器
+        textSelectPanel.style.display = "none";
+        const currentTextSize = itemPanel.getAttribute("data-value");
+        // 容器赋值
+        textSizePanel.innerText = `${currentTextSize} px`;
+        if (currentTextSize) {
+          setTextSize(+currentTextSize);
+        }
+      });
+      textSelectPanel.appendChild(itemPanel);
+    }
+    textSizePanel.style.display = "none";
+    textSelectPanel.style.display = "none";
+    // 容器点击时，展示文字大小选择容器
+    textSizePanel.addEventListener("click", () => {
+      selectTextSize();
+    });
+    this.optionController.appendChild(textSizePanel);
+    this.optionController.appendChild(textSelectPanel);
+  }
+
   // 渲染画笔大小选择图标与颜色选择容器
   private setBrushSelectPanel() {
     // 创建画笔选择容器
     const brushSelectPanel = document.createElement("div");
+    brushSelectPanel.id = "brushSelectPanel";
     brushSelectPanel.className = "brush-select-panel";
     for (let i = 0; i < 3; i++) {
       // 创建画笔图标容器

@@ -211,6 +211,50 @@
   padding: 10px;
   box-sizing: content-box;
 
+  .text-size-panel {
+    width: 65px;
+    height: 20px;
+    font-size: 14px;
+    float: left;
+    border: 1px solid #bebfca;
+    overflow: hidden;
+    border-radius: 3px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .text-select-panel {
+    width: 65px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    background: #fff;
+    border: 1px solid #d8dcea;
+    border-radius: 3px;
+    position: absolute;
+    left: 10px;
+    top: -321px;
+
+    .text-item {
+      width: 45px;
+      height: 20px;
+      font-size: 14px;
+      text-align: center;
+      margin-bottom: 5px;
+      cursor: pointer;
+
+      &:hover {
+        background: #bebfca;
+      }
+
+      &:first-child {
+        margin-top: 5px;
+      }
+    }
+  }
+
   .brush-select-panel{
     height: 20px;
     float: left;
@@ -339,6 +383,10 @@
       height: 20px;
       background: #F53340;
       border: solid 1px #E5E6E5;
+
+      &.text-select-status {
+        margin-left: 31px;
+      }
     }
 
     .pull-down-arrow {
