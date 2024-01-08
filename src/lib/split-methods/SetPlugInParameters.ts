@@ -57,4 +57,9 @@ export function setPlugInParameters(options: screenShotType) {
   if (options?.useRatioArrow) {
     plugInParameters.setRatioArrow(options.useRatioArrow);
   }
+
+  // 设置图片自适应开启状态
+  if (options?.imgAutoFit) {
+    plugInParameters.setImgAutoFit(options.imgAutoFit);
+  }
 }

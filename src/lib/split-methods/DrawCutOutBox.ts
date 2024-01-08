@@ -112,8 +112,12 @@ export function drawCutOutBox(
     imgHeight = screenShotDom.clientHeight;
   }
 
-  // 非webrtc模式且未传入截图dom时，图片的宽高不做处理
-  if (!data.getWebRtcStatus() && screenShotDom == null) {
+  // 非webrtc模式、未开启图片自适应、未传入截图dom时，图片的宽高不做处理
+  if (
+    !data.getWebRtcStatus() &&
+    !data.getImgAutoFit() &&
+    screenShotDom == null
+  ) {
     imgWidth = imageController.width / dpr;
     imgHeight = imageController.height / dpr;
   }

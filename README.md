@@ -222,6 +222,7 @@ sessionStorage.getItem("screenShotImg");
 * `proxyUrl` 代理服务器地址，值为`string`类型，默认为""
 * `screenShotDom` 需要进行截图的容器，值为`HTMLElement`类型，默认使用的是`body`。
 * `useRatioArrow` 是否使用等比例箭头, 默认为false(递增变粗的箭头)。
+* `imgAutoFit` 是否开启图片自适应, 默认为false。如果自定义了截图内容，浏览器的缩放比例不为100%时，可以设置此参数来修复图片与蒙板大小不一致的问题。
 * `cropBoxInfo` 初始裁剪框，值为`{ x: number; y: number; w: number; h: number }`类型，默认不加载。
 * `wrcReplyTime` webrtc模式捕捉屏幕时的响应时间，值为`number`类型，默认为500ms。
 * `wrcImgPosition` webrtc模式下是否需要对图像进行裁剪，值为`{ x: number; y: number; w: number; h: number }`类型，默认为不裁剪。

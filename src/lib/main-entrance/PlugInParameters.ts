@@ -21,6 +21,8 @@ let cutBoxBdColor = "#2CABFF";
 let maxUndoNum = 15;
 // 是否使用等比例箭头
 let useRatioArrow = false;
+// 开启图片自适应
+let imgAutoFit = false;
 
 let saveCallback: ((code: number, msg: string) => void) | null = null;
 
@@ -41,6 +43,7 @@ export default class PlugInParameters {
       saveCallback = null;
       maxUndoNum = 15;
       useRatioArrow = false;
+      imgAutoFit = false;
     }
   }
 
@@ -153,5 +156,13 @@ export default class PlugInParameters {
 
   public getRatioArrow() {
     return useRatioArrow;
+  }
+
+  public setImgAutoFit(state: boolean) {
+    imgAutoFit = state;
+  }
+
+  public getImgAutoFit() {
+    return imgAutoFit;
   }
 }
