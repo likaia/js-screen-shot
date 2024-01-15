@@ -86,6 +86,7 @@
     "sass-loader": "^8.0.2",
     "ts-jest": "^29.0.5",
     "tsc-alias": "^1.8.7",
+    "tslib": "^2.6.2",
     "typescript": "~5.0.4",
     "yargs": "^17.7.1"
   },
