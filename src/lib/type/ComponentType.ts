@@ -80,10 +80,22 @@ export type screenShotType = {
   level?: number; // 截图容器层级
   canvasWidth?: number; // 截图画布宽度
   canvasHeight?: number; // 截图画布高度
-  completeCallback?: Function; // 工具栏截图确认回调
-  closeCallback?: Function; // 工具栏关闭回调
-  triggerCallback?: Function; // html2canvas截图响应回调
-  cancelCallback?: Function; // webrtc截图未授权回调
+  completeCallback?: (imgInfo: {
+    base64: string;
+    cutInfo: positionInfoType;
+  }) => void; // 工具栏截图确认回调
+  closeCallback?: () => void; // 工具栏关闭回调
+  triggerCallback?: (res: {
+    code: number;
+    msg: string;
+    displaySurface: string | null;
+    displayLabel: string | null;
+  }) => void; // html2canvas截图响应回调
+  cancelCallback?: (res: {
+    code: number;
+    msg: string;
+    errorInfo: string;
+  }) => void; // webrtc截图未授权回调
   saveCallback?: (code: number, msg: string) => void; // 保存截图回调
   position?: { top?: number; left?: number }; // 截图容器位置
   clickCutFullScreen?: boolean; // 单击截全屏启用状态, 默认值为false
