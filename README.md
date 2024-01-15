@@ -291,6 +291,14 @@ screenShotHandler.destroyComponents()
 
 该方法可以跟`cropBoxInfo`参数结合起来实现指定位置的自动截图，截图内容默认写入剪切版内，如果你想拿到截取到的base64内容可以通过`completeCallback`参数拿到，或者直接从sessionStorage中获取。
 
+该回调函数中返回的参数格式如下所示：
+* base64
+* cutInfo 裁剪框位置参数
+  * startX
+  * startY
+  * width
+  * height
+
 示例代码：
 ```javascript
       const plugin = new screenShotPlugin(
@@ -307,6 +315,8 @@ screenShotHandler.destroyComponents()
           }
         });
 ```
+> 注意：此方法在1.9.9版本之后不再返回字符串类型的数据，而是返回的对象格式。
+
 
 ### 工具栏图标定制
 如果你需要修改截图工具栏的图标，可以通过覆盖元素css类名的方式实现，插件内所有图标的css类名如下所示：
