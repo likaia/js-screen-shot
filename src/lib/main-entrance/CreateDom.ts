@@ -304,12 +304,23 @@ export default class CreateDom {
 
   // 将截图相关dom渲染至body
   private setDomToBody() {
+    this.clearBody();
     document.body.appendChild(this.screenShotController);
     document.body.appendChild(this.toolController);
     document.body.appendChild(this.optionIcoController);
     document.body.appendChild(this.optionController);
     document.body.appendChild(this.cutBoxSizeContainer);
     document.body.appendChild(this.textInputController);
+  }
+
+  // 清除截图相关dom
+  private clearBody() {
+    document.getElementById("screenShotContainer")?.remove();
+    document.getElementById("toolPanel")?.remove();
+    document.getElementById("optionIcoController")?.remove();
+    document.getElementById("optionPanel")?.remove();
+    document.getElementById("optionPanel")?.remove();
+    document.getElementById("textInputPanel")?.remove();
   }
 
   // 设置画笔绘制选项顶部ico样式
