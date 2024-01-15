@@ -99,8 +99,6 @@ export default class ScreenShot {
     moveStartY: 0
   };
 
-  // 鼠标点击状态
-  private clickFlag = false;
   // 鼠标拖动状态
   private dragFlag = false;
   // 单击截取屏启用状态
@@ -534,7 +532,6 @@ export default class ScreenShot {
     this.drawStatus = false;
     // 重置工具栏超出状态
     this.data.setToolPositionStatus(false);
-    this.clickFlag = true;
     const mouseX = nonNegativeData(
       event instanceof MouseEvent ? event.offsetX : event.touches[0].pageX
     );
@@ -664,7 +661,6 @@ export default class ScreenShot {
       // 隐藏裁剪框尺寸显示容器
       this.data.setCutBoxSizeStatus(false);
     }
-    this.clickFlag = false;
     // 获取当前绘制中的工具位置信息
     const { startX, startY, width, height } = this.drawGraphPosition;
     // 获取当前鼠标坐标
