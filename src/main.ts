@@ -1399,6 +1399,8 @@ export default class ScreenShot {
     const imgContainer = new Image();
 
     imgContainer.src = imgSrc;
+    imgContainer.width = this.screenShotImageController.width;
+    imgContainer.height = this.screenShotImageController.height;
     imgContainer.crossOrigin = "Anonymous";
     imgContainer.onload = () => {
       // 装载截图的dom为null则退出
