@@ -754,7 +754,10 @@ export default class ScreenShot {
         case "mosaicPen":
           // 当前为马赛克工具则修改绘制状态
           // 前面做了判断，此处需要特殊处理
-          this.drawStatus = true;
+          if (!this.drawStatus) {
+            this.showLastHistory();
+            this.drawStatus = true;
+          }
           // 绘制马赛克，为了确保鼠标位置在绘制区域中间，所以对x、y坐标进行-10处理
           drawMosaic(
             currentX - 10,
@@ -1130,11 +1133,9 @@ export default class ScreenShot {
     if (this.screenShotContainer == null || this.screenShotCanvas == null) {
       return;
     }
-    console.log(this.drawStatus);
     // 工具栏已点击且进行了绘制
     if (this.data.getToolClickStatus() && this.drawStatus) {
       // 保存绘制记录
-      console.log("保存绘制记录");
       addHistory();
       return;
     } else if (this.data.getToolClickStatus() && !this.drawStatus) {
