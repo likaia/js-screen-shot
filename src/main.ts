@@ -6,35 +6,47 @@ import {
   crcEventType,
   cutOutBoxBorder,
   drawCutOutBoxReturnType,
+  genericMethodPostbackType,
   movePositionType,
   positionInfoType,
   screenShotType,
-  toolPositionValType,
-  zoomCutOutBoxReturnType
+  toolPositionValType
 } from "@/lib/type/ComponentType";
 import { drawMasking } from "@/lib/split-methods/DrawMasking";
-import { fixedData, nonNegativeData } from "@/lib/common-methods/FixedData";
-import { drawPencil, initPencil } from "@/lib/split-methods/DrawPencil";
-import { drawText } from "@/lib/split-methods/DrawText";
-import { drawRectangle } from "@/lib/split-methods/DrawRectangle";
-import { drawCircle } from "@/lib/split-methods/DrawCircle";
-import { DrawArrow } from "@/lib/split-methods/DrawArrow";
-import { drawMosaic } from "@/lib/split-methods/DrawMosaic";
+import { nonNegativeData } from "@/lib/common-methods/FixedData";
 import { drawCutOutBox } from "@/lib/split-methods/DrawCutOutBox";
-import { zoomCutOutBoxPosition } from "@/lib/common-methods/ZoomCutOutBoxPosition";
 import { saveBorderArrInfo } from "@/lib/common-methods/SaveBorderArrInfo";
-import { calculateToolLocation } from "@/lib/split-methods/CalculateToolLocation";
-import html2canvas from "html2canvas";
 import PlugInParameters from "@/lib/main-entrance/PlugInParameters";
 import { getDrawBoundaryStatus } from "@/lib/split-methods/BoundaryJudgment";
 import KeyboardEventHandle from "@/lib/split-methods/KeyboardEventHandle";
 import { setPlugInParameters } from "@/lib/split-methods/SetPlugInParameters";
-import { drawCrossImg } from "@/lib/split-methods/drawCrossImg";
 import { getCanvas2dCtx } from "@/lib/common-methods/CanvasPatch";
-import { updateContainerMouseStyle } from "@/lib/common-methods/UpdateContainerMouseStyle";
 import { addHistory } from "@/lib/split-methods/AddHistoryData";
 import { isPC } from "@/lib/common-methods/DeviceTypeVerif";
-import { drawLineArrow } from "@/lib/split-methods/DrawLineArrow";
+import {
+  drawPictures,
+  fixWrcSize,
+  getContainerSize,
+  getWindowContentData,
+  h2cScreenShot,
+  handleGraffitiDraw,
+  handleMouseDown,
+  operatingCutOutBox,
+  registerContainerShortcuts,
+  registerForRightClickEvent,
+  setScreenShotContainerSize,
+  showToolBar,
+  adjustContainerLevels,
+  initCropBox,
+  setScreenShotContainerEventListener,
+  sendStream,
+  startCapture,
+  stopCapture
+} from "@/lib/main-entrance/LoadCoreComponents";
+import {
+  mouseDownCore,
+  mouseMoveCore
+} from "@/lib/main-entrance/MouseEventHandling";
 
 export default class ScreenShot {
   // 当前实例的响应式data数据
@@ -137,8 +149,6 @@ export default class ScreenShot {
   };
   // 工具栏显示位置
   private placement: toolPositionValType = "center";
-  // 递增变粗箭头的实现
-  private drawArrow = new DrawArrow();
   private customRightClickEvent: crcEventType = {
     state: false
   };
@@ -158,34 +168,37 @@ export default class ScreenShot {
 
     // 设置插件的可选参数
     this.setOptionalParameter(options);
+    const { noScroll, triggerCallback, cancelCallback, level } = options;
     // 获取截图区域canvas容器(获取的同时也会为InitData中的全局变量赋值)
     this.setGlobalParameter();
     // 修改截图容器可滚动状态
-    this.data.setNoScrollStatus(options?.noScroll);
+    this.data.setNoScrollStatus(noScroll);
 
     // 加载截图组件
-    this.load(options?.triggerCallback, options?.cancelCallback);
-    if (
-      this.toolController == null ||
-      this.screenShotContainer == null ||
-      this.textInputController == null
-    ) {
-      return;
-    }
-    // 截图组件加载完毕后，对层级进行调整
-    this.adjustContainerLevels(options?.level ? options.level : 0);
-
-    // 创建键盘事件监听
-    this.keyboardEventHandle = new KeyboardEventHandle(
-      this.screenShotContainer,
-      this.toolController
-    );
-    // 给输入容器设置快捷键监听
-    this.registerContainerShortcuts(this.textInputController);
-    if (this.customRightClickEvent.state) {
-      // 给截图容器添加右键事件监听
-      this.registerForRightClickEvent(this.screenShotContainer);
-    }
+    this.load(triggerCallback, cancelCallback).then(() => {
+      if (
+        this.toolController == null ||
+        this.screenShotContainer == null ||
+        this.textInputController == null
+      ) {
+        return;
+      }
+      // 截图组件加载完毕后，对层级进行调整
+      adjustContainerLevels(level ? level : 0, {
+        screenShotContainer: this.screenShotContainer,
+        toolController: this.toolController,
+        textInputController: this.textInputController,
+        optionIcoController: this.optionIcoController,
+        optionController: this.optionController,
+        cutBoxSizeContainer: this.cutBoxSizeContainer
+      });
+      // 为截图容器创建事件监听
+      this.createEvent(
+        this.screenShotContainer,
+        this.toolController,
+        this.textInputController
+      );
+    });
   }
 
   // 获取截图区域canvas容器
@@ -206,22 +219,8 @@ export default class ScreenShot {
     }
   }
 
-  // 注册右键事件
-  private registerForRightClickEvent(container: HTMLElement) {
-    container.addEventListener("contextmenu", e => {
-      e.preventDefault();
-      // 调用者传入了自定义事件则执行
-      if (this.customRightClickEvent.handleFn) {
-        this.customRightClickEvent.handleFn();
-        return;
-      }
-      // 销毁组件
-      this.destroyComponents();
-    });
-  }
-
   // 加载截图组件
-  private load(
+  private async load(
     triggerCallback: Function | undefined,
     cancelCallback: Function | undefined
   ) {
@@ -230,24 +229,17 @@ export default class ScreenShot {
       width: parseFloat(window.getComputedStyle(document.body).width),
       height: parseFloat(window.getComputedStyle(document.body).height)
     };
-    // 设置截图区域canvas宽高
-    this.data.setScreenShotInfo(viewSize.width, viewSize.height);
-    // 设置截图容器位置
-    this.data.setScreenShotPosition(this.position.left, this.position.top);
-    // 设置截图图片存放容器宽高
-    this.screenShotImageController.width = viewSize.width;
-    this.screenShotImageController.height = viewSize.height;
-    // 用户有传宽高则使用用户传进来的
-    if (canvasSize.canvasWidth !== 0 && canvasSize.canvasHeight !== 0) {
-      this.data.setScreenShotInfo(
-        canvasSize.canvasWidth,
-        canvasSize.canvasHeight
-      );
-      this.screenShotImageController.width = canvasSize.canvasWidth;
-      this.screenShotImageController.height = canvasSize.canvasHeight;
-    }
-    // 获取截图区域canvas容器画布
+    // 设置截图容器尺寸信息
+    setScreenShotContainerSize(
+      this.screenShotImageController,
+      this.data,
+      canvasSize,
+      viewSize,
+      this.position
+    );
+
     if (this.screenShotContainer == null) return;
+    // 获取截图区域canvas容器画布
     const context = getCanvas2dCtx(
       this.screenShotContainer,
       this.screenShotImageController.width,
@@ -259,87 +251,72 @@ export default class ScreenShot {
     if (!this.plugInParameters.getWebRtcStatus()) {
       // 判断用户是否自己传入截屏图片
       if (this.imgSrc != null) {
-        this.drawPictures(triggerCallback, context, this.imgSrc);
+        const callerCallback = (res: genericMethodPostbackType) => {
+          if (res.code === 1 && res.data == null) {
+            this.initScreenShot(
+              triggerCallback,
+              context,
+              this.screenShotImageController
+            );
+          }
+        };
+        drawPictures(
+          triggerCallback,
+          context,
+          this.imgSrc,
+          this.screenShotImageController,
+          callerCallback
+        );
         return;
       }
-
-      // html2canvas截屏
-      html2canvas(this.screenShotDom ? this.screenShotDom : document.body, {
-        onclone: this.loadCrossImg ? drawCrossImg : undefined,
-        proxy: this.proxyUrl
-      })
-        .then(canvas => {
-          // 装载截图的dom为null则退出
-          if (this.screenShotContainer == null) return;
-
-          // 存储html2canvas截取的内容
-          this.screenShotImageController = canvas;
-          // 初始化截图容器
-          this.initScreenShot(triggerCallback, context, canvas);
-        })
-        .catch(err => {
-          if (triggerCallback != null) {
-            // 获取页面元素成功，执行回调函数
-            triggerCallback({ code: -1, msg: err });
-          }
-        });
+      const result = await h2cScreenShot(
+        triggerCallback,
+        this.screenShotDom,
+        this.loadCrossImg,
+        this.proxyUrl
+      );
+      if (result.code === 0) {
+        // 存储html2canvas截取的内容
+        const canvasData = result.data.canvas;
+        this.screenShotImageController = canvasData;
+        // 初始化截图容器
+        this.initScreenShot(triggerCallback, context, canvasData);
+      }
       return;
     }
     // 调用者有传入屏幕流数据则使用
     if (this.plugInParameters.getScreenFlow()) {
-      this.sendStream(
+      sendStream(
         this.plugInParameters.getScreenFlow(),
         cancelCallback,
-        triggerCallback
+        triggerCallback,
+        this.data,
+        { videoController: this.videoController },
+        {
+          loadScreenFlowData: this.loadScreenFlowData
+        }
       );
       return;
     }
-    // 隐藏光标
-    document.body.classList.add("no-cursor");
     // 使用webrtc实现截屏
     this.screenShot(cancelCallback, triggerCallback);
   }
-
-  private sendStream = (
-    stream: MediaStream | null,
-    cancelCallback: Function | undefined,
-    triggerCallback: Function | undefined
-  ) => {
-    if (stream instanceof MediaStream) {
-      this.videoController.srcObject = stream;
-      this.loadScreenFlowData(triggerCallback);
-    } else {
-      if (cancelCallback != null) {
-        cancelCallback({
-          code: -1,
-          msg: "视频流接入失败"
-        });
-      }
-      // 销毁截图组件
-      this.data.destroyDOM();
-      throw `视频流接入失败`;
-    }
-    return stream;
-  };
 
   private loadScreenFlowData(triggerCallback: Function | undefined) {
     setTimeout(() => {
       // 获取截图区域canvas容器画布
       if (this.screenShotContainer == null) return;
-      const canvasSize = this.plugInParameters.getCanvasSize();
-      let containerWidth = this.screenShotImageController?.width;
-      let containerHeight = this.screenShotImageController?.height;
-      // 用户有传宽高时，则使用用户的
-      if (canvasSize.canvasWidth !== 0 && canvasSize.canvasHeight !== 0) {
-        containerWidth = canvasSize.canvasWidth;
-        containerHeight = canvasSize.canvasHeight;
-      }
-      let imgContainerWidth = containerWidth;
-      let imgContainerHeight = containerHeight;
-      if (this.wrcWindowMode) {
-        imgContainerWidth = containerWidth * this.dpr;
-        imgContainerHeight = containerHeight * this.dpr;
-      }
+      const {
+        containerWidth,
+        containerHeight,
+        imgContainerWidth,
+        imgContainerHeight
+      } = getContainerSize(
+        this.plugInParameters.getCanvasSize(),
+        this.screenShotImageController,
+        this.wrcWindowMode,
+        this.dpr
+      );
       const context = getCanvas2dCtx(
         this.screenShotContainer,
         containerWidth,
@@ -356,55 +333,29 @@ export default class ScreenShot {
       const { videoWidth, videoHeight } = this.videoController;
       if (this.wrcWindowMode) {
         // 从窗口视频流中获取body内容
-        const bodyImgData = this.getWindowContentData(
+        const bodyImgData = getWindowContentData(
           videoWidth,
           videoHeight,
           containerWidth * this.dpr,
-          containerHeight * this.dpr
+          containerHeight * this.dpr,
+          this.videoController,
+          this.dpr
         );
         if (bodyImgData == null) return;
         // 将body内容绘制到图片容器里
         imgContext.putImageData(bodyImgData, 0, 0);
       } else {
         // 对webrtc源提供的图像宽高进行修复
-        let fixWidth = containerWidth;
-        let fixHeight = (videoHeight * containerWidth) / videoWidth;
-        if (fixHeight > containerHeight) {
-          fixWidth = (containerWidth * containerHeight) / fixHeight;
-          fixHeight = containerHeight;
-        }
-        // 对视频容器的内容进行裁剪
-        fixWidth = this.wrcImgPosition.w > 0 ? this.wrcImgPosition.w : fixWidth;
-        fixHeight =
-          this.wrcImgPosition.h > 0 ? this.wrcImgPosition.h : fixHeight;
-        imgContext?.drawImage(
+        fixWrcSize(
+          containerWidth,
+          containerHeight,
+          videoWidth,
+          videoHeight,
+          this.wrcImgPosition,
+          imgContext,
           this.videoController,
-          this.wrcImgPosition.x,
-          this.wrcImgPosition.y,
-          fixWidth,
-          fixHeight
+          this.hiddenScrollBar
         );
-        // 隐藏滚动条会出现部分内容未截取到，需要进行修复
-        const diffHeight = containerHeight - fixHeight;
-        if (
-          this.hiddenScrollBar.state &&
-          diffHeight > 0 &&
-          this.hiddenScrollBar.fillState
-        ) {
-          // 填充容器的剩余部分
-          imgContext.beginPath();
-          let fillWidth = containerWidth;
-          let fillHeight = diffHeight;
-          if (this.hiddenScrollBar.fillWidth > 0) {
-            fillWidth = this.hiddenScrollBar.fillWidth;
-          }
-          if (this.hiddenScrollBar.fillHeight > 0) {
-            fillHeight = this.hiddenScrollBar.fillHeight;
-          }
-          imgContext.rect(0, fixHeight, fillWidth, fillHeight);
-          imgContext.fillStyle = this.hiddenScrollBar.color;
-          imgContext.fill();
-        }
       }
 
       // 初始化截图容器
@@ -428,69 +379,34 @@ export default class ScreenShot {
         });
       }
       // 停止捕捉屏幕
-      this.stopCapture();
+      stopCapture(this.videoController);
       // 重置光标状态
       document.body.classList.remove("no-cursor");
     }, this.wrcReplyTime);
   }
 
-  // 开始捕捉屏幕
-  private startCapture = async (cancelCallback: Function | undefined) => {
-    let captureStream = null;
-    let mediaWidth = this.screenShotImageController.width * this.dpr;
-    let mediaHeight = this.screenShotImageController.height * this.dpr;
-    let curTabState = true;
-    let displayConfig = {};
-    // 窗口模式启用时则
-    if (this.wrcWindowMode) {
-      mediaWidth = window.screen.width * this.dpr;
-      mediaHeight = window.screen.height * this.dpr;
-      curTabState = false;
-      displayConfig = {
-        displaySurface: "window"
-      };
+  // 裁剪框回调
+  // 对组件内部所依赖的数据做处理
+  private croppingBoxCallerCallback = (res: genericMethodPostbackType) => {
+    const { code, data } = res;
+    if (code === 1 && typeof data === "number") {
+      this.borderOption = data;
     }
-
-    try {
-      // 捕获屏幕
-      captureStream = await navigator.mediaDevices.getDisplayMedia({
-        audio: false,
-        video: {
-          width: mediaWidth,
-          height: mediaHeight,
-          ...displayConfig
-        },
-        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-        // @ts-ignore
-        // 当前标签页
-        preferCurrentTab: curTabState
-      });
-      // 将MediaStream输出至video标签
-      this.videoController.srcObject = captureStream;
-      // 储存屏幕流数据
-      this.captureStream = captureStream;
-    } catch (err) {
-      if (cancelCallback != null) {
-        cancelCallback({
-          code: -1,
-          msg: "浏览器不支持webrtc或者用户未授权",
-          errorInfo: err
-        });
-      }
-      // 销毁截图组件
-      this.data.destroyDOM();
-      throw `浏览器不支持webrtc或者用户未授权( ${err} )`;
+    if (code === 2 && typeof data === "boolean") {
+      this.mouseInsideCropBox = data;
     }
-    return captureStream;
+    if (code === 3 && typeof data === null) {
+      this.borderOption = null;
+    }
+    if ((code === 4 || code === 5) && typeof data != null) {
+      this.tempGraphPosition = res.data as drawCutOutBoxReturnType;
+    }
   };
 
-  // 停止捕捉屏幕
-  private stopCapture = () => {
-    const srcObject = this.videoController.srcObject;
-    if (srcObject && "getTracks" in srcObject) {
-      const tracks = srcObject.getTracks();
-      tracks.forEach(track => track.stop());
-      this.videoController.srcObject = null;
+  // 工具栏展示时，对组件内部所依赖数据做处理
+  private toolBarCallerCallback = (res: genericMethodPostbackType) => {
+    if (res.code === 1 && typeof res.data === "boolean") {
+      this.getFullScreenStatus = res.data;
     }
   };
 
@@ -499,145 +415,68 @@ export default class ScreenShot {
     cancelCallback: Function | undefined,
     triggerCallback: Function | undefined
   ) => {
+    // 隐藏光标
+    document.body.classList.add("no-cursor");
+    const callerCallback = (res: genericMethodPostbackType) => {
+      if (res.code === 1 && res.data instanceof MediaStream) {
+        this.captureStream = res.data;
+      }
+    };
     // 开始捕捉屏幕
-    this.startCapture(cancelCallback).then(() => {
+    startCapture(
+      cancelCallback,
+      this.data,
+      {
+        screenShotImageController: this.screenShotImageController,
+        videoController: this.videoController
+      },
+      { dpr: this.dpr, wrcWindowMode: this.wrcWindowMode },
+      callerCallback
+    ).then(() => {
       this.loadScreenFlowData(triggerCallback);
     });
   };
 
   // 鼠标按下事件
   private mouseDownEvent = (event: MouseEvent | TouchEvent) => {
+    this.drawStatus = false;
     // 隐藏颜色选择面板
     this.data.setColorPanelStatus(false);
     // 隐藏文字大小选择面板
     this.data.setTextSizeOptionStatus(false);
     // 非鼠标左键按下则终止
     if (event instanceof MouseEvent && event.button != 0) return;
-
-    // 当前处于移动端触摸时，需要在按下时判断当前坐标点是否处于裁剪框内，主动更新draggingTrim状态（移动端的move事件只会在按下时才会触发）
-    if (!isPC() && event instanceof TouchEvent && this.screenShotCanvas) {
-      this.operatingCutOutBox(
-        event.touches[0].pageX,
-        event.touches[0].pageY,
-        this.tempGraphPosition.startX,
-        this.tempGraphPosition.startY,
-        this.tempGraphPosition.width,
-        this.tempGraphPosition.height,
-        this.screenShotCanvas
-      );
-    }
-    // 当前操作的是撤销
-    if (this.data.getToolName() == "undo") return;
-    this.data.setDragging(true);
-    this.drawStatus = false;
-    // 重置工具栏超出状态
-    this.data.setToolPositionStatus(false);
-    const mouseX = nonNegativeData(
-      event instanceof MouseEvent ? event.offsetX : event.touches[0].pageX
-    );
-    const mouseY = nonNegativeData(
-      event instanceof MouseEvent ? event.offsetY : event.touches[0].pageY
-    );
-
-    // 如果当前操作的是截图工具栏
-    if (this.data.getToolClickStatus()) {
-      // 记录当前鼠标开始坐标
-      this.drawGraphPosition.startX = mouseX;
-      this.drawGraphPosition.startY = mouseY;
-    }
-
-    // 当前操作的是画笔
-    if (this.data.getToolName() == "brush" && this.screenShotCanvas) {
-      // 初始化画笔
-      initPencil(this.screenShotCanvas, mouseX, mouseY);
-    }
-
-    // 当前操作的文本
-    if (
-      this.data.getToolName() == "text" &&
-      this.textInputController &&
-      this.screenShotContainer &&
-      this.screenShotCanvas
-    ) {
-      if (!this.mouseInsideCropBox) {
-        return;
+    const saveDrawGraphCallerCallback = (res: genericMethodPostbackType) => {
+      if (res.code === 1 && res.data != null) {
+        this.drawGraphPrevX = (res.data as positionInfoType).startX;
+        this.drawGraphPrevY = (res.data as positionInfoType).startY;
       }
-      // 显示文本输入区域
-      this.data.setTextStatus(true);
-      // 判断输入框位置是否变化
-      if (
-        this.textInputPosition.mouseX != 0 &&
-        this.textInputPosition.mouseY != 0 &&
-        this.textInputPosition.mouseX != mouseX &&
-        this.textInputPosition.mouseY != mouseY
-      ) {
-        drawText(
-          this.textInputController.innerText,
-          this.textInputPosition.mouseX,
-          this.textInputPosition.mouseY,
-          this.data.getSelectedColor(),
-          this.data.getFontSize(),
-          this.screenShotCanvas
-        );
-
-        // 输入框内容不为空时则隐藏
-        if (this.textInputController.innerText !== "") {
-          // 隐藏输入框
-          this.data.setTextStatus(false);
-        }
-
-        // 清空文本输入区域的内容
-        this.textInputController.innerHTML = "";
-        // 保存绘制记录
-        addHistory();
+    };
+    mouseDownCore(
+      event,
+      this.data,
+      {
+        screenShotCanvas: this.screenShotCanvas,
+        screenShotContainer: this.screenShotContainer,
+        screenShotImageController: this.screenShotImageController,
+        textInputController: this.textInputController
+      },
+      {
+        tempGraphPosition: this.tempGraphPosition,
+        dpr: this.dpr,
+        movePosition: this.movePosition,
+        cutOutBoxBorderArr: this.cutOutBoxBorderArr,
+        borderOption: this.borderOption,
+        drawGraphPosition: this.drawGraphPosition,
+        mouseInsideCropBox: this.mouseInsideCropBox,
+        textInputPosition: this.textInputPosition,
+        position: this.position
+      },
+      {
+        croppingBoxCallerCallback: this.croppingBoxCallerCallback,
+        saveDrawGraphCallerCallback: saveDrawGraphCallerCallback
       }
-      // 计算文本框显示位置, 需要加上截图容器的位置信息
-      const textMouseX = mouseX + this.position.left;
-      // 设置文本框位置等信息
-      this.textInputController.style.left = textMouseX + "px";
-      this.textInputController.style.fontSize = this.data.getFontSize() + "px";
-      this.textInputController.style.fontFamily = "none";
-      this.textInputController.style.color = this.data.getSelectedColor();
-
-      // 部分操作需要等dom渲染完毕执行
-      setTimeout(() => {
-        if (this.textInputController) {
-          // 获取输入框容器的高度
-          const containerHeight = this.textInputController.offsetHeight;
-          // 输入框容器y轴的位置需要在坐标的基础上再加上容器高度的一半，容器的位置就正好居中于光标
-          // canvas渲染的时候就不会出现位置不一致的问题了
-          const textMouseY =
-            mouseY - Math.floor(containerHeight / 2) + this.position.top;
-          this.textInputController.style.top = textMouseY + "px";
-          // 获取焦点
-          this.textInputController.focus();
-          // 记录当前输入框位置
-          this.textInputPosition = { mouseX: mouseX, mouseY: mouseY };
-          this.data.setTextInfo({
-            positionX: mouseX,
-            positionY: mouseY,
-            color: this.data.getSelectedColor(),
-            size: this.data.getFontSize()
-          });
-        }
-      });
-    }
-
-    // 如果操作的是裁剪框
-    if (this.borderOption) {
-      // 设置为拖动状态
-      this.data.setDraggingTrim(true);
-      // 记录移动时的起始点坐标
-      this.movePosition.moveStartX = mouseX;
-      this.movePosition.moveStartY = mouseY;
-    } else {
-      // 保存当前裁剪框的坐标
-      this.drawGraphPrevX = this.drawGraphPosition.startX;
-      this.drawGraphPrevY = this.drawGraphPosition.startY;
-      // 绘制裁剪框,记录当前鼠标开始坐标
-      this.drawGraphPosition.startX = mouseX;
-      this.drawGraphPosition.startY = mouseY;
-    }
+    );
   };
 
   // 鼠标移动事件
@@ -692,95 +531,56 @@ export default class ScreenShot {
         this.showLastHistory();
         this.drawStatus = true;
       }
-      switch (this.data.getToolName()) {
-        case "square":
-          drawRectangle(
-            startX,
-            startY,
-            tempWidth,
-            tempHeight,
-            this.data.getSelectedColor(),
-            this.data.getPenSize(),
-            this.screenShotCanvas
-          );
-          break;
-        case "round":
-          drawCircle(
-            this.screenShotCanvas,
-            currentX,
-            currentY,
-            startX,
-            startY,
-            this.data.getPenSize(),
-            this.data.getSelectedColor()
-          );
-          break;
-        case "right-top":
-          // 绘制等比例箭头
-          if (this.plugInParameters.getRatioArrow()) {
-            drawLineArrow(
-              this.screenShotCanvas,
-              startX,
-              startY,
-              currentX,
-              currentY,
-              30,
-              10,
-              this.data.getPenSize(),
-              this.data.getSelectedColor()
-            );
-            return;
-          }
-          this.drawArrow.draw(
-            this.screenShotCanvas,
-            startX,
-            startY,
-            currentX,
-            currentY,
-            this.data.getSelectedColor(),
-            this.data.getPenSize()
-          );
-          break;
-        case "brush":
-          // 画笔绘制
-          drawPencil(
-            this.screenShotCanvas,
-            currentX,
-            currentY,
-            this.data.getPenSize(),
-            this.data.getSelectedColor()
-          );
-          break;
-        case "mosaicPen":
-          // 当前为马赛克工具则修改绘制状态
-          // 前面做了判断，此处需要特殊处理
-          if (!this.drawStatus) {
-            this.showLastHistory();
-            this.drawStatus = true;
-          }
-          // 绘制马赛克，为了确保鼠标位置在绘制区域中间，所以对x、y坐标进行-10处理
-          drawMosaic(
-            currentX - 10,
-            currentY - 10,
-            this.data.getMosaicPenSize(),
-            this.degreeOfBlur,
-            this.screenShotCanvas
-          );
-          break;
-        default:
-          break;
-      }
+      const callerCallback = (res: genericMethodPostbackType) => {
+        if (
+          res.code === 1 &&
+          res.data != null &&
+          typeof res.data === "boolean"
+        ) {
+          this.drawStatus = res.data;
+        }
+      };
+      // 处理涂鸦绘制
+      handleGraffitiDraw(
+        this.drawStatus,
+        startX,
+        startY,
+        tempWidth,
+        tempHeight,
+        currentX,
+        currentY,
+        this.degreeOfBlur,
+        this.data,
+        this.plugInParameters.getRatioArrow(),
+        {
+          screenShotCanvas: this.screenShotCanvas
+        },
+        { showLastHistory: this.showLastHistory },
+        callerCallback
+      );
       return;
     }
     // 执行裁剪框操作函数
-    this.operatingCutOutBox(
+    operatingCutOutBox(
       currentX,
       currentY,
       startX,
       startY,
       width,
       height,
-      this.screenShotCanvas
+      this.screenShotCanvas,
+      this.data,
+      this.dpr,
+      {
+        screenShotContainer: this.screenShotContainer,
+        screenShotImageController: this.screenShotImageController
+      },
+      {
+        movePosition: this.movePosition,
+        cutOutBoxBorderArr: this.cutOutBoxBorderArr,
+        borderOption: this.borderOption
+      },
+      this.croppingBoxCallerCallback
     );
     // 如果鼠标未点击或者当前操作的是裁剪框都return
     if (!this.data.getDragging() || this.data.getDraggingTrim()) return;
@@ -796,197 +596,6 @@ export default class ScreenShot {
       this.screenShotImageController
     ) as drawCutOutBoxReturnType;
   };
-
-  // 调整插件容器层级
-  private adjustContainerLevels(level: number): void {
-    if (
-      this.screenShotContainer == null ||
-      this.toolController == null ||
-      this.textInputController == null ||
-      this.optionIcoController == null ||
-      this.optionController == null ||
-      this.cutBoxSizeContainer == null ||
-      level <= 0
-    ) {
-      return;
-    }
-    this.screenShotContainer.style.zIndex = `${level}`;
-    this.toolController.style.zIndex = `${level + 1}`;
-    this.textInputController.style.zIndex = `${level + 1}`;
-    this.optionIcoController.style.zIndex = `${level + 1}`;
-    this.optionController.style.zIndex = `${level + 1}`;
-    this.cutBoxSizeContainer.style.zIndex = `${level + 1}`;
-  }
-
-  // 初始化裁剪框
-  private initCropBox(cropBoxInfo: {
-    x: number;
-    y: number;
-    w: number;
-    h: number;
-  }): void {
-    const startX = cropBoxInfo.x;
-    const startY = cropBoxInfo.y;
-    const width = cropBoxInfo.w;
-    const height = cropBoxInfo.h;
-    if (this.screenShotContainer == null) return;
-    this.drawGraphPosition = { startX, startY, width, height };
-    this.data.setCutOutBoxPosition(startX, startY, width, height);
-    drawCutOutBox(
-      startX,
-      startY,
-      width,
-      height,
-      this.screenShotCanvas as CanvasRenderingContext2D,
-      this.data.getBorderSize(),
-      this.screenShotContainer,
-      this.screenShotImageController
-    );
-    // 保存边框节点信息
-    this.cutOutBoxBorderArr = saveBorderArrInfo(
-      this.data.getBorderSize(),
-      this.drawGraphPosition
-    );
-    // 修改鼠标状态为拖动
-    this.screenShotContainer.style.cursor = "move";
-    // 显示截图工具栏
-    this.data.setToolStatus(true);
-    // 显示裁剪框尺寸显示容器
-    this.data.setCutBoxSizeStatus(true);
-    if (this.toolController != null) {
-      // 渲染截图工具栏
-      this.showToolBar();
-    }
-  }
-
-  /**
-   * 从窗口数据流中截取页面body内容
-   * @param videoWidth 窗口宽度
-   * @param videoHeight 窗口高度
-   * @param containerWidth body内容宽度
-   * @param containerHeight body内容高度
-   * @private
-   */
-  private getWindowContentData(
-    videoWidth: number,
-    videoHeight: number,
-    containerWidth: number,
-    containerHeight: number
-  ) {
-    const videoCanvas = document.createElement("canvas");
-    videoCanvas.width = videoWidth;
-    videoCanvas.height = videoHeight;
-    const videoContext = getCanvas2dCtx(videoCanvas, videoWidth, videoHeight);
-    if (videoContext) {
-      videoContext.drawImage(this.videoController, 0, 0);
-      const startX = 0;
-      const startY = videoHeight - containerHeight;
-      const width = containerWidth;
-      const height = videoHeight - startY;
-      // 获取裁剪框区域图片信息;
-      return videoContext.getImageData(
-        startX * this.dpr,
-        startY * this.dpr,
-        width * this.dpr,
-        height * this.dpr
-      );
-    }
-    return null;
-  }
-
-  // 为指定容器绑定快捷键
-  private registerContainerShortcuts(container: HTMLElement) {
-    container.addEventListener("keydown", (event: KeyboardEvent) => {
-      if (this.screenShotCanvas == null) return;
-      // command/ctrl + enter 将输入框的文字绘制到画布内
-      // 按下ESC时如果有内容则绘制
-      if (
-        ((event.metaKey || event.ctrlKey) && event.code === "Enter") ||
-        event.code === "Escape"
-      ) {
-        this.data.setTextEditState(true);
-        const text = container.innerText;
-        if (!text || text === "") {
-          // 隐藏输入框
-          this.data.setTextStatus(false);
-          return;
-        }
-        drawText(
-          text,
-          this.textInputPosition.mouseX,
-          this.textInputPosition.mouseY,
-          this.data.getSelectedColor(),
-          this.data.getFontSize(),
-          this.screenShotCanvas
-        );
-        // 清空文本输入区域的内容
-        container.innerHTML = "";
-        // 隐藏输入框
-        this.data.setTextStatus(false);
-        // 保存绘制记录
-        addHistory();
-      }
-    });
-  }
-
-  private showToolBar(): void {
-    if (this.toolController == null || this.screenShotContainer == null) return;
-    // 计算截图工具栏位置
-    const toolLocation = calculateToolLocation(
-      this.drawGraphPosition,
-      this.toolController.offsetWidth,
-      this.screenShotContainer.width / this.dpr,
-      this.placement,
-      this.position
-    );
-    const containerHeight = this.screenShotContainer.height / this.dpr;
-
-    // 工具栏的位置超出截图容器时，调整工具栏位置防止超出
-    if (toolLocation.mouseY > containerHeight - 64) {
-      toolLocation.mouseY -= this.drawGraphPosition.height + 64;
-      // 超出屏幕顶部时
-      if (toolLocation.mouseY < 0) {
-        const containerHeight = parseInt(this.screenShotContainer.style.height);
-        toolLocation.mouseY = containerHeight - this.fullScreenDiffHeight;
-      }
-      // 设置工具栏超出状态为true
-      this.data.setToolPositionStatus(true);
-      // 隐藏裁剪框尺寸显示容器
-      this.data.setCutBoxSizeStatus(false);
-    }
-
-    // 当前截取的是全屏，则修改工具栏的位置到截图容器最底部，防止超出
-    if (this.getFullScreenStatus) {
-      const containerHeight = parseInt(this.screenShotContainer.style.height);
-      // 重新计算工具栏的x轴位置
-      const toolPositionX =
-        (this.drawGraphPosition.width / this.dpr -
-          this.toolController.offsetWidth) /
-        2;
-      toolLocation.mouseY = containerHeight - this.fullScreenDiffHeight;
-      toolLocation.mouseX = toolPositionX;
-    }
-
-    // 显示并设置截图工具栏位置
-    this.data.setToolInfo(
-      toolLocation.mouseX + this.position.left,
-      toolLocation.mouseY + this.position.top
-    );
-
-    // 设置裁剪框尺寸显示容器位置
-    this.data.setCutBoxSizePosition(
-      this.drawGraphPosition.startX,
-      this.drawGraphPosition.startY - 35
-    );
-    // 渲染裁剪框尺寸
-    this.data.setCutBoxSize(
-      this.drawGraphPosition.width,
-      this.drawGraphPosition.height
-    );
-
-    // 状态重置
-    this.getFullScreenStatus = false;
-  }
 
   private setGlobalParameter() {
     this.screenShotContainer = this.data.getScreenShotContainer() as HTMLCanvasElement | null;
@@ -1168,171 +777,25 @@ export default class ScreenShot {
       // 复原拖动状态
       this.dragFlag = false;
       if (this.toolController != null) {
-        this.showToolBar();
+        showToolBar(
+          this.dpr,
+          this.data,
+          {
+            toolController: this.toolController,
+            screenShotContainer: this.screenShotContainer
+          },
+          {
+            drawGraphPosition: this.drawGraphPosition,
+            placement: this.placement,
+            position: this.position,
+            fullScreenDiffHeight: this.fullScreenDiffHeight,
+            getFullScreenStatus: this.getFullScreenStatus
+          },
+          this.toolBarCallerCallback
+        );
       }
     }
   };
-
-  /**
-   * 操作裁剪框
-   * @param currentX 裁剪框当前x轴坐标
-   * @param currentY 裁剪框当前y轴坐标
-   * @param startX 鼠标x轴坐标
-   * @param startY 鼠标y轴坐标
-   * @param width 裁剪框宽度
-   * @param height 裁剪框高度
-   * @param context 需要进行绘制的canvas画布
-   * @private
-   */
-  private operatingCutOutBox(
-    currentX: number,
-    currentY: number,
-    startX: number,
-    startY: number,
-    width: number,
-    height: number,
-    context: CanvasRenderingContext2D
-  ) {
-    // canvas元素不存在
-    if (this.screenShotContainer == null) {
-      return;
-    }
-    // 获取鼠标按下时的坐标
-    const { moveStartX, moveStartY } = this.movePosition;
-
-    // 裁剪框边框节点事件存在且裁剪框未进行操作，则对鼠标样式进行修改
-    if (this.cutOutBoxBorderArr.length > 0 && !this.data.getDraggingTrim()) {
-      // 标识鼠标是否在裁剪框内
-      let flag = false;
-      // 判断鼠标位置
-      context.beginPath();
-      for (let i = 0; i < this.cutOutBoxBorderArr.length; i++) {
-        context.rect(
-          this.cutOutBoxBorderArr[i].x,
-          this.cutOutBoxBorderArr[i].y,
-          this.cutOutBoxBorderArr[i].width,
-          this.cutOutBoxBorderArr[i].height
-        );
-        // 当前坐标点处于8个可操作点上，修改鼠标指针样式
-        if (context.isPointInPath(currentX * this.dpr, currentY * this.dpr)) {
-          switch (this.cutOutBoxBorderArr[i].index) {
-            case 1:
-              if (this.data.getToolClickStatus()) {
-                // 修改截图容器内的鼠标样式
-                updateContainerMouseStyle(
-                  this.screenShotContainer,
-                  this.data.getActiveToolName()
-                );
-              } else {
-                this.screenShotContainer.style.cursor = "move";
-              }
-              break;
-            case 2:
-              // 工具栏被点击则不改变指针样式
-              if (this.data.getToolClickStatus()) break;
-              this.screenShotContainer.style.cursor = "ns-resize";
-              break;
-            case 3:
-              if (this.data.getToolClickStatus()) break;
-              this.screenShotContainer.style.cursor = "ew-resize";
-              break;
-            case 4:
-              if (this.data.getToolClickStatus()) break;
-              this.screenShotContainer.style.cursor = "nwse-resize";
-              break;
-            case 5:
-              if (this.data.getToolClickStatus()) break;
-              this.screenShotContainer.style.cursor = "nesw-resize";
-              break;
-            default:
-              break;
-          }
-          this.borderOption = this.cutOutBoxBorderArr[i].option;
-          flag = true;
-          break;
-        }
-      }
-      this.mouseInsideCropBox = flag;
-      context.closePath();
-      if (!flag) {
-        // 鼠标移出裁剪框重置鼠标样式
-        this.screenShotContainer.style.cursor = "default";
-        // 重置当前操作的边框节点为null
-        this.borderOption = null;
-      }
-    }
-
-    // 裁剪框正在被操作
-    if (this.data.getDraggingTrim()) {
-      // 当前操作节点为1时则为移动裁剪框
-      if (this.borderOption === 1) {
-        // 计算要移动的x轴坐标
-        let x = fixedData(
-          currentX - (moveStartX - startX),
-          width,
-          this.screenShotContainer.width
-        );
-        // 计算要移动的y轴坐标
-        let y = fixedData(
-          currentY - (moveStartY - startY),
-          height,
-          this.screenShotContainer.height
-        );
-        // 计算画布面积
-        const containerWidth = this.screenShotContainer.width / this.dpr;
-        const containerHeight = this.screenShotContainer.height / this.dpr;
-        // 计算裁剪框在画布上所占的面积
-        const cutOutBoxSizeX = x + width;
-        const cutOutBoxSizeY = y + height;
-        // 超出画布的可视区域，进行位置修正
-        if (cutOutBoxSizeX > containerWidth) {
-          x = containerWidth - width;
-        }
-        if (cutOutBoxSizeY > containerHeight) {
-          y = containerHeight - height;
-        }
-
-        // 重新绘制裁剪框
-        this.tempGraphPosition = drawCutOutBox(
-          x,
-          y,
-          width,
-          height,
-          context,
-          this.data.getBorderSize(),
-          this.screenShotContainer as HTMLCanvasElement,
-          this.screenShotImageController
-        ) as drawCutOutBoxReturnType;
-      } else {
-        // 裁剪框其他8个点的拖拽事件
-        const {
-          tempStartX,
-          tempStartY,
-          tempWidth,
-          tempHeight
-        } = zoomCutOutBoxPosition(
-          currentX,
-          currentY,
-          startX,
-          startY,
-          width,
-          height,
-          this.borderOption as number
-        ) as zoomCutOutBoxReturnType;
-        // 绘制裁剪框
-        this.tempGraphPosition = drawCutOutBox(
-          tempStartX,
-          tempStartY,
-          tempWidth,
-          tempHeight,
-          context,
-          this.data.getBorderSize(),
-          this.screenShotContainer as HTMLCanvasElement,
-          this.screenShotImageController
-        ) as drawCutOutBoxReturnType;
-      }
-    }
-  }
 
   /**
    * 显示最新的画布状态
@@ -1350,80 +813,6 @@ export default class ScreenShot {
         0
       );
     }
-  }
-
-  // 为截图容器添加鼠标||触摸的事件监听
-  private setScreenShotContainerEventListener() {
-    if (isPC()) {
-      // 添加鼠标事件监听
-      this.screenShotContainer?.addEventListener(
-        "mousedown",
-        this.mouseDownEvent
-      );
-      this.screenShotContainer?.addEventListener(
-        "mousemove",
-        this.mouseMoveEvent
-      );
-      this.screenShotContainer?.addEventListener("mouseup", this.mouseUpEvent);
-      return;
-    }
-    // 设置触摸监听
-    this.screenShotContainer?.addEventListener(
-      "touchstart",
-      this.mouseDownEvent,
-      false
-    );
-    this.screenShotContainer?.addEventListener(
-      "touchmove",
-      this.mouseMoveEvent,
-      false
-    );
-    this.screenShotContainer?.addEventListener(
-      "touchend",
-      this.mouseUpEvent,
-      false
-    );
-  }
-
-  /**
-   * 向截图容器中绘制图片
-   * @param triggerCallback
-   * @param context
-   * @param imgSrc
-   * @private
-   */
-  private drawPictures(
-    triggerCallback: Function | undefined,
-    context: CanvasRenderingContext2D,
-    imgSrc: string
-  ) {
-    const imgContainer = new Image();
-
-    imgContainer.src = imgSrc;
-    imgContainer.width = this.screenShotImageController.width;
-    imgContainer.height = this.screenShotImageController.height;
-    imgContainer.crossOrigin = "Anonymous";
-    imgContainer.onload = () => {
-      // 装载截图的dom为null则退出
-      if (this.screenShotContainer == null) return;
-
-      // 将用户传递的图片绘制到图片容器里
-      this.screenShotImageController
-        .getContext("2d")
-        ?.drawImage(
-          imgContainer,
-          0,
-          0,
-          this.screenShotImageController.width,
-          this.screenShotImageController.height
-        );
-      // 初始化截图容器
-      this.initScreenShot(
-        triggerCallback,
-        context,
-        this.screenShotImageController
-      );
-    };
   }
 
   /**
@@ -1450,10 +839,61 @@ export default class ScreenShot {
     // 绘制蒙层
     drawMasking(context, screenShotContainer);
     // 截图容器添加鼠标点击/触摸事件的监听
-    this.setScreenShotContainerEventListener();
+    setScreenShotContainerEventListener(this.screenShotContainer, {
+      mouseDownEvent: this.mouseDownEvent,
+      mouseMoveEvent: this.mouseMoveEvent,
+      mouseUpEvent: this.mouseUpEvent
+    });
     // 是否初始化裁剪框
     if (this.cropBoxInfo != null && Object.keys(this.cropBoxInfo).length == 4) {
-      this.initCropBox(this.cropBoxInfo);
+      initCropBox(
+        this.dpr,
+        this.cropBoxInfo,
+        this.data,
+        {
+          screenShotContainer: this.screenShotContainer,
+          screenShotImageController: this.screenShotImageController,
+          screenShotCanvas: this.screenShotCanvas,
+          toolController: this.toolController
+        },
+        {
+          drawGraphPosition: this.drawGraphPosition,
+          cutOutBoxBorderArr: this.cutOutBoxBorderArr,
+          placement: this.placement,
+          position: this.position,
+          fullScreenDiffHeight: this.fullScreenDiffHeight,
+          getFullScreenStatus: this.getFullScreenStatus
+        },
+        { toolBarCallerCallback: this.toolBarCallerCallback }
+      );
+    }
+  }
+
+  // 创建监听事件
+  private createEvent(
+    screenShotContainer: HTMLCanvasElement,
+    toolController: HTMLDivElement,
+    textInputController: HTMLDivElement
+  ) {
+    // 创建键盘事件监听
+    this.keyboardEventHandle = new KeyboardEventHandle(
+      screenShotContainer,
+      toolController
+    );
+    // 给输入容器设置快捷键监听
+    registerContainerShortcuts(
+      textInputController,
+      this.screenShotCanvas,
+      this.data,
+      this.textInputPosition
+    );
+    if (this.customRightClickEvent.state) {
+      // 给截图容器添加右键事件监听
+      registerForRightClickEvent(
+        screenShotContainer,
+        this.data,
+        this.customRightClickEvent.handleFn
+      );
     }
   }
 }
