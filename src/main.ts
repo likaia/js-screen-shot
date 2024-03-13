@@ -382,31 +382,6 @@ export default class ScreenShot {
     }, this.wrcReplyTime);
   }
 
-  // 裁剪框回调
-  // 对组件内部所依赖的数据做处理
-  private croppingBoxCallerCallback = (res: genericMethodPostbackType) => {
-    const { code, data } = res;
-    if (code === 1 && typeof data === "number") {
-      this.borderOption = data;
-    }
-    if (code === 2 && typeof data === "boolean") {
-      this.mouseInsideCropBox = data;
-    }
-    if (code === 3 && typeof data === null) {
-      this.borderOption = null;
-    }
-    if ((code === 4 || code === 5) && typeof data != null) {
-      this.tempGraphPosition = res.data as drawCutOutBoxReturnType;
-    }
-  };
-
-  // 工具栏展示时，对组件内部所依赖数据做处理
-  private toolBarCallerCallback = (res: genericMethodPostbackType) => {
-    if (res.code === 1 && typeof res.data === "boolean") {
-      this.getFullScreenStatus = res.data;
-    }
-  };
-
   // 截屏
   private screenShot = (
     cancelCallback: Function | undefined,
@@ -433,6 +408,60 @@ export default class ScreenShot {
       this.loadScreenFlowData(triggerCallback);
     });
   };
+
+  /**
+   * 初始化截图容器
+   * @param triggerCallback
+   * @param context
+   * @param screenShotContainer
+   * @private
+   */
+  private initScreenShot(
+    triggerCallback: Function | undefined,
+    context: CanvasRenderingContext2D,
+    screenShotContainer: HTMLCanvasElement
+  ) {
+    if (triggerCallback != null) {
+      // 加载成功，执行回调函数
+      triggerCallback({ code: 0, msg: "截图加载完成" });
+    }
+    // 赋值截图区域canvas画布
+    this.screenShotCanvas = context;
+    // 存储屏幕截图
+    this.data.setScreenShotImageController(screenShotContainer);
+
+    // 绘制蒙层
+    drawMasking(context, screenShotContainer);
+    // 截图容器添加鼠标点击/触摸事件的监听
+    setScreenShotContainerEventListener(this.screenShotContainer, {
+      mouseDownEvent: this.mouseDownEvent,
+      mouseMoveEvent: this.mouseMoveEvent,
+      mouseUpEvent: this.mouseUpEvent
+    });
+    // 是否初始化裁剪框
+    if (this.cropBoxInfo != null && Object.keys(this.cropBoxInfo).length == 4) {
+      initCropBox(
+        this.dpr,
+        this.cropBoxInfo,
+        this.data,
+        {
+          screenShotContainer: this.screenShotContainer,
+          screenShotImageController: this.screenShotImageController,
+          screenShotCanvas: this.screenShotCanvas,
+          toolController: this.toolController
+        },
+        {
+          drawGraphPosition: this.drawGraphPosition,
+          cutOutBoxBorderArr: this.cutOutBoxBorderArr,
+          placement: this.placement,
+          position: this.position,
+          fullScreenDiffHeight: this.fullScreenDiffHeight,
+          getFullScreenStatus: this.getFullScreenStatus
+        },
+        { toolBarCallerCallback: this.toolBarCallerCallback }
+      );
+    }
+  }
 
   // 鼠标按下事件
   private mouseDownEvent = (event: MouseEvent | TouchEvent) => {
@@ -594,21 +623,28 @@ export default class ScreenShot {
     ) as drawCutOutBoxReturnType;
   };
 
-  // 鼠标移动事件
-  private mouseMoveEvent2 = (event: MouseEvent | TouchEvent) => {
-    if (
-      this.screenShotCanvas == null ||
-      this.screenShotContainer == null ||
-      this.data.getToolName() == "undo"
-    ) {
+  // 鼠标抬起事件
+  private mouseUpEvent = () => {
+    // 当前操作的是撤销
+    if (this.data.getToolName() == "undo") return;
+    // 绘制结束
+    this.data.setDragging(false);
+    this.data.setDraggingTrim(false);
+
+    // 截图容器判空
+    if (this.screenShotCanvas == null || this.screenShotContainer == null) {
       return;
     }
-    // 去除默认事件
-    event.preventDefault();
-
-    const updateDragFlagCallback = (res: genericMethodPostbackType) => {
-      if (res.code === 1 && typeof res.data === "boolean") {
-        this.dragFlag = res.data;
+    const updateTempGraphPositionCallback = (
+      res: genericMethodPostbackType
+    ) => {
+      if (res.code === 1 && res.data != null) {
+        const { getFullScreenStatus, tempGraphPosition } = res.data as {
+          getFullScreenStatus: boolean;
+          tempGraphPosition: drawCutOutBoxReturnType;
+        };
+        this.getFullScreenStatus = getFullScreenStatus;
+        this.tempGraphPosition = tempGraphPosition;
       }
     };
     const updateDrawStatusCallback = (res: genericMethodPostbackType) => {
@@ -616,43 +652,79 @@ export default class ScreenShot {
         this.drawStatus = res.data;
       }
     };
-    const updateTempGraphPositionCallback = (
-      res: genericMethodPostbackType
-    ) => {
-      if (res.code === 1 && typeof res.data != null) {
-        this.tempGraphPosition = res.data as drawCutOutBoxReturnType;
-      }
-    };
-    mouseMoveCore(
-      event,
+    mouseUpCore(
       this.data,
+      {
+        dragFlag: this.dragFlag,
+        drawStatus: this.drawStatus,
+        clickCutFullScreen: this.clickCutFullScreen,
+        drawGraphPosition: this.drawGraphPosition,
+        cutOutBoxBorderArr: this.cutOutBoxBorderArr,
+        drawGraphPrevX: this.drawGraphPrevX,
+        drawGraphPrevY: this.drawGraphPrevY,
+        tempGraphPosition: this.tempGraphPosition,
+        placement: this.placement,
+        position: this.position,
+        fullScreenDiffHeight: this.fullScreenDiffHeight,
+        getFullScreenStatus: this.getFullScreenStatus,
+        dpr: this.dpr
+      },
       {
         screenShotCanvas: this.screenShotCanvas,
         screenShotContainer: this.screenShotContainer,
         screenShotImageController: this.screenShotImageController,
-        textInputController: this.textInputController
+        toolController: this.toolController
       },
       {
-        tempGraphPosition: this.tempGraphPosition,
-        dpr: this.dpr,
-        movePosition: this.movePosition,
-        cutOutBoxBorderArr: this.cutOutBoxBorderArr,
-        borderOption: this.borderOption,
-        drawGraphPosition: this.drawGraphPosition,
-        position: this.position,
-        drawStatus: this.drawStatus,
-        degreeOfBlur: this.degreeOfBlur,
-        useRatioArrow: this.plugInParameters.getRatioArrow()
-      },
-      {
-        showLastHistory: this.showLastHistory,
-        croppingBoxCallerCallback: this.croppingBoxCallerCallback,
-        updateDragFlagCallback,
-        updateDrawStatusCallback,
-        updateTempGraphPositionCallback
+        toolBarCallerCallback: this.toolBarCallerCallback,
+        updateTempGraphPositionCallback,
+        updateDrawStatusCallback
       }
     );
   };
+
+  // 裁剪框回调
+  // 对组件内部所依赖的数据做处理
+  private croppingBoxCallerCallback = (res: genericMethodPostbackType) => {
+    const { code, data } = res;
+    if (code === 1 && typeof data === "number") {
+      this.borderOption = data;
+    }
+    if (code === 2 && typeof data === "boolean") {
+      this.mouseInsideCropBox = data;
+    }
+    if (code === 3 && typeof data === null) {
+      this.borderOption = null;
+    }
+    if ((code === 4 || code === 5) && typeof data != null) {
+      this.tempGraphPosition = res.data as drawCutOutBoxReturnType;
+    }
+  };
+
+  // 工具栏展示时，对组件内部所依赖数据做处理
+  private toolBarCallerCallback = (res: genericMethodPostbackType) => {
+    if (res.code === 1 && typeof res.data === "boolean") {
+      this.getFullScreenStatus = res.data;
+    }
+  };
+
+  /**
+   * 显示最新的画布状态
+   * @private
+   */
+  private showLastHistory() {
+    if (this.screenShotCanvas != null) {
+      const context = this.screenShotCanvas;
+      if (this.data.getHistory().length <= 0) {
+        addHistory();
+      }
+      context.putImageData(
+        this.data.getHistory()[this.data.getHistory().length - 1]["data"],
+        0,
+        0
+      );
+    }
+  }
 
   private setGlobalParameter() {
     this.screenShotContainer = this.data.getScreenShotContainer() as HTMLCanvasElement | null;
@@ -741,138 +813,6 @@ export default class ScreenShot {
     }
     if (options?.customRightClickEvent != null) {
       this.customRightClickEvent = options.customRightClickEvent;
-    }
-  }
-
-  // 鼠标抬起事件
-  private mouseUpEvent = () => {
-    // 当前操作的是撤销
-    if (this.data.getToolName() == "undo") return;
-    // 绘制结束
-    this.data.setDragging(false);
-    this.data.setDraggingTrim(false);
-
-    // 截图容器判空
-    if (this.screenShotCanvas == null || this.screenShotContainer == null) {
-      return;
-    }
-    const updateTempGraphPositionCallback = (
-      res: genericMethodPostbackType
-    ) => {
-      if (res.code === 1 && res.data != null) {
-        const { getFullScreenStatus, tempGraphPosition } = res.data as {
-          getFullScreenStatus: boolean;
-          tempGraphPosition: drawCutOutBoxReturnType;
-        };
-        this.getFullScreenStatus = getFullScreenStatus;
-        this.tempGraphPosition = tempGraphPosition;
-      }
-    };
-    const updateDrawStatusCallback = (res: genericMethodPostbackType) => {
-      if (res.code === 1 && typeof res.data === "boolean") {
-        this.drawStatus = res.data;
-      }
-    };
-    mouseUpCore(
-      this.data,
-      {
-        dragFlag: this.dragFlag,
-        drawStatus: this.drawStatus,
-        clickCutFullScreen: this.clickCutFullScreen,
-        drawGraphPosition: this.drawGraphPosition,
-        cutOutBoxBorderArr: this.cutOutBoxBorderArr,
-        drawGraphPrevX: this.drawGraphPrevX,
-        drawGraphPrevY: this.drawGraphPrevY,
-        tempGraphPosition: this.tempGraphPosition,
-        placement: this.placement,
-        position: this.position,
-        fullScreenDiffHeight: this.fullScreenDiffHeight,
-        getFullScreenStatus: this.getFullScreenStatus,
-        dpr: this.dpr
-      },
-      {
-        screenShotCanvas: this.screenShotCanvas,
-        screenShotContainer: this.screenShotContainer,
-        screenShotImageController: this.screenShotImageController,
-        toolController: this.toolController
-      },
-      {
-        toolBarCallerCallback: this.toolBarCallerCallback,
-        updateTempGraphPositionCallback,
-        updateDrawStatusCallback
-      }
-    );
-  };
-
-  /**
-   * 显示最新的画布状态
-   * @private
-   */
-  private showLastHistory() {
-    if (this.screenShotCanvas != null) {
-      const context = this.screenShotCanvas;
-      if (this.data.getHistory().length <= 0) {
-        addHistory();
-      }
-      context.putImageData(
-        this.data.getHistory()[this.data.getHistory().length - 1]["data"],
-        0,
-        0
-      );
-    }
-  }
-
-  /**
-   * 初始化截图容器
-   * @param triggerCallback
-   * @param context
-   * @param screenShotContainer
-   * @private
-   */
-  private initScreenShot(
-    triggerCallback: Function | undefined,
-    context: CanvasRenderingContext2D,
-    screenShotContainer: HTMLCanvasElement
-  ) {
-    if (triggerCallback != null) {
-      // 加载成功，执行回调函数
-      triggerCallback({ code: 0, msg: "截图加载完成" });
-    }
-    // 赋值截图区域canvas画布
-    this.screenShotCanvas = context;
-    // 存储屏幕截图
-    this.data.setScreenShotImageController(screenShotContainer);
-
-    // 绘制蒙层
-    drawMasking(context, screenShotContainer);
-    // 截图容器添加鼠标点击/触摸事件的监听
-    setScreenShotContainerEventListener(this.screenShotContainer, {
-      mouseDownEvent: this.mouseDownEvent,
-      mouseMoveEvent: this.mouseMoveEvent,
-      mouseUpEvent: this.mouseUpEvent
-    });
-    // 是否初始化裁剪框
-    if (this.cropBoxInfo != null && Object.keys(this.cropBoxInfo).length == 4) {
-      initCropBox(
-        this.dpr,
-        this.cropBoxInfo,
-        this.data,
-        {
-          screenShotContainer: this.screenShotContainer,
-          screenShotImageController: this.screenShotImageController,
-          screenShotCanvas: this.screenShotCanvas,
-          toolController: this.toolController
-        },
-        {
-          drawGraphPosition: this.drawGraphPosition,
-          cutOutBoxBorderArr: this.cutOutBoxBorderArr,
-          placement: this.placement,
-          position: this.position,
-          fullScreenDiffHeight: this.fullScreenDiffHeight,
-          getFullScreenStatus: this.getFullScreenStatus
-        },
-        { toolBarCallerCallback: this.toolBarCallerCallback }
-      );
     }
   }
 
