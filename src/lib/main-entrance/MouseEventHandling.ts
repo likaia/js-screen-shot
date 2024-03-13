@@ -2,7 +2,8 @@ import { isPC } from "@/lib/common-methods/DeviceTypeVerif";
 import {
   handleGraffitiDraw,
   handleMouseDown,
-  operatingCutOutBox
+  operatingCutOutBox,
+  showToolBar
 } from "@/lib/main-entrance/LoadCoreComponents";
 import { nonNegativeData } from "@/lib/common-methods/FixedData";
 import InitData from "@/lib/main-entrance/InitData";
@@ -11,10 +12,13 @@ import {
   drawCutOutBoxReturnType,
   genericMethodPostbackType,
   movePositionType,
-  positionInfoType
+  positionInfoType,
+  toolPositionValType
 } from "@/lib/type/ComponentType";
 import { getDrawBoundaryStatus } from "@/lib/split-methods/BoundaryJudgment";
 import { drawCutOutBox } from "@/lib/split-methods/DrawCutOutBox";
+import { addHistory } from "@/lib/split-methods/AddHistoryData";
+import { saveBorderArrInfo } from "@/lib/common-methods/SaveBorderArrInfo";
 
 const mouseDownCore = (
   event: MouseEvent | TouchEvent,
@@ -264,6 +268,165 @@ const mouseMoveCore = (
     data: tempGraphPosition
   });
 };
-const mouseUpCore = (event: MouseEvent | TouchEvent) => {};
+const mouseUpCore = (
+  data: InitData,
+  containerVariable: {
+    dragFlag: boolean;
+    drawStatus: boolean;
+    clickCutFullScreen: boolean;
+    drawGraphPosition: positionInfoType;
+    cutOutBoxBorderArr: Array<cutOutBoxBorder>;
+    drawGraphPrevX: number;
+    drawGraphPrevY: number;
+    tempGraphPosition: positionInfoType;
+    placement: toolPositionValType;
+    position: { top: number; left: number };
+    fullScreenDiffHeight: number;
+    getFullScreenStatus: boolean;
+    dpr: number;
+  },
+  containerInfo: {
+    screenShotCanvas: CanvasRenderingContext2D;
+    screenShotContainer: HTMLCanvasElement;
+    screenShotImageController: HTMLCanvasElement;
+    toolController: HTMLDivElement | null | undefined;
+  },
+  containerFn: {
+    toolBarCallerCallback: (res: genericMethodPostbackType) => void;
+    updateTempGraphPositionCallback: (res: genericMethodPostbackType) => void;
+    updateDrawStatusCallback: (res: genericMethodPostbackType) => void;
+  }
+) => {
+  // 工具栏未点击且鼠标未拖动且单击截屏状态为false则复原裁剪框位置
+  if (
+    !data.getToolClickStatus() &&
+    !containerVariable.dragFlag &&
+    !containerVariable.clickCutFullScreen
+  ) {
+    // 复原裁剪框的坐标
+    containerVariable.drawGraphPosition.startX =
+      containerVariable.drawGraphPrevX;
+    containerVariable.drawGraphPosition.startY =
+      containerVariable.drawGraphPrevY;
+    return;
+  }
+
+  // 调用者尚未拖拽生成选区
+  // 鼠标尚未拖动
+  // 单击截取屏幕状态为true
+  // 则截取整个屏幕
+  const cutBoxPosition = data.getCutOutBoxPosition();
+  if (
+    cutBoxPosition.width === 0 &&
+    cutBoxPosition.height === 0 &&
+    cutBoxPosition.startX === 0 &&
+    cutBoxPosition.startY === 0 &&
+    !containerVariable.dragFlag &&
+    containerVariable.clickCutFullScreen
+  ) {
+    const borderSize = data.getBorderSize();
+    containerFn.updateTempGraphPositionCallback({
+      code: 1,
+      msg: "更新getFullScreenStatus与tempGraphPosition",
+      data: {
+        getFullScreenStatus: true,
+        tempGraphPosition: drawCutOutBox(
+          0,
+          0,
+          containerInfo.screenShotContainer.width - borderSize / 2,
+          containerInfo.screenShotContainer.height - borderSize / 2,
+          containerInfo.screenShotCanvas,
+          borderSize,
+          containerInfo.screenShotContainer,
+          containerInfo.screenShotImageController
+        ) as drawCutOutBoxReturnType
+      }
+    });
+    // this.getFullScreenStatus = true;
+    // 设置裁剪框位置为全屏
+    // this.tempGraphPosition = drawCutOutBox(
+    //   0,
+    //   0,
+    //   this.screenShotContainer.width - borderSize / 2,
+    //   this.screenShotContainer.height - borderSize / 2,
+    //   this.screenShotCanvas,
+    //   borderSize,
+    //   this.screenShotContainer,
+    //   this.screenShotImageController
+    // ) as drawCutOutBoxReturnType;
+  }
+
+  if (
+    containerInfo.screenShotContainer == null ||
+    containerInfo.screenShotCanvas == null
+  ) {
+    return;
+  }
+  // 工具栏已点击且进行了绘制
+  if (data.getToolClickStatus() && containerVariable.drawStatus) {
+    // 保存绘制记录
+    addHistory();
+    return;
+  } else if (data.getToolClickStatus() && !containerVariable.drawStatus) {
+    // 工具栏点击了但尚未进行绘制
+    return;
+  }
+  // 保存绘制后的图形位置信息
+  Object.assign(
+    containerVariable.drawGraphPosition,
+    containerVariable.tempGraphPosition
+  );
+  // 如果工具栏未点击则保存裁剪框位置
+  if (!data.getToolClickStatus()) {
+    const {
+      startX,
+      startY,
+      width,
+      height
+    } = containerVariable.drawGraphPosition;
+    data.setCutOutBoxPosition(startX, startY, width, height);
+  }
+  // 保存边框节点信息
+  Object.assign(
+    containerVariable.cutOutBoxBorderArr,
+    saveBorderArrInfo(data.getBorderSize(), containerVariable.drawGraphPosition)
+  );
+  // 鼠标按下且拖动时重新渲染工具栏
+  if (
+    (containerInfo.screenShotContainer != null && containerVariable.dragFlag) ||
+    containerVariable.clickCutFullScreen
+  ) {
+    // 修改鼠标状态为拖动
+    containerInfo.screenShotContainer.style.cursor = "move";
+    // 显示截图工具栏
+    data.setToolStatus(true);
+    // 显示裁剪框尺寸显示容器
+    data.setCutBoxSizeStatus(true);
+    // 复原拖动状态
+    containerFn.updateDrawStatusCallback({
+      code: 1,
+      msg: "更新dragFlag",
+      data: false
+    });
+    if (containerInfo.toolController != null) {
+      showToolBar(
+        containerVariable.dpr,
+        data,
+        {
+          toolController: containerInfo.toolController,
+          screenShotContainer: containerInfo.screenShotContainer
+        },
+        {
+          drawGraphPosition: containerVariable.drawGraphPosition,
+          placement: containerVariable.placement,
+          position: containerVariable.position,
+          fullScreenDiffHeight: containerVariable.fullScreenDiffHeight,
+          getFullScreenStatus: containerVariable.getFullScreenStatus
+        },
+        containerFn.toolBarCallerCallback
+      );
+    }
+  }
+};
 
 export { mouseDownCore, mouseMoveCore, mouseUpCore };

@@ -45,7 +45,8 @@ import {
 } from "@/lib/main-entrance/LoadCoreComponents";
 import {
   mouseDownCore,
-  mouseMoveCore
+  mouseMoveCore,
+  mouseUpCore
 } from "@/lib/main-entrance/MouseEventHandling";
 
 export default class ScreenShot {
@@ -759,102 +760,52 @@ export default class ScreenShot {
     if (this.screenShotCanvas == null || this.screenShotContainer == null) {
       return;
     }
-    // 工具栏未点击且鼠标未拖动且单击截屏状态为false则复原裁剪框位置
-    if (
-      !this.data.getToolClickStatus() &&
-      !this.dragFlag &&
-      !this.clickCutFullScreen
-    ) {
-      // 复原裁剪框的坐标
-      this.drawGraphPosition.startX = this.drawGraphPrevX;
-      this.drawGraphPosition.startY = this.drawGraphPrevY;
-      return;
-    }
-
-    // 调用者尚未拖拽生成选区
-    // 鼠标尚未拖动
-    // 单击截取屏幕状态为true
-    // 则截取整个屏幕
-    const cutBoxPosition = this.data.getCutOutBoxPosition();
-    if (
-      cutBoxPosition.width === 0 &&
-      cutBoxPosition.height === 0 &&
-      cutBoxPosition.startX === 0 &&
-      cutBoxPosition.startY === 0 &&
-      !this.dragFlag &&
-      this.clickCutFullScreen
-    ) {
-      const borderSize = this.data.getBorderSize();
-      this.getFullScreenStatus = true;
-      // 设置裁剪框位置为全屏
-      this.tempGraphPosition = drawCutOutBox(
-        0,
-        0,
-        this.screenShotContainer.width - borderSize / 2,
-        this.screenShotContainer.height - borderSize / 2,
-        this.screenShotCanvas,
-        borderSize,
-        this.screenShotContainer,
-        this.screenShotImageController
-      ) as drawCutOutBoxReturnType;
-    }
-
-    if (this.screenShotContainer == null || this.screenShotCanvas == null) {
-      return;
-    }
-    // 工具栏已点击且进行了绘制
-    if (this.data.getToolClickStatus() && this.drawStatus) {
-      // 保存绘制记录
-      addHistory();
-      return;
-    } else if (this.data.getToolClickStatus() && !this.drawStatus) {
-      // 工具栏点击了但尚未进行绘制
-      return;
-    }
-    // 保存绘制后的图形位置信息
-    this.drawGraphPosition = this.tempGraphPosition;
-    // 如果工具栏未点击则保存裁剪框位置
-    if (!this.data.getToolClickStatus()) {
-      const { startX, startY, width, height } = this.drawGraphPosition;
-      this.data.setCutOutBoxPosition(startX, startY, width, height);
-    }
-    // 保存边框节点信息
-    this.cutOutBoxBorderArr = saveBorderArrInfo(
-      this.data.getBorderSize(),
-      this.drawGraphPosition
-    );
-    // 鼠标按下且拖动时重新渲染工具栏
-    if (
-      (this.screenShotContainer != null && this.dragFlag) ||
-      this.clickCutFullScreen
-    ) {
-      // 修改鼠标状态为拖动
-      this.screenShotContainer.style.cursor = "move";
-      // 显示截图工具栏
-      this.data.setToolStatus(true);
-      // 显示裁剪框尺寸显示容器
-      this.data.setCutBoxSizeStatus(true);
-      // 复原拖动状态
-      this.dragFlag = false;
-      if (this.toolController != null) {
-        showToolBar(
-          this.dpr,
-          this.data,
-          {
-            toolController: this.toolController,
-            screenShotContainer: this.screenShotContainer
-          },
-          {
-            drawGraphPosition: this.drawGraphPosition,
-            placement: this.placement,
-            position: this.position,
-            fullScreenDiffHeight: this.fullScreenDiffHeight,
-            getFullScreenStatus: this.getFullScreenStatus
-          },
-          this.toolBarCallerCallback
-        );
+    const updateTempGraphPositionCallback = (
+      res: genericMethodPostbackType
+    ) => {
+      if (res.code === 1 && res.data != null) {
+        const { getFullScreenStatus, tempGraphPosition } = res.data as {
+          getFullScreenStatus: boolean;
+          tempGraphPosition: drawCutOutBoxReturnType;
+        };
+        this.getFullScreenStatus = getFullScreenStatus;
+        this.tempGraphPosition = tempGraphPosition;
       }
-    }
+    };
+    const updateDrawStatusCallback = (res: genericMethodPostbackType) => {
+      if (res.code === 1 && typeof res.data === "boolean") {
+        this.drawStatus = res.data;
+      }
+    };
+    mouseUpCore(
+      this.data,
+      {
+        dragFlag: this.dragFlag,
+        drawStatus: this.drawStatus,
+        clickCutFullScreen: this.clickCutFullScreen,
+        drawGraphPosition: this.drawGraphPosition,
+        cutOutBoxBorderArr: this.cutOutBoxBorderArr,
+        drawGraphPrevX: this.drawGraphPrevX,
+        drawGraphPrevY: this.drawGraphPrevY,
+        tempGraphPosition: this.tempGraphPosition,
+        placement: this.placement,
+        position: this.position,
+        fullScreenDiffHeight: this.fullScreenDiffHeight,
+        getFullScreenStatus: this.getFullScreenStatus,
+        dpr: this.dpr
+      },
+      {
+        screenShotCanvas: this.screenShotCanvas,
+        screenShotContainer: this.screenShotContainer,
+        screenShotImageController: this.screenShotImageController,
+        toolController: this.toolController
+      },
+      {
+        toolBarCallerCallback: this.toolBarCallerCallback,
+        updateTempGraphPositionCallback,
+        updateDrawStatusCallback
+      }
+    );
   };
 
   /**
