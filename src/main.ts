@@ -41,7 +41,6 @@ import {
 } from "@/lib/main-entrance/LoadCoreComponents";
 import {
   mouseDownCore,
-  mouseMoveCore,
   mouseUpCore
 } from "@/lib/main-entrance/MouseEventHandling";
 
