@@ -15,14 +15,12 @@ import {
 import { drawMasking } from "@/lib/split-methods/DrawMasking";
 import { nonNegativeData } from "@/lib/common-methods/FixedData";
 import { drawCutOutBox } from "@/lib/split-methods/DrawCutOutBox";
-import { saveBorderArrInfo } from "@/lib/common-methods/SaveBorderArrInfo";
 import PlugInParameters from "@/lib/main-entrance/PlugInParameters";
 import { getDrawBoundaryStatus } from "@/lib/split-methods/BoundaryJudgment";
 import KeyboardEventHandle from "@/lib/split-methods/KeyboardEventHandle";
 import { setPlugInParameters } from "@/lib/split-methods/SetPlugInParameters";
 import { getCanvas2dCtx } from "@/lib/common-methods/CanvasPatch";
 import { addHistory } from "@/lib/split-methods/AddHistoryData";
-import { isPC } from "@/lib/common-methods/DeviceTypeVerif";
 import {
   drawPictures,
   fixWrcSize,
@@ -30,12 +28,10 @@ import {
   getWindowContentData,
   h2cScreenShot,
   handleGraffitiDraw,
-  handleMouseDown,
   operatingCutOutBox,
   registerContainerShortcuts,
   registerForRightClickEvent,
   setScreenShotContainerSize,
-  showToolBar,
   adjustContainerLevels,
   initCropBox,
   setScreenShotContainerEventListener,
