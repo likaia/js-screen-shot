@@ -294,8 +294,7 @@ export default class ScreenShot {
       );
       return;
     }
-    // 使用webrtc实现截屏
-    this.screenShot(cancelCallback, triggerCallback);
+    this.wrcScreenShot(cancelCallback, triggerCallback);
   }
 
   private loadScreenFlowData(triggerCallback: Function | undefined) {
@@ -381,8 +380,8 @@ export default class ScreenShot {
     }, this.wrcReplyTime);
   }
 
-  // 截屏
-  private screenShot = (
+  // webrtc模式截屏
+  private wrcScreenShot = (
     cancelCallback: Function | undefined,
     triggerCallback: Function | undefined
   ) => {
