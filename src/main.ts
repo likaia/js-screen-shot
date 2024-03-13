@@ -597,6 +597,66 @@ export default class ScreenShot {
     ) as drawCutOutBoxReturnType;
   };
 
+  // 鼠标移动事件
+  private mouseMoveEvent2 = (event: MouseEvent | TouchEvent) => {
+    if (
+      this.screenShotCanvas == null ||
+      this.screenShotContainer == null ||
+      this.data.getToolName() == "undo"
+    ) {
+      return;
+    }
+    // 去除默认事件
+    event.preventDefault();
+
+    const updateDragFlagCallback = (res: genericMethodPostbackType) => {
+      if (res.code === 1 && typeof res.data === "boolean") {
+        this.dragFlag = res.data;
+      }
+    };
+    const updateDrawStatusCallback = (res: genericMethodPostbackType) => {
+      if (res.code === 1 && typeof res.data === "boolean") {
+        this.drawStatus = res.data;
+      }
+    };
+    const updateTempGraphPositionCallback = (
+      res: genericMethodPostbackType
+    ) => {
+      if (res.code === 1 && typeof res.data != null) {
+        this.tempGraphPosition = res.data as drawCutOutBoxReturnType;
+      }
+    };
+    mouseMoveCore(
+      event,
+      this.data,
+      {
+        screenShotCanvas: this.screenShotCanvas,
+        screenShotContainer: this.screenShotContainer,
+        screenShotImageController: this.screenShotImageController,
+        textInputController: this.textInputController
+      },
+      {
+        tempGraphPosition: this.tempGraphPosition,
+        dpr: this.dpr,
+        movePosition: this.movePosition,
+        cutOutBoxBorderArr: this.cutOutBoxBorderArr,
+        borderOption: this.borderOption,
+        drawGraphPosition: this.drawGraphPosition,
+        position: this.position,
+        drawStatus: this.drawStatus,
+        degreeOfBlur: this.degreeOfBlur,
+        useRatioArrow: this.plugInParameters.getRatioArrow()
+      },
+      {
+        showLastHistory: this.showLastHistory,
+        croppingBoxCallerCallback: this.croppingBoxCallerCallback,
+        updateDragFlagCallback,
+        updateDrawStatusCallback,
+        updateTempGraphPositionCallback
+      }
+    );
+  };
+
   private setGlobalParameter() {
     this.screenShotContainer = this.data.getScreenShotContainer() as HTMLCanvasElement | null;
     this.toolController = this.data.getToolController() as HTMLDivElement | null;

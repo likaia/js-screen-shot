@@ -201,7 +201,6 @@ const mouseMoveCore = (
           msg: "更新绘制状态",
           data: res.data
         });
-        // this.drawStatus = res.data;
       }
     };
     // 处理涂鸦绘制
