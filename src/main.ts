@@ -257,8 +257,6 @@ export default class ScreenShot {
           }
         };
         drawPictures(
-          triggerCallback,
-          context,
           this.imgSrc,
           this.screenShotImageController,
           callerCallback

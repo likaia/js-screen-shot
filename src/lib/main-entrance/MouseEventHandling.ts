@@ -85,7 +85,6 @@ const mouseDownCore = (
     event instanceof MouseEvent ? event.offsetY : event.touches[0].pageY
   );
   handleMouseDown(
-    event,
     data,
     containerVariable.drawGraphPosition,
     containerVariable.mouseInsideCropBox,
@@ -93,7 +92,6 @@ const mouseDownCore = (
     containerVariable.position,
     mouseX,
     mouseY,
-    containerVariable.movePosition,
     {
       textInputController: containerInfo.textInputController,
       screenShotContainer: containerInfo.screenShotContainer,

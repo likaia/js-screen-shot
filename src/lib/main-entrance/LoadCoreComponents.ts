@@ -46,6 +46,16 @@ const registerForRightClickEvent = (
   });
 };
 
+/**
+ * 从窗口数据流中截取页面body内容
+ * @param videoWidth 窗口宽度
+ * @param videoHeight 窗口高度
+ * @param containerWidth body内容宽度
+ * @param containerHeight body内容高度
+ * @param videoController
+ * @param dpr
+ * @private
+ */
 const getWindowContentData = (
   videoWidth: number,
   videoHeight: number,
@@ -202,8 +212,6 @@ const showToolBar = (
 };
 
 const drawPictures = (
-  triggerCallback: Function | undefined,
-  context: CanvasRenderingContext2D,
   imgSrc: string,
   screenShotImageController: HTMLCanvasElement,
   callerCallback: (res: genericMethodPostbackType) => void
@@ -394,7 +402,6 @@ const getDisplayMediaConfig = (
 };
 
 const handleMouseDown = (
-  event: MouseEvent | TouchEvent,
   data: InitData,
   drawGraphPosition: positionInfoType,
   mouseInsideCropBox: boolean,
@@ -402,7 +409,6 @@ const handleMouseDown = (
   position: { top: number; left: number },
   mouseX: number,
   mouseY: number,
-  movePosition: movePositionType,
   containerInfo: {
     textInputController?: HTMLDivElement | null | undefined;
     screenShotContainer?: HTMLCanvasElement | null | undefined;
