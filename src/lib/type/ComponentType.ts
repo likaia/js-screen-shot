@@ -73,6 +73,12 @@ export type toolIcoType = {
 // 截图工具栏图标数据类型
 export type toolbarType = { id: number; title: string };
 export type crcEventType = { state: boolean; handleFn?: () => void };
+// 拆分出来的绘制方法回传的参数类型
+export type genericMethodPostbackType = {
+  code: number;
+  data: null | boolean | number | Record<string, any>;
+  msg: string;
+};
 
 export type screenShotType = {
   enableWebRtc?: boolean; // 是否启用webrtc，默认是启用状态
