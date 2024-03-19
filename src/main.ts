@@ -599,6 +599,7 @@ export default class ScreenShot {
       },
       {
         movePosition: this.movePosition,
+        tempGraphPosition: this.tempGraphPosition,
         cutOutBoxBorderArr: this.cutOutBoxBorderArr,
         borderOption: this.borderOption
       },
@@ -691,9 +692,6 @@ export default class ScreenShot {
     }
     if (code === 3 && typeof data === null) {
       this.borderOption = null;
-    }
-    if ((code === 4 || code === 5) && typeof data != null) {
-      this.tempGraphPosition = res.data as drawCutOutBoxReturnType;
     }
   };
 

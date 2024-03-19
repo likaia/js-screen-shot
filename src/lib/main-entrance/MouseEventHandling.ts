@@ -67,6 +67,7 @@ const mouseDownCore = (
       },
       {
         movePosition: containerVariable.movePosition,
+        tempGraphPosition: containerVariable.tempGraphPosition,
         cutOutBoxBorderArr: containerVariable.cutOutBoxBorderArr,
         borderOption: containerVariable.borderOption
       },
@@ -305,6 +306,7 @@ const mouseMoveCore = (
     },
     {
       movePosition: containerVariable.movePosition,
+      tempGraphPosition: containerVariable.tempGraphPosition,
       cutOutBoxBorderArr: containerVariable.cutOutBoxBorderArr,
       borderOption: containerVariable.borderOption
     },

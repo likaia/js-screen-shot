@@ -643,6 +643,7 @@ const operatingCutOutBox = (
   containerVariable: {
     movePosition: movePositionType;
     cutOutBoxBorderArr: Array<cutOutBoxBorder>;
+    tempGraphPosition: positionInfoType;
     borderOption: number | null;
   },
   callerCallback: (res: genericMethodPostbackType) => void
@@ -758,21 +759,20 @@ const operatingCutOutBox = (
       if (cutOutBoxSizeY > containerHeight) {
         y = containerHeight - height;
       }
-
       // 重新绘制裁剪框
-      res.code = 5;
-      res.msg = "重新绘制裁剪框, 修改tempGraphPosition的值";
-      res.data = drawCutOutBox(
-        x,
-        y,
-        width,
-        height,
-        context,
-        data.getBorderSize(),
-        containerInfo.screenShotContainer,
-        containerInfo.screenShotImageController
-      ) as drawCutOutBoxReturnType;
-      callerCallback(res);
+      Object.assign(
+        containerVariable.tempGraphPosition,
+        drawCutOutBox(
+          x,
+          y,
+          width,
+          height,
+          context,
+          data.getBorderSize(),
+          containerInfo.screenShotContainer,
+          containerInfo.screenShotImageController
+        ) as drawCutOutBoxReturnType
+      );
     } else {
       // 裁剪框其他8个点的拖拽事件
       const {
@@ -790,20 +790,19 @@ const operatingCutOutBox = (
         containerVariable.borderOption as number
       ) as zoomCutOutBoxReturnType;
       // 绘制裁剪框
-
-      res.code = 4;
-      res.msg = "修改tempGraphPosition的值";
-      res.data = drawCutOutBox(
-        tempStartX,
-        tempStartY,
-        tempWidth,
-        tempHeight,
-        context,
-        data.getBorderSize(),
-        containerInfo.screenShotContainer as HTMLCanvasElement,
-        containerInfo.screenShotImageController
-      ) as drawCutOutBoxReturnType;
-      callerCallback(res);
+      Object.assign(
+        containerVariable.tempGraphPosition,
+        drawCutOutBox(
+          tempStartX,
+          tempStartY,
+          tempWidth,
+          tempHeight,
+          context,
+          data.getBorderSize(),
+          containerInfo.screenShotContainer as HTMLCanvasElement,
+          containerInfo.screenShotImageController
+        ) as drawCutOutBoxReturnType
+      );
     }
   }
 };
