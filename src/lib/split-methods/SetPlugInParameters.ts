@@ -62,4 +62,9 @@ export function setPlugInParameters(options: screenShotType) {
   if (options?.imgAutoFit) {
     plugInParameters.setImgAutoFit(options.imgAutoFit);
   }
+
+  // 设置图片保存时的文件名称
+  if (options?.saveImgTitle) {
+    plugInParameters.setSaveImgTitle(options.saveImgTitle);
+  }
 }

@@ -1,4 +1,5 @@
 import { getCanvas2dCtx } from "@/lib/common-methods/CanvasPatch";
+import PlugInParameters from "@/lib/main-entrance/PlugInParameters";
 
 export function saveCanvasToImage(
   context: CanvasRenderingContext2D,
@@ -7,6 +8,7 @@ export function saveCanvasToImage(
   width: number,
   height: number
 ) {
+  const plugInParameters = new PlugInParameters();
   // 获取设备像素比
   const dpr = window.devicePixelRatio || 1;
   // 获取裁剪框区域图片信息
@@ -27,8 +29,10 @@ export function saveCanvasToImage(
     const a = document.createElement("a");
     // 获取图片
     a.href = canvas.toDataURL("png");
+    // 获取用户传入的文件名
+    const imgName = plugInParameters?.getSaveImgTitle() || new Date().getTime();
     // 下载图片
-    a.download = `${new Date().getTime()}.png`;
+    a.download = `${imgName}.png`;
     a.click();
   }
 }
