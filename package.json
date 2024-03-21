@@ -1,6 +1,6 @@
 {
   "name": "js-web-screen-shot",
-  "version": "1.9.9-rc.14",
+  "version": "1.9.9-rc.15",
   "description": "web端自定义截屏插件(原生JS版)",
   "main": "dist/screenShotPlugin.common.js",
   "private": false,
@@ -40,7 +40,7 @@
   "bugs": {
     "url": "https://github.com/likaia/js-screen-shot/issues"
   },
-  "homepage": "https://github.com/likaia/js-screen-shot#readme",
+  "homepage": "https://www.kaisir.cn/js-screen-shot/",
   "devDependencies": {
     "@babel/core": "^7.21.0",
     "@babel/preset-env": "^7.20.2",
