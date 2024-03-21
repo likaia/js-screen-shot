@@ -25,6 +25,7 @@ let useRatioArrow = false;
 let imgAutoFit = false;
 
 let saveCallback: ((code: number, msg: string) => void) | null = null;
+let saveImgTitle: string | null = null;
 
 export default class PlugInParameters {
   constructor() {
@@ -44,6 +45,7 @@ export default class PlugInParameters {
       maxUndoNum = 15;
       useRatioArrow = false;
       imgAutoFit = false;
+      saveImgTitle = null;
     }
   }
 
@@ -164,5 +166,13 @@ export default class PlugInParameters {
 
   public getImgAutoFit() {
     return imgAutoFit;
+  }
+
+  public setSaveImgTitle(title: string) {
+    saveImgTitle = title;
+  }
+
+  public getSaveImgTitle() {
+    return saveImgTitle;
   }
 }
