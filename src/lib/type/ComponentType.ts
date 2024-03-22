@@ -1,4 +1,6 @@
 // 裁剪框节点事件定义
+import InitData from "@/lib/main-entrance/InitData";
+
 export type cutOutBoxBorder = {
   x: number;
   y: number;
@@ -71,7 +73,28 @@ export type toolIcoType = {
 };
 
 // 截图工具栏图标数据类型
-export type toolbarType = { id: number; title: string };
+export type toolbarType = {
+  id: number;
+  title: string;
+  sort: number;
+  icon?: toolbarIconType;
+  handleFn?: toolbarHandleFnType;
+};
+export type toolbarDataType = Array<
+  toolbarType & { icon: toolbarIconType; handleFn: toolbarHandleFnType }
+>;
+export type toolbarIconType = {
+  normal: string;
+  active: string;
+  hover: string;
+};
+export type toolbarHandleFnType = (options: {
+  toolName: string;
+  id: number;
+  mouseEvent: MouseEvent;
+  screenShotController: HTMLCanvasElement | null;
+  internalData: InitData;
+}) => void;
 export type crcEventType = { state: boolean; handleFn?: () => void };
 // 拆分出来的绘制方法回传的参数类型
 export type genericMethodPostbackType = {
@@ -126,4 +149,5 @@ export type screenShotType = {
   useRatioArrow?: boolean; // 是否使用等比例箭头, 默认为false(递增变粗的箭头)
   imgAutoFit?: boolean; // 是否开启图片自适应, 默认为false(用户自定义了截图内容的情况下使用)
   saveImgTitle?: string; // 保存图片时的文件名
+  toolbarArr?: toolbarDataType; // 自定义的工具栏数据
 };

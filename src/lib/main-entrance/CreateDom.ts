@@ -2,6 +2,7 @@ import toolbar from "@/lib/config/Toolbar";
 import {
   positionInfoType,
   screenShotType,
+  toolbarIconType,
   toolbarType
 } from "@/lib/type/ComponentType";
 import { toolClickEvent } from "@/lib/split-methods/ToolClickEvent";
@@ -18,6 +19,7 @@ import {
   selectTextSize,
   setTextSize
 } from "@/lib/common-methods/SelectTextSize";
+import InitData from "@/lib/main-entrance/InitData";
 
 export default class CreateDom {
   // 截图区域canvas容器
@@ -38,6 +40,7 @@ export default class CreateDom {
   private readonly closeCallback: Function | undefined;
   // 需要隐藏的图标
   private readonly hiddenIcoArr: string[];
+  private data: InitData = new InitData();
 
   // 截图工具栏图标
   private readonly toolbar: Array<toolbarType>;
@@ -102,7 +105,22 @@ export default class CreateDom {
     this.setAllControllerId();
     // 为画笔绘制选项角标设置class
     this.setOptionIcoClassName();
-    this.toolbar = toolbar;
+    this.toolbar = JSON.parse(JSON.stringify(toolbar));
+    // 读取用户自定义的工具栏数据
+    if (options?.toolbarArr) {
+      // 获取内置工具栏数据中的最大顺序
+      const maxOrder = toolbar[toolbar.length - 1].sort;
+      for (let i = 0; i < options.toolbarArr.length; i++) {
+        const { sort } = options.toolbarArr[i];
+        // 当前要插入的工具栏顺序小于最大顺序的，则将其插入sort之前
+        if (sort < maxOrder) {
+          this.toolbar.splice(sort, 0, options.toolbarArr[i]);
+          continue;
+        }
+        // 正常插入
+        this.toolbar.push(options.toolbarArr[i]);
+      }
+    }
     // 渲染工具栏
     this.setToolBarIco();
     // 渲染文字大小选择容器
@@ -139,14 +157,14 @@ export default class CreateDom {
       } else {
         itemPanel.className = `item-panel ${item.title}`;
         itemPanel.addEventListener("click", e => {
-          toolClickEvent(
-            item.title,
-            item.id,
-            e,
-            this.completeCallback,
-            this.closeCallback
-          );
+          this.handleToolbarItemClick(item, e);
         });
+      }
+      // 绑定鼠标事件用来更改backgroundImage
+      this.handleCustomizeToolbarIconState(itemPanel, item?.icon);
+      // 设置用户传入的工具栏图标
+      if (item?.icon) {
+        itemPanel.style.backgroundImage = `url(${item.icon.normal})`;
       }
       itemPanel.setAttribute("data-title", item.title);
       itemPanel.setAttribute("data-id", item.id + "");
@@ -326,6 +344,65 @@ export default class CreateDom {
   // 设置画笔绘制选项顶部ico样式
   private setOptionIcoClassName() {
     this.optionIcoController.className = "ico-panel";
+  }
+
+  private handleToolbarItemClick(item: toolbarType, mouseEvent: MouseEvent) {
+    // 执行调用者传入的事件回调
+    if (item?.handleFn) {
+      item.handleFn({
+        id: item.id,
+        toolName: item.title,
+        mouseEvent: mouseEvent,
+        screenShotController: this.data.getScreenShotContainer(),
+        internalData: this.data
+      });
+    }
+    toolClickEvent(
+      item.title,
+      item.id,
+      mouseEvent,
+      this.completeCallback,
+      this.closeCallback
+    );
+  }
+
+  // 处理工具栏图标自定义时，鼠标按下/点击的图标切换
+  private handleCustomizeToolbarIconState(
+    itemPanel: HTMLDivElement,
+    icon?: toolbarIconType
+  ) {
+    itemPanel.addEventListener("mouseover", () => {
+      const dataActive = Boolean(itemPanel.getAttribute("data-active"));
+      if (icon && !dataActive) {
+        itemPanel.style.backgroundImage = `url(${icon.hover})`;
+      }
+    });
+    itemPanel.addEventListener("mouseout", () => {
+      const dataActive = Boolean(itemPanel.getAttribute("data-active"));
+      if (icon && !dataActive) {
+        itemPanel.style.backgroundImage = `url(${icon.normal})`;
+      }
+    });
+    itemPanel.addEventListener("click", () => {
+      // 如果icon不存在，找到包含data-active属性的dom进行图标还原
+      if (!icon) {
+        const toolController = this.data.getToolController();
+        if (toolController == null) return;
+        const activeItem: HTMLDivElement | null = toolController.querySelector(
+          '[data-active="true"]'
+        );
+        if (activeItem) {
+          activeItem.removeAttribute("data-active");
+          activeItem.style.backgroundImage = `url(${activeItem.getAttribute(
+            "data-bg-normal"
+          )})`;
+        }
+        return;
+      }
+      itemPanel.style.backgroundImage = `url(${icon.active})`;
+      itemPanel.setAttribute("data-active", "true");
+      itemPanel.setAttribute("data-bg-normal", icon.normal);
+    });
   }
 
   // 将需要隐藏的图标放入对应的数组中

@@ -1,46 +1,57 @@
 export default [
   {
     id: 1,
-    title: "square"
+    title: "square",
+    sort: 1
   },
   {
     id: 2,
-    title: "round"
+    title: "round",
+    sort: 2
   },
   {
     id: 3,
-    title: "right-top"
+    title: "right-top",
+    sort: 3
   },
   {
     id: 4,
-    title: "brush"
+    title: "brush",
+    sort: 4
   },
   {
     id: 5,
-    title: "mosaicPen"
+    title: "mosaicPen",
+    sort: 5
   },
   {
     id: 6,
-    title: "text"
+    title: "text",
+    sort: 6
   },
   {
     id: 7,
-    title: "separateLine"
+    title: "separateLine",
+    sort: 7
   },
   {
     id: 8,
-    title: "save"
+    title: "save",
+    sort: 8
   },
   {
     id: 9,
-    title: "undo"
+    title: "undo",
+    sort: 9
   },
   {
     id: 10,
-    title: "close"
+    title: "close",
+    sort: 10
   },
   {
     id: 11,
-    title: "confirm"
+    title: "confirm",
+    sort: 11
   }
 ];

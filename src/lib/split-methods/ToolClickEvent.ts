@@ -74,10 +74,17 @@ export function toolClickEvent(
     // 显示画笔尺寸选择容器
     data.setBrushSelectionStatus(true);
   }
-  // 显示选项面板
-  data.setOptionStatus(true);
-  // 设置选项面板位置
-  data.setOptionPosition(calculateOptionIcoPosition(index));
+  const position = calculateOptionIcoPosition(index);
+  if (position > 0) {
+    // 显示选项面板
+    data.setOptionStatus(true);
+    // 设置选项面板位置
+    data.setOptionPosition(position);
+  }
+  // 隐藏选项面板
+  if (position <= 0) {
+    data.setOptionStatus(false);
+  }
   data.setRightPanel(true);
   if (toolName == "mosaicPen") {
     // 马赛克工具隐藏右侧颜色面板与角标
