@@ -231,6 +231,9 @@ export default class InitData {
   // 设置裁剪框尺寸
   public setCutBoxSize(width: number, height: number) {
     if (cutBoxSizeContainer == null) return;
+    // width和height保留整数
+    width = Math.floor(width);
+    height = Math.floor(height);
     const childrenPanel = cutBoxSizeContainer.childNodes;
     // p标签已存在直接更改文本值即可
     if (childrenPanel.length > 0) {
