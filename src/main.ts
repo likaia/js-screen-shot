@@ -33,7 +33,7 @@ import { drawCrossImg } from "@/lib/split-methods/drawCrossImg";
 import { getCanvas2dCtx } from "@/lib/common-methods/CanvasPatch";
 import { updateContainerMouseStyle } from "@/lib/common-methods/UpdateContainerMouseStyle";
 import { addHistory } from "@/lib/split-methods/AddHistoryData";
-import { isPC } from "@/lib/common-methods/DeviceTypeVerif";
+import { isPC, isTouchDevice } from "@/lib/common-methods/DeviceTypeVerif";
 import { drawLineArrow } from "@/lib/split-methods/DrawLineArrow";
 
 export default class ScreenShot {
@@ -1365,8 +1365,9 @@ export default class ScreenShot {
         this.mouseMoveEvent
       );
       this.screenShotContainer?.addEventListener("mouseup", this.mouseUpEvent);
-      return;
     }
+    // 设备不支持触摸事件则退出
+    if (!isTouchDevice()) return;
     // 设置触摸监听
     this.screenShotContainer?.addEventListener(
       "touchstart",
