@@ -26,7 +26,7 @@ import { fixedData } from "@/lib/common-methods/FixedData";
 import { drawCutOutBox } from "@/lib/split-methods/DrawCutOutBox";
 import { zoomCutOutBoxPosition } from "@/lib/common-methods/ZoomCutOutBoxPosition";
 import { saveBorderArrInfo } from "@/lib/common-methods/SaveBorderArrInfo";
-import { isPC } from "@/lib/common-methods/DeviceTypeVerif";
+import { isPC, isTouchDevice } from "@/lib/common-methods/DeviceTypeVerif";
 
 const registerForRightClickEvent = (
   container: HTMLElement,
@@ -941,8 +941,9 @@ const setScreenShotContainerEventListener = (
       containerFn.mouseMoveEvent
     );
     screenShotContainer?.addEventListener("mouseup", containerFn.mouseUpEvent);
-    return;
   }
+  // 设备不支持触摸事件则退出
+  if (!isTouchDevice()) return;
   // 设置触摸监听
   screenShotContainer?.addEventListener(
     "touchstart",
