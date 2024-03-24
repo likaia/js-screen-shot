@@ -515,7 +515,11 @@ export default class ScreenShot {
     if (event instanceof MouseEvent && event.button != 0) return;
 
     // 当前处于移动端触摸时，需要在按下时判断当前坐标点是否处于裁剪框内，主动更新draggingTrim状态（移动端的move事件只会在按下时才会触发）
-    if (!isPC() && event instanceof TouchEvent && this.screenShotCanvas) {
+    if (
+      isTouchDevice() &&
+      event instanceof TouchEvent &&
+      this.screenShotCanvas
+    ) {
       this.operatingCutOutBox(
         event.touches[0].pageX,
         event.touches[0].pageY,
