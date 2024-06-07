@@ -110,6 +110,7 @@ export type screenShotType = {
   imgSrc?: string; // 截图内容，默认为false
   loadCrossImg?: boolean; // 加载跨域图片状态
   proxyUrl?: string; // 代理服务器地址
+  useCORS?: boolean; // html2canvas是否开启跨域
   screenShotDom?: HTMLElement | HTMLDivElement | HTMLCanvasElement; // 需要进行截图的容器
   cropBoxInfo?: { x: number; y: number; w: number; h: number }; // 是否加载默认的裁剪框
   wrcReplyTime?: number; // webrtc捕捉屏幕响应时间，默认为500ms
