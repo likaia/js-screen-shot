@@ -120,6 +120,7 @@ export default class ScreenShot {
   // 鼠标是否在裁剪框内
   private mouseInsideCropBox = false;
   private proxyUrl: undefined | string = undefined;
+  private useCORS = false;
   private drawStatus = false;
   // webrtc模式下的屏幕流数据
   private captureStream: MediaStream | null = null;
@@ -266,7 +267,8 @@ export default class ScreenShot {
       // html2canvas截屏
       html2canvas(this.screenShotDom ? this.screenShotDom : document.body, {
         onclone: this.loadCrossImg ? drawCrossImg : undefined,
-        proxy: this.proxyUrl
+        proxy: this.proxyUrl,
+        useCORS: this.useCORS
       })
         .then(canvas => {
           // 装载截图的dom为null则退出
@@ -1017,6 +1019,9 @@ export default class ScreenShot {
     // 跨域时的代理服务器地址
     if (options?.proxyUrl) {
       this.proxyUrl = options.proxyUrl;
+    }
+    if (options?.useCORS) {
+      this.useCORS = options.useCORS;
     }
     // 设置截图容器的位置信息
     if (options?.position != null) {
