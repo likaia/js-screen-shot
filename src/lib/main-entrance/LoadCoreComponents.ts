@@ -273,12 +273,14 @@ const h2cScreenShot = (
   triggerCallback: Function | undefined,
   screenShotDom: HTMLElement | HTMLCanvasElement | HTMLDivElement | null,
   loadCrossImg: boolean,
-  proxyUrl: string | undefined
+  proxyUrl: string | undefined,
+  useCORS: boolean
 ): Promise<{ code: number; data: { canvas: HTMLCanvasElement } }> => {
   return new Promise((resolve, reject) => {
     html2canvas(screenShotDom ? screenShotDom : document.body, {
       onclone: loadCrossImg ? drawCrossImg : undefined,
-      proxy: proxyUrl
+      proxy: proxyUrl,
+      useCORS: useCORS
     })
       .then(canvas => {
         resolve({ code: 0, data: { canvas } });

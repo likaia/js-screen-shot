@@ -129,6 +129,8 @@ export default class ScreenShot {
   private mouseInsideCropBox = false;
   private proxyUrl: undefined | string = undefined;
   private drawStatus = false;
+  // html2canvas是否使用useCORS
+  private useCORS = false;
   // webrtc模式下的屏幕流数据
   private captureStream: MediaStream | null = null;
   private cropBoxInfo: {
@@ -267,7 +269,8 @@ export default class ScreenShot {
         triggerCallback,
         this.screenShotDom,
         this.loadCrossImg,
-        this.proxyUrl
+        this.proxyUrl,
+        this.useCORS
       );
       if (result.code === 0) {
         // 存储html2canvas截取的内容
@@ -745,6 +748,10 @@ export default class ScreenShot {
     // 跨域时的代理服务器地址
     if (options?.proxyUrl) {
       this.proxyUrl = options.proxyUrl;
+    }
+    // html2canvas useCORS属性添加
+    if (options?.useCORS) {
+      this.useCORS = options.useCORS;
     }
     // 设置截图容器的位置信息
     if (options?.position != null) {
