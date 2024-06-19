@@ -12,6 +12,7 @@ let canvasHeight = 0;
 // 展示截屏图片至容器
 let showScreenData = false;
 let screenShotDom: null | HTMLElement = null;
+let destroyContainer = true;
 
 // 蒙层颜色
 const maskColor = { r: 0, g: 0, b: 0, a: 0.6 };
@@ -46,6 +47,7 @@ export default class PlugInParameters {
       useRatioArrow = false;
       imgAutoFit = false;
       saveImgTitle = null;
+      destroyContainer = true;
     }
   }
 
@@ -174,5 +176,13 @@ export default class PlugInParameters {
 
   public getSaveImgTitle() {
     return saveImgTitle;
+  }
+
+  public setDestroyContainerState(state: boolean) {
+    destroyContainer = state;
+  }
+
+  public getDestroyContainerState() {
+    return destroyContainer;
   }
 }

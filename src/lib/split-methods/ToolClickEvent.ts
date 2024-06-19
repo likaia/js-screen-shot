@@ -130,6 +130,12 @@ export function toolClickEvent(
     if (completeCallback) {
       completeCallback({ base64, cutInfo: data.getCutOutBoxPosition() });
     }
+    if (!plugInParameters.getDestroyContainerState()) {
+      // 隐藏工具栏
+      data.setToolStatus(false);
+      data.setOptionStatus(false);
+      return;
+    }
     // 销毁组件
     data.destroyDOM();
     data.setInitStatus(true);

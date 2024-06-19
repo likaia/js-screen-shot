@@ -67,4 +67,10 @@ export function setPlugInParameters(options: screenShotType) {
   if (options?.saveImgTitle) {
     plugInParameters.setSaveImgTitle(options.saveImgTitle);
   }
+
+  // 确认截图时，是否需要销毁dom
+  if (options?.destroyContainer === false) {
+    console.log("状态设置", options.destroyContainer);
+    plugInParameters.setDestroyContainerState(options.destroyContainer);
+  }
 }

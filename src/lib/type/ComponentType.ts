@@ -121,4 +121,5 @@ export type screenShotType = {
   useRatioArrow?: boolean; // 是否使用等比例箭头, 默认为false(递增变粗的箭头)
   imgAutoFit?: boolean; // 是否开启图片自适应, 默认为false(用户自定义了截图内容的情况下使用)
   saveImgTitle?: string; // 保存图片时的文件名
+  destroyContainer?: boolean; // 确认截图时是否销毁容器
 };
