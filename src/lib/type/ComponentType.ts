@@ -120,6 +120,8 @@ export type screenShotType = {
   maxUndoNum?: number; // 最大可撤销次数
   useRatioArrow?: boolean; // 是否使用等比例箭头, 默认为false(递增变粗的箭头)
   imgAutoFit?: boolean; // 是否开启图片自适应, 默认为false(用户自定义了截图内容的情况下使用)
+  useCustomImgSize?: boolean; // 自定义图片尺寸, 默认为false(手动传入图片内容时，是否需要自定义其宽高)
+  customImgSize?: { w: number; h: number }; // 自定义图片尺寸
   saveImgTitle?: string; // 保存图片时的文件名
   destroyContainer?: boolean; // 确认截图时是否销毁容器
 };

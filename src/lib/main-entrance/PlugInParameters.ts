@@ -24,6 +24,9 @@ let maxUndoNum = 15;
 let useRatioArrow = false;
 // 开启图片自适应
 let imgAutoFit = false;
+// 自定义传入图片尺寸
+let useCustomImgSize = false;
+let customImgSize = { w: 0, h: 0 };
 
 let saveCallback: ((code: number, msg: string) => void) | null = null;
 let saveImgTitle: string | null = null;
@@ -168,6 +171,23 @@ export default class PlugInParameters {
 
   public getImgAutoFit() {
     return imgAutoFit;
+  }
+
+  public setUseCustomImgSize(
+    state: boolean,
+    sizeInfo?: { w: number; h: number }
+  ) {
+    if (state && sizeInfo) {
+      useCustomImgSize = true;
+      customImgSize = sizeInfo;
+    }
+  }
+
+  public getCustomImgSize() {
+    return {
+      useCustomImgSize,
+      customImgSize
+    };
   }
 
   public setSaveImgTitle(title: string) {

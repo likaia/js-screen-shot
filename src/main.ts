@@ -481,7 +481,9 @@ export default class ScreenShot {
       }
       // 销毁截图组件
       this.data.destroyDOM();
-      throw `浏览器不支持webrtc或者用户未授权( ${err} )`;
+      if (cancelCallback == null) {
+        throw `浏览器不支持webrtc或者用户未授权( ${err} )`;
+      }
     }
     return captureStream;
   };

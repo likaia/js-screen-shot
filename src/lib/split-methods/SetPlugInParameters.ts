@@ -63,6 +63,14 @@ export function setPlugInParameters(options: screenShotType) {
     plugInParameters.setImgAutoFit(options.imgAutoFit);
   }
 
+  // 设置图片尺寸
+  if (options?.useCustomImgSize && options?.customImgSize) {
+    plugInParameters.setUseCustomImgSize(
+      options.useCustomImgSize,
+      options.customImgSize
+    );
+  }
+
   // 设置图片保存时的文件名称
   if (options?.saveImgTitle) {
     plugInParameters.setSaveImgTitle(options.saveImgTitle);

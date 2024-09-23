@@ -112,10 +112,18 @@ export function drawCutOutBox(
     imgHeight = screenShotDom.clientHeight;
   }
 
-  // 非webrtc模式、未开启图片自适应、未传入截图dom时，图片的宽高不做处理
+  // 用户有传入自定义尺寸则使用
+  if (data.getCustomImgSize().useCustomImgSize) {
+    const { w, h } = data.getCustomImgSize().customImgSize;
+    imgWidth = w;
+    imgHeight = h;
+  }
+
+  // 非webrtc模式、未开启图片自适应、未自定义图片尺寸、未传入截图dom时，图片的宽高不做处理
   if (
     !data.getWebRtcStatus() &&
     !data.getImgAutoFit() &&
+    !data.getCustomImgSize().useCustomImgSize &&
     screenShotDom == null
   ) {
     imgWidth = imageController.width / dpr;
