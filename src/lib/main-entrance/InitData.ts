@@ -14,6 +14,8 @@ let toolClickStatus = false;
 let selectedColor = "#F53340";
 // 当前点击的工具栏名称
 let toolName = "";
+// 当前点击的工具栏id
+let toolId: number | null = null;
 //  当前选择的画笔大小
 let penSize = 2;
 // 马赛克工具的笔触大小
@@ -97,6 +99,7 @@ export default class InitData {
       toolPositionStatus = false;
       selectedColor = "#F53340";
       toolName = "";
+      toolId = null;
       penSize = 2;
       fontSize = 17;
       mosaicPenSize = 10;
@@ -477,6 +480,13 @@ export default class InitData {
   }
   public setToolName(itemName: string) {
     toolName = itemName;
+  }
+
+  public getToolId() {
+    return toolId;
+  }
+  public setToolId(id: number | null) {
+    toolId = id;
   }
 
   // 获取/设置当前画笔大小

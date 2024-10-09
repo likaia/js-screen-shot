@@ -24,12 +24,21 @@ export function setSelectedClassName(
   // 获取div下的所有子元素
   const nodes = path[1].children;
   for (let i = 0; i < nodes.length; i++) {
-    const item = nodes[i];
+    const item = nodes[i] as HTMLDivElement;
+    const itemId: string | number = Number(item.getAttribute("data-id"));
+    // 自定义的图标则重置其选中状态
+    if (itemId > 100 && index !== Number.MAX_VALUE) {
+      console.log("reset icon");
+      const icon = item.getAttribute("data-icon") as string;
+      item.style.backgroundImage = `url(${icon})`;
+    }
     // 如果工具栏中已经有选中的class则将其移除
     if (item.className.includes("active")) {
       item.classList.remove(item.classList[2]);
     }
   }
-  // 给当前点击项添加选中时的class
-  mouseEvent.target.className += " " + className;
+  if (className) {
+    // 给当前点击项添加选中时的class
+    mouseEvent.target.className += " " + className;
+  }
 }

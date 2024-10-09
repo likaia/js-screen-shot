@@ -1,3 +1,5 @@
+import { customToolbarType, userToolbarType } from "@/lib/type/ComponentType";
+
 let enableWebRtc = true;
 // electron环境下使用webrtc需要自己传入屏幕流
 let screenFlow: MediaStream | null = null;
@@ -27,7 +29,8 @@ let imgAutoFit = false;
 // 自定义传入图片尺寸
 let useCustomImgSize = false;
 let customImgSize = { w: 0, h: 0 };
-
+// 调用者定义的工具栏数据
+let userToolbar: Array<customToolbarType> = [];
 let saveCallback: ((code: number, msg: string) => void) | null = null;
 let saveImgTitle: string | null = null;
 
@@ -51,6 +54,7 @@ export default class PlugInParameters {
       imgAutoFit = false;
       saveImgTitle = null;
       destroyContainer = true;
+      userToolbar = [];
     }
   }
 
@@ -204,5 +208,20 @@ export default class PlugInParameters {
 
   public getDestroyContainerState() {
     return destroyContainer;
+  }
+
+  public setUserToolbar(toolbar: Array<userToolbarType>) {
+    const toolbarData: Array<customToolbarType> = [];
+    for (let i = 0; i < toolbar.length; i++) {
+      const item = toolbar[i];
+      // 自定义工具栏id从100开始
+      toolbarData.push({ ...item, id: 100 + (i + 1) });
+    }
+    userToolbar = toolbarData;
+    console.log(userToolbar);
+  }
+
+  public getUserToolbar() {
+    return userToolbar;
   }
 }

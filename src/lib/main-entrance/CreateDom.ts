@@ -2,9 +2,13 @@ import toolbar from "@/lib/config/Toolbar";
 import {
   positionInfoType,
   screenShotType,
-  toolbarType
+  toolbarType,
+  userToolbarFnType
 } from "@/lib/type/ComponentType";
-import { toolClickEvent } from "@/lib/split-methods/ToolClickEvent";
+import {
+  toolClickEvent,
+  toolClickEventForUserDefined
+} from "@/lib/split-methods/ToolClickEvent";
 import {
   setBrushSize,
   setMosaicPenSize
@@ -18,6 +22,8 @@ import {
   selectTextSize,
   setTextSize
 } from "@/lib/common-methods/SelectTextSize";
+import PlugInParameters from "@/lib/main-entrance/PlugInParameters";
+import InitData from "@/lib/main-entrance/InitData";
 
 export default class CreateDom {
   // 截图区域canvas容器
@@ -38,6 +44,7 @@ export default class CreateDom {
   private readonly closeCallback: Function | undefined;
   // 需要隐藏的图标
   private readonly hiddenIcoArr: string[];
+  private data: InitData;
 
   // 截图工具栏图标
   private readonly toolbar: Array<toolbarType>;
@@ -59,6 +66,7 @@ export default class CreateDom {
   ];
 
   constructor(options: screenShotType) {
+    const plugInParameters = new PlugInParameters();
     this.screenShotController = document.createElement("canvas");
     this.toolController = document.createElement("div");
     this.optionIcoController = document.createElement("div");
@@ -68,6 +76,8 @@ export default class CreateDom {
     this.completeCallback = options?.completeCallback;
     this.closeCallback = options?.closeCallback;
     this.hiddenIcoArr = [];
+    this.toolbar = Object.assign([], toolbar);
+    this.data = new InitData();
     this.optionController.addEventListener("click", evt => {
       const target = evt.target as HTMLElement;
       if (target.id === "colorSelectPanel" || target.id === "textSizePanel") {
@@ -102,7 +112,12 @@ export default class CreateDom {
     this.setAllControllerId();
     // 为画笔绘制选项角标设置class
     this.setOptionIcoClassName();
-    this.toolbar = toolbar;
+    // 将自定义的数据插入到默认数据的倒数第二个位置
+    this.toolbar.splice(
+      toolbar.length - 2,
+      0,
+      ...plugInParameters.getUserToolbar()
+    );
     // 渲染工具栏
     this.setToolBarIco();
     // 渲染文字大小选择容器
@@ -132,24 +147,13 @@ export default class CreateDom {
       // 图标隐藏状态为true则直接跳过本次循环
       if (icoHiddenStatus) continue;
       const itemPanel = document.createElement("div");
-      // 撤销按钮单独处理
-      if (item.title == "undo") {
-        itemPanel.className = `item-panel undo-disabled`;
-        itemPanel.id = "undoPanel";
-      } else {
-        itemPanel.className = `item-panel ${item.title}`;
-        itemPanel.addEventListener("click", e => {
-          toolClickEvent(
-            item.title,
-            item.id,
-            e,
-            this.completeCallback,
-            this.closeCallback
-          );
-        });
-      }
+      // 给itemPanel绑定点击事件
+      this.bindToolClickEvent(itemPanel, item);
       itemPanel.setAttribute("data-title", item.title);
       itemPanel.setAttribute("data-id", item.id + "");
+      if (item?.icon) {
+        itemPanel.setAttribute("data-icon", item.icon);
+      }
       this.toolController.appendChild(itemPanel);
     }
     // 有需要隐藏的截图工具栏时，则修改其最小宽度
@@ -338,5 +342,60 @@ export default class CreateDom {
         this.hiddenIcoArr.push(icons);
         break;
     }
+  }
+
+  // 为工具栏绑定点击事件
+  public bindToolClickEvent(itemPanel: HTMLDivElement, item: toolbarType) {
+    // 撤销按钮单独处理
+    if (item.title == "undo") {
+      itemPanel.className = `item-panel undo-disabled`;
+      itemPanel.id = "undoPanel";
+      return;
+    }
+    itemPanel.className = `item-panel ${item.title}`;
+    // 默认数据的处理
+    if (item.id <= 100) {
+      itemPanel.addEventListener("click", e => {
+        toolClickEvent(
+          item.title,
+          item.id,
+          e,
+          this.completeCallback,
+          this.closeCallback
+        );
+      });
+      return;
+    }
+    // 用户自定义数据的处理
+    itemPanel.addEventListener("click", e => {
+      toolClickEventForUserDefined(
+        item.id,
+        item.title,
+        item.activeIcon as string,
+        item.clickFn as userToolbarFnType,
+        e
+      );
+    });
+    // 渲染图标
+    itemPanel.style.backgroundImage = `url(${item.icon})`;
+    itemPanel.style.backgroundSize = "cover";
+    // 鼠标移入时修改图标
+    itemPanel.addEventListener("mouseenter", e => {
+      this.switchBgIcon(e, item.activeIcon as string, this.data.getToolId());
+    });
+    // 鼠标移出时恢复图标
+    itemPanel.addEventListener("mouseleave", e => {
+      this.switchBgIcon(e, item.icon as string, this.data.getToolId());
+    });
+  }
+
+  private switchBgIcon(e: MouseEvent, imgUrl: string, toolId: number | null) {
+    const elItem = e.target as HTMLDivElement;
+    const itemId = Number(elItem.getAttribute("data-id"));
+    // 当前图标处于选中状态时停止图标的更换
+    if (toolId === itemId) {
+      return;
+    }
+    elItem.style.backgroundImage = `url(${imgUrl})`;
   }
 }

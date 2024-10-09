@@ -71,8 +71,29 @@ export type toolIcoType = {
 };
 
 // 截图工具栏图标数据类型
-export type toolbarType = { id: number; title: string };
+export type toolbarType = {
+  id: number;
+  title: string;
+  icon?: string;
+  activeIcon?: string;
+  clickFn?: () => void;
+};
 export type crcEventType = { state: boolean; handleFn?: () => void };
+
+// 用户自定义的工具栏图标数据类型
+export type userToolbarType = {
+  title: string;
+  icon: string;
+  activeIcon: string;
+  clickFn: () => void;
+};
+export type customToolbarType = userToolbarType & { id: number };
+
+export type userToolbarFnType = (canvasInfo: {
+  screenShotCanvas: CanvasRenderingContext2D;
+  screenShotController: HTMLCanvasElement;
+  ScreenShotImageController: HTMLCanvasElement;
+}) => void; // 用户自定义工具栏点击事件
 
 export type screenShotType = {
   enableWebRtc?: boolean; // 是否启用webrtc，默认是启用状态
@@ -124,4 +145,5 @@ export type screenShotType = {
   customImgSize?: { w: number; h: number }; // 自定义图片尺寸
   saveImgTitle?: string; // 保存图片时的文件名
   destroyContainer?: boolean; // 确认截图时是否销毁容器
+  userToolbar?: Array<userToolbarType>; // 用户自定义的工具栏图标
 };

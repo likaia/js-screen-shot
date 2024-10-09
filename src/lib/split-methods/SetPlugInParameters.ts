@@ -81,4 +81,9 @@ export function setPlugInParameters(options: screenShotType) {
     console.log("状态设置", options.destroyContainer);
     plugInParameters.setDestroyContainerState(options.destroyContainer);
   }
+
+  // 设置用户定义的toolbar数据
+  if (options?.userToolbar) {
+    plugInParameters.setUserToolbar(options.userToolbar);
+  }
 }
