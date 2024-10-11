@@ -226,7 +226,11 @@ export function toolClickEventForUserDefined(
   clickFn({
     screenShotCanvas,
     screenShotController,
-    ScreenShotImageController
+    ScreenShotImageController,
+    currentInfo: {
+      toolName,
+      toolId: index
+    }
   });
   data.setToolName(toolName);
   setSelectedClassName(mouseEvent, Number.MAX_VALUE, false);

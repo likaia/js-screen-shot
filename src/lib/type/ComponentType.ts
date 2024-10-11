@@ -99,6 +99,7 @@ export type userToolbarFnType = (canvasInfo: {
   screenShotCanvas: CanvasRenderingContext2D;
   screenShotController: HTMLCanvasElement;
   ScreenShotImageController: HTMLCanvasElement;
+  currentInfo: { toolName: string; toolId: number };
 }) => void; // 用户自定义工具栏点击事件
 
 export type screenShotType = {
