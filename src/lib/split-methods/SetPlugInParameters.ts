@@ -86,4 +86,9 @@ export function setPlugInParameters(options: screenShotType) {
   if (options?.userToolbar) {
     plugInParameters.setUserToolbar(options.userToolbar);
   }
+
+  // 处理用户定义的画布事件
+  if (options?.canvasEvents) {
+    plugInParameters.setCanvasEvents(options.canvasEvents);
+  }
 }

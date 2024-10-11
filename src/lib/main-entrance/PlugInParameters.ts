@@ -1,4 +1,8 @@
-import { customToolbarType, userToolbarType } from "@/lib/type/ComponentType";
+import {
+  customToolbarType,
+  mouseEventType,
+  userToolbarType
+} from "@/lib/type/ComponentType";
 
 let enableWebRtc = true;
 // electron环境下使用webrtc需要自己传入屏幕流
@@ -33,6 +37,7 @@ let customImgSize = { w: 0, h: 0 };
 let userToolbar: Array<customToolbarType> = [];
 let saveCallback: ((code: number, msg: string) => void) | null = null;
 let saveImgTitle: string | null = null;
+let canvasEvents: mouseEventType | null = null;
 
 export default class PlugInParameters {
   constructor() {
@@ -223,5 +228,12 @@ export default class PlugInParameters {
 
   public getUserToolbar() {
     return userToolbar;
+  }
+
+  public setCanvasEvents(event: mouseEventType) {
+    canvasEvents = event;
+  }
+  public getCanvasEvents() {
+    return canvasEvents;
   }
 }

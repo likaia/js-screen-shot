@@ -70,6 +70,12 @@ export type toolIcoType = {
   confirm?: boolean;
 };
 
+export type mouseEventType = {
+  mouseDownFn: (event: MouseEvent | TouchEvent) => void;
+  mouseMoveFn: (event: MouseEvent | TouchEvent) => void;
+  mouseUpFn: () => void;
+};
+
 // 截图工具栏图标数据类型
 export type toolbarType = {
   id: number;
@@ -146,4 +152,5 @@ export type screenShotType = {
   saveImgTitle?: string; // 保存图片时的文件名
   destroyContainer?: boolean; // 确认截图时是否销毁容器
   userToolbar?: Array<userToolbarType>; // 用户自定义的工具栏图标
+  canvasEvents?: mouseEventType; // 截图画布的事件监听
 };
