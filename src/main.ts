@@ -517,7 +517,8 @@ export default class ScreenShot {
     this.data.setTextSizeOptionStatus(false);
     // 非鼠标左键按下则终止
     if (event instanceof MouseEvent && event.button != 0) return;
-    this.plugInParameters.getCanvasEvents()?.mouseDownFn(event);
+    this.isCustomTool() &&
+      this.plugInParameters.getCanvasEvents()?.mouseDownFn(event);
 
     // 当前处于移动端触摸时，需要在按下时判断当前坐标点是否处于裁剪框内，主动更新draggingTrim状态（移动端的move事件只会在按下时才会触发）
     if (
@@ -684,7 +685,8 @@ export default class ScreenShot {
     const tempHeight = currentY - startY;
     // 工具栏绘制
     if (this.data.getToolClickStatus() && this.data.getDragging()) {
-      this.plugInParameters.getCanvasEvents()?.mouseMoveFn(event);
+      this.isCustomTool() &&
+        this.plugInParameters.getCanvasEvents()?.mouseMoveFn(event);
       // 获取裁剪框位置信息
       const cutBoxPosition = this.data.getCutOutBoxPosition();
       // 绘制中工具的起始x、y坐标不能小于裁剪框的起始坐标
@@ -1148,7 +1150,8 @@ export default class ScreenShot {
     }
     // 工具栏已点击且进行了绘制
     if (this.data.getToolClickStatus() && this.drawStatus) {
-      this.plugInParameters.getCanvasEvents()?.mouseUpFn();
+      this.isCustomTool() &&
+        this.plugInParameters.getCanvasEvents()?.mouseUpFn();
       // 保存绘制记录
       addHistory();
       return;
@@ -1470,5 +1473,11 @@ export default class ScreenShot {
     if (this.cropBoxInfo != null && Object.keys(this.cropBoxInfo).length == 4) {
       this.initCropBox(this.cropBoxInfo);
     }
+  }
+
+  // 判断当前工具栏是否为自定义工具栏
+  private isCustomTool() {
+    const toolId = this.data.getToolId();
+    return toolId && toolId > 100;
   }
 }
