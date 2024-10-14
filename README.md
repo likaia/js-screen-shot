@@ -6,7 +6,7 @@ web端自定义截屏插件(原生JS版)，运行视频：[实现web端自定义
 - [实现Web端自定义截屏](https://juejin.cn/post/6924368956950052877)
 - [实现Web端自定义截屏(JS版)](https://juejin.cn/post/6931901091445473293)
 
-> 文档请移步[官网](https://www.kaisir.cn/js-screen-shot/)
+> 注意⚠️：本文档并非最新的，最新文档请移步[官网](https://www.kaisir.cn/js-screen-shot/)
 
 ## 插件安装
 ```bash
