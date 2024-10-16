@@ -959,60 +959,60 @@ export default class ScreenShot {
 
   private showToolBar(): void {
     if (this.toolController == null || this.screenShotContainer == null) return;
-    // 计算截图工具栏位置
+
+    // 使用 clientHeight/clientWidth 获取真实的容器尺寸
+    const containerHeight = this.screenShotContainer.clientHeight;
+    const containerWidth = this.screenShotContainer.clientWidth;
+    const toolbarHeight = this.toolController.offsetHeight;
+
+    // 通过 calculateToolLocation 获取初步工具栏位置
     const toolLocation = calculateToolLocation(
       this.drawGraphPosition,
       this.toolController.offsetWidth,
-      this.screenShotContainer.width / this.dpr,
+      containerWidth,
       this.placement,
       this.position
     );
-    const containerHeight = this.screenShotContainer.height / this.dpr;
 
-    // 工具栏的位置超出截图容器时，调整工具栏位置防止超出
-    if (toolLocation.mouseY > containerHeight - 64) {
-      toolLocation.mouseY -= this.drawGraphPosition.height + 64;
-      // 超出屏幕顶部时
+    // 如果工具栏加上高度超出容器底部，则将其放置到选区上方（留出10px间距）
+    if (toolLocation.mouseY + toolbarHeight > containerHeight) {
+      toolLocation.mouseY = this.drawGraphPosition.startY - toolbarHeight - 10;
+      // 如果上方空间不足，确保不小于0
       if (toolLocation.mouseY < 0) {
-        const containerHeight = parseInt(this.screenShotContainer.style.height);
-        toolLocation.mouseY = containerHeight - this.fullScreenDiffHeight;
+        toolLocation.mouseY = 0;
       }
-      // 设置工具栏超出状态为true
       this.data.setToolPositionStatus(true);
-      // 隐藏裁剪框尺寸显示容器
       this.data.setCutBoxSizeStatus(false);
     }
 
-    // 当前截取的是全屏，则修改工具栏的位置到截图容器最底部，防止超出
-    if (this.getFullScreenStatus) {
-      const containerHeight = parseInt(this.screenShotContainer.style.height);
-      // 重新计算工具栏的x轴位置
-      const toolPositionX =
-        (this.drawGraphPosition.width / this.dpr -
-          this.toolController.offsetWidth) /
-        2;
-      toolLocation.mouseY = containerHeight - this.fullScreenDiffHeight;
-      toolLocation.mouseX = toolPositionX;
+    // 如果初步计算的位置低于0则修正为0
+    if (toolLocation.mouseY < 0) {
+      toolLocation.mouseY = 0;
     }
 
-    // 显示并设置截图工具栏位置
+    // 如果当前为全屏截取状态，则工具栏放置于容器底部并水平居中
+    if (this.getFullScreenStatus) {
+      toolLocation.mouseY = containerHeight - toolbarHeight - 10;
+      toolLocation.mouseX = (this.drawGraphPosition.width - this.toolController.offsetWidth) / 2;
+    }
+
+    // 设置工具栏显示位置，考虑了截图容器的偏移
     this.data.setToolInfo(
       toolLocation.mouseX + this.position.left,
       toolLocation.mouseY + this.position.top
     );
 
-    // 设置裁剪框尺寸显示容器位置
+    // 设置裁剪框尺寸显示容器的位置和大小
     this.data.setCutBoxSizePosition(
       this.drawGraphPosition.startX,
       this.drawGraphPosition.startY - 35
     );
-    // 渲染裁剪框尺寸
     this.data.setCutBoxSize(
       this.drawGraphPosition.width,
       this.drawGraphPosition.height
     );
 
-    // 状态重置
+    // 重置全屏标识
     this.getFullScreenStatus = false;
   }
 
