@@ -194,9 +194,10 @@ sessionStorage.getItem("screenShotImg");
 * `closeCallback` 截图关闭回调函数，值为`Function`类型。
 * `triggerCallback` 截图响应回调函数，值为`Function`类型，使用html2canvas截屏时，页面图片过多时响应会较慢；使用webrtc截屏时用户点了分享，该函数为响应完成后触发的事件。回调函数返回一个对象，类型为: `{code: number,msg: string, displaySurface: string | null,displayLabel: string | null}`，code为0时代表截图加载完成，displaySurface返回的的是当前选择的窗口类型，displayLabel返回的是当前选择的标签页标识，浏览器不支持时此值为null。
 * `cancelCallback` 取消分享回到函数，值为`Function`类型，使用webrtc模式截屏时，用户点了取消或者浏览器不支持时所触发的事件。回调函数返回一个对象，类型为：`{code: number,msg: string, errorInfo: string}`，code为-1时代表用户未授权或者浏览器不支持webrtc。
-* `saveCallback` 保存截图回调函数，值为`Function`类型。回调函数中返回两个参数：
+* `saveCallback` 保存截图回调函数，值为`Function`类型。回调函数中返回三个参数：
   * `code` 状态码，number类型，为0时代表保存成功
   * `msg` 消息码，string类型。
+  * `base64` 截图的base64信息，string类型。
 * `level` 截图容器层级，值为number类型。 
 * `cutBoxBdColor` 裁剪区域边框像素点颜色，值为string类型。
 * `maxUndoNum` 最大可撤销次数, 值为number类型

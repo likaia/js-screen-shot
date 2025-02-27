@@ -37,7 +37,9 @@ let customImgSize = { w: 0, h: 0 };
 // 调用者定义的工具栏数据
 let userToolbar: Array<customToolbarType> = [];
 let h2cCrossImgLoadErrFn: screenShotType["h2cImgLoadErrCallback"] | null = null;
-let saveCallback: ((code: number, msg: string) => void) | null = null;
+let saveCallback:
+  | ((code: number, msg: string, base64: string) => void)
+  | null = null;
 let saveImgTitle: string | null = null;
 let canvasEvents: mouseEventType | null = null;
 
@@ -153,7 +155,9 @@ export default class PlugInParameters {
     return writeBase64;
   }
 
-  public setSaveCallback(saveFn: (code: number, msg: string) => void) {
+  public setSaveCallback(
+    saveFn: (code: number, msg: string, base64: string) => void
+  ) {
     saveCallback = saveFn;
   }
 
