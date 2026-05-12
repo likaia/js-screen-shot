@@ -349,6 +349,16 @@ export default class InitData {
     if (optionTextSizeController == null) return;
     if (status) {
       optionTextSizeController.style.display = "flex";
+      // 根据上方剩余空间决定向上或向下弹出
+      const panelH = optionTextSizeController.offsetHeight;
+      optionController = this.getOptionController();
+      if (optionController) {
+        const spaceAbove = optionController.getBoundingClientRect().top;
+        optionTextSizeController.style.top =
+          spaceAbove >= panelH
+            ? `-${panelH}px`
+            : `${optionController.offsetHeight}px`;
+      }
       return;
     }
     optionTextSizeController.style.display = "none";
@@ -557,6 +567,16 @@ export default class InitData {
     if (colorSelectController == null) return;
     if (status) {
       colorSelectController.style.display = "flex";
+      // 根据上方剩余空间决定向上或向下弹出
+      const panelH = colorSelectController.offsetHeight;
+      optionController = this.getOptionController();
+      if (optionController) {
+        const spaceAbove = optionController.getBoundingClientRect().top;
+        colorSelectController.style.top =
+          spaceAbove >= panelH
+            ? `-${panelH}px`
+            : `${optionController.offsetHeight}px`;
+      }
       return;
     }
     colorSelectController.style.display = "none";
