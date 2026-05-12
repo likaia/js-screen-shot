@@ -60,13 +60,6 @@ function drawCutOutBoxWithoutPixel(
   ScreenShotImageController: HTMLCanvasElement
 ) {
   const data = new InitData();
-  const leftValue = data.getToolPosition()?.left || 0;
-  const topValue = data.getToolPosition()?.top || 0;
-  // 工具栏位置超出时，对其进行修正处理
-  if (topValue && data.getToolPositionStatus()) {
-    // 调整工具栏位置
-    data.setToolInfo(leftValue, topValue - 46);
-  }
   data.setToolStatus(true);
   // 获取裁剪框位置信息
   const cutBoxPosition = data.getCutOutBoxPosition();

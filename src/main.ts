@@ -549,8 +549,6 @@ export default class ScreenShot {
     if (this.data.getToolName() == "undo") return;
     this.data.setDragging(true);
     this.drawStatus = false;
-    // 重置工具栏超出状态
-    this.data.setToolPositionStatus(false);
     const mouseX = nonNegativeData(
       event instanceof MouseEvent ? event.offsetX : event.touches[0].pageX
     );
@@ -976,21 +974,17 @@ export default class ScreenShot {
     const containerHeight =
       this.screenShotContainer.height / this.dpr -
       this.plugInParameters.getMenuBarHeight();
-    console.log(
-      containerHeight,
-      "abcdefg",
-      this.plugInParameters.getMenuBarHeight()
-    );
-    // 工具栏的位置超出截图容器时，调整工具栏位置防止超出
-    if (toolLocation.mouseY > containerHeight - 64) {
+    // 工具栏+选项面板整体高度为90px（工具栏44 + 三角6 + 选项面板40）
+    // 下方空间不足时，整体移到选区上方
+    const BLOCK_H = 90;
+    if (toolLocation.mouseY + BLOCK_H > containerHeight) {
       toolLocation.mouseY -= this.drawGraphPosition.height + 64;
-      // 超出屏幕顶部时
-      if (toolLocation.mouseY - this.plugInParameters.getMenuBarHeight() < 0) {
-        const containerHeight = parseInt(this.screenShotContainer.style.height);
-        toolLocation.mouseY = containerHeight - this.fullScreenDiffHeight;
+      // 上方空间也不足时（选项面板在工具栏上方需额外46px），兜底到容器底部附近
+      const menuBarH = this.plugInParameters.getMenuBarHeight();
+      if (toolLocation.mouseY - menuBarH < 46) {
+        const ch = parseInt(this.screenShotContainer.style.height);
+        toolLocation.mouseY = ch - this.fullScreenDiffHeight;
       }
-      // 设置工具栏超出状态为true
-      this.data.setToolPositionStatus(true);
       // 隐藏裁剪框尺寸显示容器
       this.data.setCutBoxSizeStatus(false);
     }

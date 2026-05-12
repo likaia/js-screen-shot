@@ -28,8 +28,6 @@ let undoClickNum = 0;
 let history: Array<Record<string, any>> = [];
 // 文本输入工具栏点击状态
 const textClickStatus = false;
-// 工具栏超出截图容器状态
-let toolPositionStatus = false;
 // 裁剪框位置参数
 let cutOutBoxPosition: positionInfoType = {
   startX: 0,
@@ -96,7 +94,6 @@ export default class InitData {
       toolClickStatus = false;
       resetScrollbarState = false;
       textEditState = false;
-      toolPositionStatus = false;
       selectedColor = "#F53340";
       toolName = "";
       toolId = null;
@@ -306,14 +303,6 @@ export default class InitData {
     return draggingTrim;
   }
 
-  public getToolPositionStatus() {
-    return toolPositionStatus;
-  }
-
-  public setToolPositionStatus(status: boolean) {
-    toolPositionStatus = status;
-  }
-
   public setDraggingTrim(status: boolean) {
     draggingTrim = status;
   }
@@ -431,21 +420,48 @@ export default class InitData {
 
   // 设置画笔选择工具栏位置
   public setOptionPosition(position: number) {
-    // 获取截图工具栏与三角形角标容器
     optionIcoController = this.getOptionIcoController();
     optionController = this.getOptionController();
-    if (optionIcoController == null || optionController == null) return;
-    // 修改位置
+    toolController = this.getToolController();
+    if (optionIcoController == null || optionController == null || toolController == null) return;
+
     const toolPosition = this.getToolPosition();
     if (toolPosition == null) return;
+
+    const TOOLBAR_H = 44;
+    const TRIANGLE_H = 6;
+    const PANEL_H = 40;
+
+    const toolbarTop = toolPosition.top;
     const icoLeft = toolPosition.left + position + "px";
-    const icoTop = toolPosition.top + 44 + "px";
     const optionLeft = toolPosition.left + "px";
-    const optionTop = toolPosition.top + 44 + 6 + "px";
+
+    // 通过工具栏与截图选区的相对位置判断选项面板方向
+    // 工具栏在选区下方（toolbarTop >= selectionBottom）时，选项面板放工具栏下方
+    const sscTop = screenShotController ? screenShotController.offsetTop : 0;
+    const selectionBottom =
+      sscTop + cutOutBoxPosition.startY + cutOutBoxPosition.height;
+    const panelBelow = toolbarTop >= selectionBottom;
+
+    let icoTop: number;
+    let optionTop: number;
+
+    if (panelBelow) {
+      // 整体在选区下方：工具栏上，选项面板下，三角▲
+      icoTop = toolbarTop + TOOLBAR_H;
+      optionTop = toolbarTop + TOOLBAR_H + TRIANGLE_H;
+      optionIcoController.style.transform = "rotate(180deg)";
+    } else {
+      // 整体在选区上方或选区内：选项面板上，工具栏下，三角▼
+      icoTop = toolbarTop - TRIANGLE_H;
+      optionTop = toolbarTop - TRIANGLE_H - PANEL_H;
+      optionIcoController.style.transform = "rotate(0deg)";
+    }
+
     optionIcoController.style.left = icoLeft;
-    optionIcoController.style.top = icoTop;
+    optionIcoController.style.top = icoTop + "px";
     optionController.style.left = optionLeft;
-    optionController.style.top = optionTop;
+    optionController.style.top = optionTop + "px";
   }
 
   // 获取工具栏位置
